@@ -20,6 +20,7 @@ return array(
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Models\\Demande' => $baseDir . '/app/Models/Demande.php',
     'App\\Models\\Diplome' => $baseDir . '/app/Models/Diplome.php',
+    'App\\Models\\Etudiant' => $baseDir . '/app/Models/Etudiant.php',
     'App\\Models\\Formulaire' => $baseDir . '/app/Models/Formulaire.php',
     'App\\Models\\Profil' => $baseDir . '/app/Models/Profil.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
