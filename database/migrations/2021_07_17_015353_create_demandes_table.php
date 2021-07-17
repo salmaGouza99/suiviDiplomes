@@ -14,7 +14,9 @@ class CreateDemandesTable extends Migration
     public function up()
     {
         Schema::create('demandes', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->string('type_demande');
+            $table->date('date_demande');
             $table->timestamps();
         });
     }
