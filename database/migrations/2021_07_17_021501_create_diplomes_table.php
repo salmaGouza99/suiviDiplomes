@@ -15,8 +15,6 @@ class CreateDiplomesTable extends Migration
     {
         Schema::create('diplomes', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('etudiant_id')->index();
-            $table->foreign('etudiant_id')->references('cin')->on('etudiant')->onDelete('cascade');
             $table->string('type_diplome');
             $table->string('statut');
             $table->date('date_creationDossier_envoiAuServiceDiplome');
