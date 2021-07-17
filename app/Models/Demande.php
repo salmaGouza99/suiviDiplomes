@@ -17,4 +17,11 @@ class Demande extends Model
     protected $fillable = ['type_demande', 
     'date_demande',
     ];
+
+    public function diplome(){
+        return $this->hasOne(Diplome::class);
+    }
+    public function etudiant(){
+        return $this->belongsTo(Etudiant::class);
+    }
 }

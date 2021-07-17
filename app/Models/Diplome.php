@@ -24,4 +24,9 @@ class Diplome extends Model
     'date_notificationetudiant',
     'date_retraitDiplome_archiveDossier',
     ];
+
+    public function demande(){
+        return $this->belongsTo(Demande::class);
+    }
+
 }

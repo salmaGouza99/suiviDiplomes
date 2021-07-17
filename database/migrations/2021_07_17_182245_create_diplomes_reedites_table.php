@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDiplomeReeditesTable extends Migration
+class CreateDiplomesReeditesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateDiplomeReeditesTable extends Migration
      */
     public function up()
     {
-        Schema::create('diplome_reedites', function (Blueprint $table) {
-            $table->integer('id')->index();
+        Schema::create('diplomes_reedites', function (Blueprint $table) {
+            $table->bigIncrements('id')->index('id')->on('diplomes');
             $table->string('typeErreur')->nullable();
             $table->date('dateReedition')->nullable();
-            $table->timestamps();
+            $table->timestamps();;
         });
     }
 
@@ -28,6 +28,6 @@ class CreateDiplomeReeditesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('diplome_reedites');
+        Schema::dropIfExists('diplomes_reedites');
     }
 }

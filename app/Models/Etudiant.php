@@ -28,4 +28,8 @@ class Etudiant extends Model
     'lieu_naiss',
     'email_inst',
     ];
+
+    public function demande(){
+        return $this->hasMany(Demande::class);
+    }
 }

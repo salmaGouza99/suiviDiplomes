@@ -14,7 +14,11 @@ class CreateDiplomesTable extends Migration
     public function up()
     {
         Schema::create('diplomes', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
+            $table->String('etudiant_cin')->unique();
+            $table->foreign('etudiant_cin')->references('cin')->on('etudiants')->onDelete('cascade');
+            $table->unsignedBigInteger('demande_id')->unique();
+            $table->foreign('demande_id')->references('id')->on('demandes')->onDelete('cascade');
             $table->string('type_diplome');
             $table->string('statut');
             $table->date('date_creationDossier_envoiAuServiceDiplome');
@@ -27,6 +31,7 @@ class CreateDiplomesTable extends Migration
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      *
