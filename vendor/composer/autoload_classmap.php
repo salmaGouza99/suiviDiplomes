@@ -18,6 +18,8 @@ return array(
     'App\\Http\\Middleware\\TrustHosts' => $baseDir . '/app/Http/Middleware/TrustHosts.php',
     'App\\Http\\Middleware\\TrustProxies' => $baseDir . '/app/Http/Middleware/TrustProxies.php',
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
+    'App\\Models\\Demande' => $baseDir . '/app/Models/Demande.php',
+    'App\\Models\\Diplome' => $baseDir . '/app/Models/Diplome.php',
     'App\\Models\\Formulaire' => $baseDir . '/app/Models/Formulaire.php',
     'App\\Models\\Profil' => $baseDir . '/app/Models/Profil.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
