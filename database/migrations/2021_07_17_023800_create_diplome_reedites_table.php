@@ -14,7 +14,7 @@ class CreateDiplomeReeditesTable extends Migration
     public function up()
     {
         Schema::create('diplome_reedites', function (Blueprint $table) {
-            $table->id();
+            $table->integer('id')->index();
             $table->string('typeErreur')->nullable();
             $table->date('dateReedition')->nullable();
             $table->timestamps();

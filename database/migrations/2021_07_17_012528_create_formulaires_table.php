@@ -14,8 +14,9 @@ class CreateFormulairesTable extends Migration
     public function up()
     {
         Schema::create('formulaires', function (Blueprint $table) {
-            $table->id();
-            $table->string('link',300);
+            $table->increments('id');
+            $table->string('type_formulaire');
+            $table->string('lien',300);
             $table->string('filiere',50);
             $table->Integer('annee');
             $table->timestamps();
