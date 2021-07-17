@@ -15,8 +15,8 @@ class CreateDiplomesReeditesTable extends Migration
     {
         Schema::create('diplomes_reedites', function (Blueprint $table) {
             $table->bigIncrements('id')->index('id')->on('diplomes');
-            $table->string('typeErreur')->nullable();
-            $table->date('dateReedition')->nullable();
+            $table->string('typeErreur');
+            $table->date('dateReedition');
             $table->timestamps();;
         });
     }

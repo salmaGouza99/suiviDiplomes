@@ -32,4 +32,7 @@ class Etudiant extends Model
     public function demande(){
         return $this->hasMany(Demande::class);
     }
+    public function diplome(){
+        return $this->hasOne(Diplome::class);
+    }
 }

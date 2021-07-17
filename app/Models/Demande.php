@@ -14,7 +14,8 @@ class Demande extends Model
      *
      * @var array
      */
-    protected $fillable = ['type_demande', 
+    protected $fillable = ['etudiant_cin',
+    'type_demande', 
     'date_demande',
     ];
 
