@@ -14,4 +14,8 @@ class Profil extends Model
      * @var array
      */
     protected $fillable = ['nomProfil'];
+
+    public function user(){
+        return $this->hasMany(User::class);
+    }
 }
