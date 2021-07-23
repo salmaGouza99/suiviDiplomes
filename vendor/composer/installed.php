@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'ffaf4b68aa25b33ab5a41890a9c35d6978f41e06',
+        'reference' => 'b24fcba681933c8f370a1203bc6c34314dd7bc32',
         'name' => 'laravel/laravel',
         'dev' => true,
     ),
@@ -424,6 +424,15 @@
                 0 => 'v8.50.0',
             ),
         ),
+        'kkszymanowski/traitor' => array(
+            'pretty_version' => '0.2.5',
+            'version' => '0.2.5.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../kkszymanowski/traitor',
+            'aliases' => array(),
+            'reference' => '9770fc7de72ff585601dc9c42b31715d9fc40a24',
+            'dev_requirement' => false,
+        ),
         'kodova/hamcrest-php' => array(
             'dev_requirement' => true,
             'replaced' => array(
@@ -445,7 +454,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'ffaf4b68aa25b33ab5a41890a9c35d6978f41e06',
+            'reference' => 'b24fcba681933c8f370a1203bc6c34314dd7bc32',
             'dev_requirement' => false,
         ),
         'laravel/sail' => array(
@@ -838,6 +847,15 @@
             'replaced' => array(
                 0 => '4.1.1',
             ),
+        ),
+        'santigarcor/laratrust' => array(
+            'pretty_version' => '6.3.2',
+            'version' => '6.3.2.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../santigarcor/laratrust',
+            'aliases' => array(),
+            'reference' => '9ab3bfdc06afe18b17f69b77cb77291c36dae9f6',
+            'dev_requirement' => false,
         ),
         'sebastian/cli-parser' => array(
             'pretty_version' => '1.0.1',

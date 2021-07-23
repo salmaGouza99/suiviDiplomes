@@ -50,6 +50,7 @@ final class Versions
   'guzzlehttp/guzzle' => '7.3.0@7008573787b430c1c1f650e3722d9bba59967628',
   'guzzlehttp/promises' => '1.4.1@8e7d04f1f6450fef59366c399cfad4b9383aa30d',
   'guzzlehttp/psr7' => '2.0.0@1dc8d9cba3897165e16d12bb13d813afb1eb3fe7',
+  'kkszymanowski/traitor' => '0.2.5@9770fc7de72ff585601dc9c42b31715d9fc40a24',
   'laravel/framework' => 'v8.50.0@d892dbacbe3859cf9303ccda98ac8d782141d5ae',
   'laravel/sanctum' => 'v2.11.2@b21e65cbe13896946986cb0868180cd69e1bd5d3',
   'laravel/tinker' => 'v2.6.1@04ad32c1a3328081097a181875733fa51f402083',
@@ -72,6 +73,7 @@ final class Versions
   'ralouphie/getallheaders' => '3.0.3@120b605dfeb996808c31b6477290a714d356e822',
   'ramsey/collection' => '1.1.3@28a5c4ab2f5111db6a60b2b4ec84057e0f43b9c1',
   'ramsey/uuid' => '4.1.1@cd4032040a750077205918c86049aa0f43d22947',
+  'santigarcor/laratrust' => '6.3.2@9ab3bfdc06afe18b17f69b77cb77291c36dae9f6',
   'swiftmailer/swiftmailer' => 'v6.2.7@15f7faf8508e04471f666633addacf54c0ab5933',
   'symfony/console' => 'v5.3.2@649730483885ff2ca99ca0560ef0e5f6b03f2ac1',
   'symfony/css-selector' => 'v5.3.0@fcd0b29a7a0b1bb5bfbedc6231583d77fea04814',
@@ -144,7 +146,7 @@ final class Versions
   'sebastian/type' => '2.3.4@b8cd8a1c753c90bc1a0f5372170e3e489136f914',
   'sebastian/version' => '3.0.2@c6c1022351a901512170118436c764e473f6de8c',
   'theseer/tokenizer' => '1.2.0@75a63c33a8577608444246075ea0af0d052e452a',
-  'laravel/laravel' => 'dev-master@ffaf4b68aa25b33ab5a41890a9c35d6978f41e06',
+  'laravel/laravel' => 'dev-master@b24fcba681933c8f370a1203bc6c34314dd7bc32',
 );
 
     private function __construct()

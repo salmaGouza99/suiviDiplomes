@@ -15,7 +15,12 @@ use App\Http\Controllers\ApiController;
 */
 Route::post('/login','App\Http\Controllers\LoginController@login');
 
-Route::middleware(['auth:sanctum'])->group(function () {
+// Route::middleware(['auth:sanctum','role:guichet_droit_arabe'])->group(function () {
+//     Route::post('/logout','App\Http\Controllers\LoginController@logout');
+//     Route::get('/users','App\Http\Controllers\LoginController@getUser');
+//   });
+
+  Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum','role:superadministrateur']], function() {
     Route::post('/logout','App\Http\Controllers\LoginController@logout');
-    Route::get('/users','App\Http\Controllers\LoginController@getUsers');
-  });
+    Route::get('/users','App\Http\Controllers\LoginController@getUser');
+});

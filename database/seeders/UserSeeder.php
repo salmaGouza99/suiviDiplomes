@@ -19,8 +19,7 @@ class UserSeeder extends Seeder
         for($i=0;$i<8;$i++){
             DB::table('users')->insert([
                 'email' => Str::random(10).'@gmail.com',
-                'password' => Hash::make('password'),
-                'profil_id' => rand(1,8),            
+                'password' => Hash::make('password'),         
             ]);
         }
     }

@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
+use App\Models\User;
+use App\Models\RoleUser;
+use App\Models\role_user;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Laratrust\Traits\LaratrustUserTrait;
+use Illuminate\Support\Facades\DB;
 
 
 class LoginController extends Controller
@@ -30,32 +36,12 @@ class LoginController extends Controller
         if (!Auth::attempt($attr)) {
             return $this->error('Credentials not match', 401);
         }
-        $user = auth()->user(); //user authentified
-        if($user->profil_id == 1){
-            $token = $user->createToken('token',['*']);
-            return $token->plainTextToken;
-        }
-        elseif($user->profil_id == 2 ||$user->profil_id == 3 || $user->profil_id == 4){
-            $token = $user->createToken('token',['*']);
-            return $token->plainTextToken;
-        }
-        elseif($user->profil_id == 5){
-            $token = $user->createToken('token',['*']);
-            return $token->plainTextToken;
-        }
-        elseif($user->profil_id == 6){
-            $token = $user->createToken('token',['*']);
-            return $token->plainTextToken;
-        }
-        elseif($user->profil_id == 7){
-            $token = $user->createToken('token',['*']);
-            return $token->plainTextToken;
-        }
-        elseif($user->profil_id == 8){
-            $token = $user->createToken('token',['*']);
-            return $token->plainTextToken;
-        }
+        $user = auth()->user();
+        // $user->attachRole('guichet_droit_arabe'); //user authentified
+        $token = $user->createToken('token');
+        return $token->plainTextToken;
     }
+    
 
     /**
      * Logout function
@@ -70,11 +56,19 @@ class LoginController extends Controller
     }
 
 
-    public function getUsers(Request $request){ 
+    public function getUser(Request $request){ 
         $user = auth()->user();
-        if ($user->tokenCan('all:user')) {
-            return response()->json(['users' => 'ok']);
+        $role = DB::table('users')
+                ->join('role_user', 'users.id', '=', 'role_user.user_id')
+                ->join('roles','role_user.role_id', '=', 'roles.id')
+                ->where('users.id',$user->id)->get();
+
+        if ($user->hasRole('superadministrateur')) {
+            return response()->json([
+                'user_connected' => $user,
+                'role' => $role ,
+        ]);
         }
-        return $user;
+        
     }
 }
