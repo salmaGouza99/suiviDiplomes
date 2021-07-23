@@ -37,8 +37,8 @@ class LoginController extends Controller
             return $this->error('Credentials not match', 401);
         }
         $user = auth()->user();
-        // $user->attachRole('guichet_droit_arabe'); //user authentified
         $token = $user->createToken('token');
+        
         return $token->plainTextToken;
     }
     
@@ -63,7 +63,7 @@ class LoginController extends Controller
                 ->join('roles','role_user.role_id', '=', 'roles.id')
                 ->where('users.id',$user->id)->get();
 
-        if ($user->hasRole('superadministrateur')) {
+        if ($user->hasRole('admin')) {
             return response()->json([
                 'user_connected' => $user,
                 'role' => $role ,
