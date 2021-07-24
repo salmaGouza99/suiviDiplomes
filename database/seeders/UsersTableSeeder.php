@@ -17,19 +17,19 @@ class UsersTableSeeder extends Seeder
     {
         $user1 = User::create([
             'email' => 'asma@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => bcrypt('password'),
         ]);
         $user1->attachRole('admin');
 
         $user2 = User::create([
             'email' => 'salma@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => bcrypt('password'),
         ]);
         $user2->attachRole('admin');
 
         $user3 = User::create([
             'email' => 'chakib@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => bcrypt('password'),
         ]);
         $user3->attachRole('guichet_retrait');
 

@@ -38,7 +38,7 @@ class LoginController extends Controller
         }
         $user = auth()->user();
         $token = $user->createToken('token');
-        
+
         return $token->plainTextToken;
     }
     
@@ -67,7 +67,7 @@ class LoginController extends Controller
             return response()->json([
                 'user_connected' => $user,
                 'role' => $role ,
-        ]);
+            ]);
         }
         
     }

@@ -18,10 +18,10 @@ class CreateEtudiantsTable extends Migration
             $table->primary('cin');
             $table->string('apogee');
             $table->string('cne');
-            $table->string('nom')->nullable();
-            $table->string('prenom')->nullable();
-            $table->string('nom_arabe')->nullable();
-            $table->string('prenom_arabe')->nullable();
+            $table->string('nom');
+            $table->string('prenom');
+            $table->string('nom_arabe');
+            $table->string('prenom_arabe');
             $table->string('filiere');
             $table->string('option');
             $table->string('nationalite');
