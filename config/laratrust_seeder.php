@@ -44,7 +44,7 @@ return [
         'service_diplomes' => [
             'profile' => 'r,u',
             'etudiants' => 'r,u',
-            'diplomes' => 'r,u',
+            'diplomes' => 'r',
             'diplomes_reedites' => 'c,r,u'
         ],
         'decanat' => [
