@@ -17,6 +17,8 @@ class CreateDiplomesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('demande_id')->unique();
             $table->foreign('demande_id')->references('id')->on('demandes')->onDelete('cascade');
+            $table->string('etudiant_cin');
+            $table->foreign('etudiant_cin')->references('cin')->on('etudiants')->onDelete('cascade')->onUpdate('cascade');
             $table->string('type_diplome');
             $table->string('statut');
             $table->date('date_creationDossier_envoiAuServiceDiplome');

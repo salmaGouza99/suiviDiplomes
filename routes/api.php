@@ -6,7 +6,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\FormulaireController;
-
+use App\Http\Controllers\EtudiantController;
+use App\Http\Controllers\DemandeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,8 @@ Route::post('/login',[LoginController::class,'login']);
 Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::post('/logout',[LoginController::class,'logout']);
   Route::get('/welcome',[WelcomeController::class,'index']);
+  Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
+  Route::get('/etudiants/search/{var}',[EtudiantController::class,'search']);
 
 });
 
@@ -37,7 +40,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
 
 // Protected routes for admin
-Route::group(['prefix' => 'admin','middleware' => ['auth:sanctum','role:admin']], function(){
+Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   //route for users
   Route::resource('/users',UsersController::class);
   Route::get('/users/email/{email}',[UsersController::class,'search']);
@@ -45,41 +48,49 @@ Route::group(['prefix' => 'admin','middleware' => ['auth:sanctum','role:admin']]
 
   //routes for forms
   Route::resource('/formulaires',FormulaireController::class);
+
+  //routes for etudiants
+  Route::get('/etudiants',[EtudiantController::class,'index']);
+  Route::get('/etudiants/filter/{filiere}',[EtudiantController::class,'filterByFiliere']);
 });
 
-// Protected routes for guichet_droit_arabe
-Route::group(['prefix' => 'guichet_droit_arabe','middleware' => ['auth:sanctum','role:guichet_droit_arabe']], function(){
+// Protected routes for admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
+Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
+       guichet_droit_francais|guichet_economie']], function(){
+  Route::resource('demandes', DemandeController::class,['only' => ['index', 'show']]);
+  Route::get('/demandes/search/{var}',[DemandeController::class,'search']);
+  Route::get('/demandes/filter/{type}',[DemandeController::class,'filterByType']);
+});
+
+// Protected routes for admin and decanat
+Route::group(['middleware' => ['auth:sanctum','role:admin|decanat']], function(){
+  Route::put('/etudiants/{cin}',[EtudiantController::class,'update']);
+});
+
+// Protected routes for guichet_droit_arabe, guichet_droit_francais and guichet_economie
+Route::group(['middleware' => ['auth:sanctum','role:guichet_droit_arabe|
+       guichet_droit_francais|guichet_economie']], function(){
+  
+});
+
+
+// Protected routes only for service_diplomes
+Route::group(['middleware' => ['auth:sanctum','role:service_diplomes']], function(){
+  
+});
+
+// Protected routes only for decanat
+Route::group(['middleware' => ['auth:sanctum','role:decanat']], function(){
 
 });
 
-// Protected routes for guichet_droit_francais
-Route::group(['prefix' => 'guichet_droit_francais','middleware' => ['auth:sanctum','role:guichet_droit_francais']], function(){
+// Protected routes only for bureau_ordre
+Route::group(['middleware' => ['auth:sanctum','role:bureau_ordre']], function(){
 
 });
 
-// Protected routes for guichet_economie
-Route::group(['prefix' => 'guichet_economie','middleware' => ['auth:sanctum','role:guichet_economie']], function(){
+// Protected routes only for guichet_retrait
+Route::group(['middleware' => ['auth:sanctum','role:guichet_retrait']], function(){
 
 });
-
-// Protected routes for service_diplomes
-Route::group(['prefix' => 'service_diplomes','middleware' => ['auth:sanctum','role:service_diplomes']], function(){
-
-});
-
-// Protected routes for decanat
-Route::group(['prefix' => 'decanat','middleware' => ['auth:sanctum','role:decanat']], function(){
-
-});
-
-// Protected routes for bureau_ordre
-Route::group(['prefix' => 'bureau_ordre','middleware' => ['auth:sanctum','role:bureau_ordre']], function(){
-
-});
-
-// Protected routes for guichet_retrait
-Route::group(['prefix' => 'guichet_retrait','middleware' => ['auth:sanctum','role:guichet_retrait']], function(){
-
-});
-
 

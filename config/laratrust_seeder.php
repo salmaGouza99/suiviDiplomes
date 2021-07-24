@@ -17,41 +17,48 @@ return [
             'users' => 'c,r,u,d',
             'formulaires' => 'c,r,u,d',
             'etudiants' => 'r,u',
-            'demandes' => 'r,u',
+            'demandes' => 'r',
             'diplomes' => 'r,u,d',
             'diplomes_reedites' => 'r,u,d',
             'roles' => 'c,r,u,d',
             'permissions' => 'c,r,u,d',
         ],
         'guichet_droit_arabe' => [
+            'profile' => 'r,u',
             'etudiants' => 'r',
-            'demandes' => 'r,u',
+            'demandes' => 'r',
             'diplomes' => 'c,r,u'
         ],
         'guichet_droit_francais' => [
+            'profile' => 'r,u',
             'etudiants' => 'r',
-            'demandes' => 'r,u',
+            'demandes' => 'r',
             'diplomes' => 'c,r,u'
         ],  
         'guichet_economie' => [
+            'profile' => 'r,u',
             'etudiants' => 'r',
-            'demandes' => 'r,u',
+            'demandes' => 'r',
             'diplomes' => 'c,r,u'
         ],
         'service_diplomes' => [
+            'profile' => 'r,u',
             'etudiants' => 'r,u',
-            'diplomes' => 'r,u',
+            'diplomes' => 'r',
             'diplomes_reedites' => 'c,r,u'
         ],
         'decanat' => [
+            'profile' => 'r,u',
             'etudiants' => 'r',
             'diplomes' => 'r,u'
         ],
         'bureau_ordre' => [
+            'profile' => 'r,u',
             'etudiants' => 'r',
             'diplomes' => 'r,u'
         ],
         'guichet_retrait' => [
+            'profile' => 'r,u',
             'etudiants' => 'r',
             'diplomes' => 'r,u'
         ]

@@ -30,9 +30,9 @@ class Etudiant extends Model
     ];
 
     public function demande(){
-        return $this->hasMany(Demande::class);
+        return $this->hasMany(Demande::class, 'etudiant_cin', 'cin');
     }
     public function diplome(){
-        return $this->hasOne(Diplome::class);
+        return $this->hasOne(Diplome::class, 'etudiant_cin', 'cin');
     }
 }

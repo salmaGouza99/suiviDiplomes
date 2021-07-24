@@ -23,6 +23,6 @@ class Demande extends Model
         return $this->hasOne(Diplome::class);
     }
     public function etudiant(){
-        return $this->belongsTo(Etudiant::class);
+        return $this->belongsTo(Etudiant::class, 'etudiant_cin', 'cin');
     }
 }
