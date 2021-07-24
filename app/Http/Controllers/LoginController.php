@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\RoleUser;
-use App\Models\role_user;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Laratrust\Traits\LaratrustUserTrait;
-use Illuminate\Support\Facades\DB;
+
 
 
 class LoginController extends Controller
@@ -27,7 +25,6 @@ class LoginController extends Controller
         //         "success"=>'false',
         //         'status'=>200,
         //     ]);
-
         $attr = $request->validate([
             'email' => 'required|string|email|',
             'password' => 'required|string|min:6'
@@ -38,7 +35,7 @@ class LoginController extends Controller
         }
         $user = auth()->user();
         $token = $user->createToken('token');
-        
+
         return $token->plainTextToken;
     }
     
@@ -55,20 +52,4 @@ class LoginController extends Controller
         return response()->json(['success' => 'logged out']);
     }
 
-
-    public function getUser(Request $request){ 
-        $user = auth()->user();
-        $role = DB::table('users')
-                ->join('role_user', 'users.id', '=', 'role_user.user_id')
-                ->join('roles','role_user.role_id', '=', 'roles.id')
-                ->where('users.id',$user->id)->get();
-
-        if ($user->hasRole('admin')) {
-            return response()->json([
-                'user_connected' => $user,
-                'role' => $role ,
-        ]);
-        }
-        
-    }
 }

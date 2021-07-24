@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class UsersTableSeeder extends Seeder
 {
@@ -16,20 +17,20 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         $user1 = User::create([
-            'email' => 'asma@gmail.com',
-            'password' => Hash::make('password'),
+            'email' => 'asmaa@gmail.com',
+            'password' =>Crypt::encryptString('password1'),
         ]);
         $user1->attachRole('admin');
 
         $user2 = User::create([
-            'email' => 'salma@gmail.com',
-            'password' => Hash::make('password'),
+            'email' => 'salmaa@gmail.com',
+            'password' =>Crypt::encryptString('password2'),
         ]);
         $user2->attachRole('admin');
 
         $user3 = User::create([
-            'email' => 'chakib@gmail.com',
-            'password' => Hash::make('password'),
+            'email' => 'chakibe@gmail.com',
+            'password' =>Crypt::encryptString('password3'),
         ]);
         $user3->attachRole('guichet_retrait');
 
