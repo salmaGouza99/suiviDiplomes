@@ -11,11 +11,6 @@ use SheetDB\SheetDB;
 
 class UsersController extends Controller
 {
-    /**
-     * Display a listing of users.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $users = array();
@@ -32,15 +27,18 @@ class UsersController extends Controller
        
     }
 
-    /**
-     * Store a newly created user in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $user = User::create($request->all());
+        $vars = $request->validate([
+            'email' => 'required|string|email|',
+            'password' => 'required|string|min:6',
+            'role' => 'required|string'
+        ]);
+
+        $user = User::create([
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
         $user->attachRole($request->role);
 
         return response()->json([
@@ -49,26 +47,16 @@ class UsersController extends Controller
         
     }
 
-    /**
-     * Display the specified user.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
+        $user = User::with('roles')->find($id);
         return response()->json([
-            'user' => User::with('roles')->find($id),
+                'id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->roles[0]->name
         ]);
     }
 
-    /**
-     * Update the specified user in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response 
-     */
     public function update(Request $request, $id)
     {
         $user = User::with('roles')->findOrFail($id);
@@ -76,10 +64,7 @@ class UsersController extends Controller
         // update role
         if ($request->role)
         {
-            foreach ($user->roles as $role) 
-            {
-                $user->detachRole($role->name);
-            }
+            $user->detachRole($user->roles[0]->name);
             $user->attachRole($request->role);
         }
 
@@ -96,23 +81,21 @@ class UsersController extends Controller
             {
                 if (!\Hash::check($request->newpassword , $user->password)) 
                 {
-                    $user->password = Hash::make($request->newpassword);
-                    User::where( 'id' , $user->id)->update( array( 'password' =>  $user->password));
+                    User::where('id',$user->id)->update(array('password'=>Hash::make($request->newpassword)));
                 }
-     
                 else
                 {
-                    return response()->json(
-                        'message','new password can not be the old password!'
-                    );
+                    return response()->json([
+                        'message' => 'new password can not be the old password!'
+                    ]);
                 }
             }
      
             else
             {
-                return response()->json(
-                    'message','old password doesnt matched!'
-                );  
+                return response()->json([
+                    'message' => 'old password doesnt matched!'
+                ]);  
             }
         }
 
@@ -121,26 +104,12 @@ class UsersController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified user from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-
+        User::findOrFail($id)->delete();
         return response()->json(['response' => 'User deleted successfully']);
     }
 
-     /**
-     * filter users by role
-     *
-     * @param  String  $role
-     * @return \Illuminate\Http\Response
-     */
     public function filterByRole($role)
     {
         $users=array();
@@ -162,15 +131,9 @@ class UsersController extends Controller
         ]);
     }
 
-    /**
-     * search users by email
-     *
-     * @param String $email
-     * @return \Illuminate\Http\Response
-     */
     public function search(String $email){
        return response()->json([
-            'users' => User::where('email','like','%'.$email.'%')->get(),
+            'users' => User::where('email','like','%'.$email.'%')->get()
        ]);
     }
 

@@ -28,7 +28,7 @@ Route::post('/login',[LoginController::class,'login']);
 Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::post('/logout',[LoginController::class,'logout']);
   Route::get('/welcome',[WelcomeController::class,'index']);
-  
+
   // Etudiants
   Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
   Route::get('/etudiants/search/{var}',[EtudiantController::class,'search']);
@@ -39,8 +39,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
   Route::resource('/users',UsersController::class);
-  Route::get('/users/email/{email}',[UsersController::class,'search']);
-  Route::get('/users/role/{role}',[UsersController::class,'filterByRole']);
+  Route::get('/users/search/{email}',[UsersController::class,'search']);
+  Route::get('/users/filter/{role}',[UsersController::class,'filterByRole']);
 
   // Forms
   Route::resource('/formulaires',FormulaireController::class);
