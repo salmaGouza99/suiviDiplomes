@@ -20,15 +20,18 @@ class UsersController extends Controller
         {   
             $users = array();
             foreach ( User::with('roles')->get() as $user ) {
-                try {
-                    $decryptedPassword = Crypt::decryptString($user->password);
-                } catch (DecryptException $e) {
-                    echo $e->getMessage();
+                // try {
+                //     $decryptedPassword = Crypt::decryptString($user->password);
+                // } catch (DecryptException $e) {
+                //     echo $e->getMessage();
+                // }
+                foreach ($user->roles as $role) {
+                    $role=$role->name;
                 }
                 $users[] = ['id' => $user->id,
                            'email' => $user->email,
-                           'password' => $decryptedPassword,
-                           'role' => $user->roles[0]->name
+                           'password' => $user->password,
+                           'role' => $user->role,
                            ];
                 }
     
@@ -114,19 +117,12 @@ class UsersController extends Controller
         $users=array();
         foreach ( User::with('roles')->get() as $user ) 
             {
-            //decrypt password
-            try {
-                $decryptedPassword = Crypt::decryptString($user->password);
-            } catch (DecryptException $e) {
-                echo $e->getMessage();
-            }
-
             //test role
             if($user->roles[0]->name==$role) 
             {
                 $users[] = [   'id' => $user->id,
                                'email' => $user->email,
-                               'password' => $decryptedPassword,
+                               'password' => $user->password,
                                'role' => $user->roles[0]->name
                             ];
             }
@@ -144,7 +140,7 @@ class UsersController extends Controller
      * @param String $email
      * @return \Illuminate\Http\Response
      */
-    public function search(Request $request,String $email){
+    public function search(String $email){
        return response()->json([
             'users' => User::where('email','like','%'.$email.'%')->get(),
        ]);
