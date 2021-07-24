@@ -17,20 +17,20 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         $user1 = User::create([
-            'email' => 'asmaa@gmail.com',
-            'password' =>Crypt::encryptString('password1'),
+            'email' => 'asma@gmail.com',
+            'password' => Hash::make('password1'),
         ]);
         $user1->attachRole('admin');
 
         $user2 = User::create([
-            'email' => 'salmaa@gmail.com',
-            'password' =>Crypt::encryptString('password2'),
+            'email' => 'salma@gmail.com',
+            'password' => Hash::make('password2'),
         ]);
         $user2->attachRole('admin');
 
         $user3 = User::create([
             'email' => 'chakibe@gmail.com',
-            'password' =>Crypt::encryptString('password3'),
+            'password' => Hash::make('password3'),
         ]);
         $user3->attachRole('guichet_retrait');
 

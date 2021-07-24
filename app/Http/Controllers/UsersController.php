@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Encryption\DecryptException;
 use SheetDB\SheetDB;
 
@@ -17,25 +18,17 @@ class UsersController extends Controller
      */
     public function index()
     {
-        {   
-            $users = array();
-            foreach ( User::with('roles')->get() as $user ) {
-                try {
-                    $decryptedPassword = Crypt::decryptString($user->password);
-                } catch (DecryptException $e) {
-                    echo $e->getMessage();
-                }
-                $users[] = ['id' => $user->id,
-                           'email' => $user->email,
-                           'password' => $decryptedPassword,
-                           'role' => $user->roles[0]->name
-                           ];
-                }
-    
-            return response()->json([
-                'users' =>$users,
-            ]);
+        $users = array();
+        foreach ( User::with('roles')->get() as $user ) {
+            $users[] = [
+                'id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->roles[0]->name
+            ];
         }
+        return response()->json([
+            'users' => $users,
+        ]);
        
     }
 
@@ -47,10 +40,11 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $user=User::create($request->all());
+        $user = User::create($request->all());
         $user->attachRole($request->role);
+
         return response()->json([
-            'user' =>$user,
+            'user' => $user,
         ]);
         
     }
@@ -77,15 +71,53 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user =User::with('roles')->findOrFail($id);
-        foreach ($user->roles as $role) {
-            $user->detachRole($role->name);
+        $user = User::with('roles')->findOrFail($id);
+
+        // update role
+        if ($request->role)
+        {
+            foreach ($user->roles as $role) 
+            {
+                $user->detachRole($role->name);
+            }
+            $user->attachRole($request->role);
         }
-        $user->attachRole($request->role);
-        $user->update($request->all());
+
+        // update email
+        if ($request->email)
+        {
+            User::where('id',$user->id)->update(array('email'=>$request->email));
+        }
+
+        // update password 
+        if ($request->oldpassword and $request->newpassword )
+        {
+            if (\Hash::check($request->oldpassword , $user->password )) 
+            {
+                if (!\Hash::check($request->newpassword , $user->password)) 
+                {
+                    $user->password = Hash::make($request->newpassword);
+                    User::where( 'id' , $user->id)->update( array( 'password' =>  $user->password));
+                }
+     
+                else
+                {
+                    return response()->json(
+                        'message','new password can not be the old password!'
+                    );
+                }
+            }
+     
+            else
+            {
+                return response()->json(
+                    'message','old password doesnt matched!'
+                );  
+            }
+        }
 
         return response()->json([
-            'user' =>User::with('roles')->find($user->id),
+            'user' => User::with('roles')->find($user->id),
         ]);
     }
 
@@ -113,20 +145,12 @@ class UsersController extends Controller
     {
         $users=array();
         foreach ( User::with('roles')->get() as $user ) 
-            {
-            //decrypt password
-            try {
-                $decryptedPassword = Crypt::decryptString($user->password);
-            } catch (DecryptException $e) {
-                echo $e->getMessage();
-            }
-
+        {
             //test role
             if($user->roles[0]->name==$role) 
             {
                 $users[] = [   'id' => $user->id,
                                'email' => $user->email,
-                               'password' => $decryptedPassword,
                                'role' => $user->roles[0]->name
                             ];
             }
