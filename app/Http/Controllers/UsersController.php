@@ -168,7 +168,7 @@ class UsersController extends Controller
      * @param String $email
      * @return \Illuminate\Http\Response
      */
-    public function search(Request $request,String $email){
+    public function search(String $email){
        return response()->json([
             'users' => User::where('email','like','%'.$email.'%')->get(),
        ]);
