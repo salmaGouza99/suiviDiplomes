@@ -48,6 +48,8 @@ Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
 
   //routes for forms
   Route::resource('/formulaires',FormulaireController::class);
+  Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
+  Route::get('/formulaires/filiere/{filiere}',[FormulaireController::class,'filterByFiliere']);
 
   //routes for etudiants
   Route::get('/etudiants',[EtudiantController::class,'index']);

@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
 use SheetDB\SheetDB;
 
 class UsersController extends Controller
@@ -20,11 +18,6 @@ class UsersController extends Controller
         {   
             $users = array();
             foreach ( User::with('roles')->get() as $user ) {
-                // try {
-                //     $decryptedPassword = Crypt::decryptString($user->password);
-                // } catch (DecryptException $e) {
-                //     echo $e->getMessage();
-                // }
                 foreach ($user->roles as $role) {
                     $role=$role->name;
                 }
@@ -34,7 +27,6 @@ class UsersController extends Controller
                            'role' => $user->role,
                            ];
                 }
-    
             return response()->json([
                 'users' =>$users,
             ]);
@@ -53,7 +45,7 @@ class UsersController extends Controller
         $user=User::create($request->all());
         $user->attachRole($request->role);
         return response()->json([
-            'user' =>$user,
+            'user' =>$user->with('roles')->find($user->id),
         ]);
         
     }
@@ -102,7 +94,6 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-
         return response()->json(['response' => 'User deleted successfully']);
     }
 
@@ -127,7 +118,6 @@ class UsersController extends Controller
                             ];
             }
         }    
-            
         //return json response
         return response()->json([
            'users' => $users,
@@ -153,4 +143,8 @@ class UsersController extends Controller
     //         'sheet' => $sheetdb->get(),
     //     ]);
     // }
+
+
+
+
 }
