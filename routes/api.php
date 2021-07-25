@@ -41,10 +41,12 @@ Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
   Route::resource('/users',UsersController::class);
   Route::get('/users/search/{email}',[UsersController::class,'search']);
-  Route::get('/users/filter/{role}',[UsersController::class,'filterByRole']);
+  Route::get('/users/role/{role}',[UsersController::class,'filterByRole']);
 
   // Forms
   Route::resource('/formulaires',FormulaireController::class);
+  Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
+  Route::get('/formulaires/filiere/{filiere}',[FormulaireController::class,'filterByFiliere']);
 
   // Etudiants
   Route::get('/etudiants',[EtudiantController::class,'index']);

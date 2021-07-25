@@ -25,16 +25,12 @@ class LoginController extends Controller
             'password' => 'required|string|min:6'
         ]);
 
-         // check email first
-         $user = User::where('email', $attr['email'])->first();
-
-         // check password
-         if (!$user || !Hash::check($attr['password'], $user->password)) {
-             return response([
-                 'message' => 'These credentials do not match our records!'
-                 ], 401);
-         }
-
+        if (!Auth::attempt($attr)) {
+            return response()->json([
+                'message' => 'username or password invalid'
+            ]);
+        }
+        $user = auth()->user();
         $token = $user->createToken('token');
         return $token->plainTextToken;
     }
