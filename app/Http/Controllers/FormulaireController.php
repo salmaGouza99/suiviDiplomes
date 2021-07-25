@@ -17,7 +17,6 @@ class FormulaireController extends Controller
     public function store(Request $request)
     {
         $form = Formulaire::create($request->all());
-
         return response()->json($form, 201);
     }
 
