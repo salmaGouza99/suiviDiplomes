@@ -7,11 +7,16 @@ use App\Models\Etudiant;
 
 class EtudiantController extends Controller
 {   
+
+    /**
+     * liste des etudiants
+     *
+     * @return json_response
+     */
     public function index()
     {
         $etudiants = array();
-        $data = Etudiant::with('demande')->get();
-        //$data = Etudiant::paginate(15);
+        $data = Etudiant::with('demande')->paginate(10);
         foreach ( $data as $etudiant ) 
         {
             $demandes = array();
@@ -34,6 +39,13 @@ class EtudiantController extends Controller
         return response()->json($etudiants);   
     }
 
+
+    /**
+     * show a specific etudiant
+     *
+     * @param [string] $cin
+     * @return json_response
+     */
     public function show($cin)
     {
         $res = Etudiant::with('demande')->where('cin',$cin)->first();
@@ -64,13 +76,13 @@ class EtudiantController extends Controller
         return response()->json('Not found!',404);
     }
 
-    /* public function store(Request $request)
-    {
-        $etudiant = Etudiant::create($request->all());
-
-        return response()->json($etudiant, 201);
-    } */
-
+    /**
+     * update infos d'un etudiant
+     *
+     * @param Request $request
+     * @param [string] $cin
+     * @return json_Response
+     */
     public function update(Request $request, $cin)
     {
         $res = Etudiant::with('demande')->where('cin',$cin)->update($request->all()); // res = 1 if ok 0 if not
@@ -78,20 +90,20 @@ class EtudiantController extends Controller
         return response()->json($res, 200);
     }
 
-   /*  public function destroy(Etudiant $etudiant)
-    {
-        $etudiant->delete();
-
-        return response()->json(null, 204);
-    } */
-
-    function search($var)
+  
+    /**
+     * chercher un etudiant par CNE CIN ou APPOGE
+     *
+     * @param [type] $mc
+     * @return json_response
+     */
+    public function search($mc)
     {
         $etudiants = array();
         $data = Etudiant::with('demande')
-            ->where('cin', 'like', '%'.$var.'%')
-            ->orWhere('cne', 'like', '%'.$var.'%')
-            ->orWhere('apogee', 'like', '%'.$var.'%')
+            ->where('cin', 'like', '%'.$mc.'%')
+            ->orWhere('cne', 'like', '%'.$mc.'%')
+            ->orWhere('apogee', 'like', '%'.$mc.'%')
             ->get();
         foreach ( $data as $etudiant ) 
         {
@@ -115,6 +127,12 @@ class EtudiantController extends Controller
         return response()->json($etudiants);
     }
 
+    /**
+     * filiter les etudiant par filiere
+     *
+     * @param [string] $filiere
+     * @return void
+     */
     public function filterByFiliere($filiere)
     {
         $etudiants = array();

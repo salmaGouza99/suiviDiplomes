@@ -17,19 +17,22 @@ class DemandesTableSeeder extends Seeder
         Demande::create([
             'etudiant_cin' => 'AE009898',
             'type_demande' => 'diplome de deug',
-            'date_demande' => '2021-06-01'
+            'date_demande' => '2021-06-01',
+            'statut' => 0
         ]);
 
         Demande::create([
             'etudiant_cin' => 'AE345668',
             'type_demande' => 'diplome de deug',
-            'date_demande' => '2020-05-13'
+            'date_demande' => '2020-05-13',
+            'statut' => 0
         ]);
 
         Demande::create([
             'etudiant_cin' => 'AE345668',
             'type_demande' => 'diplome de licence',
-            'date_demande' => '2021-06-22'
+            'date_demande' => '2021-06-22',
+            'statut' => 0
         ]);
             
     }

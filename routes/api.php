@@ -9,6 +9,7 @@ use App\Http\Controllers\FormulaireController;
 use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\DiplomeController;
 
 
 /*
@@ -24,6 +25,11 @@ use App\Http\Controllers\ExportController;
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
 Route::get('/export',[ExportController::class,'export']);
+
+
+Route::resource('/diplomes',DiplomeController::class)->only('index','show');
+Route::get('/diplomes/search/{mc}',[DiplomeController::class,'search']);
+
 
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
@@ -58,8 +64,9 @@ Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
   // Demandes
   Route::resource('demandes', DemandeController::class,['only' => ['index', 'show']]);
-  Route::get('/demandes/search/{var}',[DemandeController::class,'search']);
+  Route::get('/demandes/search/{mc}',[DemandeController::class,'search']);
   Route::get('/demandes/filter/{type}',[DemandeController::class,'filterByType']);
+
 });
 
 // Protected routes for admin and decanat
@@ -72,12 +79,15 @@ Route::group(['middleware' => ['auth:sanctum','role:admin|decanat']], function()
 Route::group(['middleware' => ['auth:sanctum','role:guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
   
+  //route pour cretion diplome
+  Route::post('/diplomes/{demande_id}',[DiplomeController::class,'store']);
 });
 
 
 // Protected routes only for service_diplomes
 Route::group(['middleware' => ['auth:sanctum','role:service_diplomes']], function(){
-  
+  Route::put('/diplomes/impression/{diplome_id}',[DiplomeController::class,'updateDateImpression']);
+  Route::put('/diplomes/envoiPresidence/{diplome_id}',[DiplomeController::class,'updateDateEnvoiPresidence']);
 });
 
 // Protected routes only for decanat

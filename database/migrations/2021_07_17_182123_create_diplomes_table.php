@@ -19,7 +19,6 @@ class CreateDiplomesTable extends Migration
             $table->foreign('demande_id')->references('id')->on('demandes')->onDelete('cascade');
             $table->string('etudiant_cin');
             $table->foreign('etudiant_cin')->references('cin')->on('etudiants')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('type_diplome');
             $table->string('statut');
             $table->date('date_creationDossier_envoiAuServiceDiplome');
             $table->date('date_impression_envoiAuDecanat')->nullable();
