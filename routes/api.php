@@ -8,6 +8,8 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\FormulaireController;
 use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\ExportController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,37 +23,32 @@ use App\Http\Controllers\DemandeController;
 */
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
-// Route::get('/excel',[UsersController::class,'excel']);
-
+Route::get('/export',[ExportController::class,'export']);
 
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::post('/logout',[LoginController::class,'logout']);
   Route::get('/welcome',[WelcomeController::class,'index']);
+
+  // Etudiants
   Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
   Route::get('/etudiants/search/{var}',[EtudiantController::class,'search']);
 
 });
 
- /*  Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum','role:superadministrateur']], function() {
-    Route::post('/logout','App\Http\Controllers\LoginController@logout');
-    Route::get('/users','App\Http\Controllers\LoginController@getUser');
-}); */
-
-
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
-  //route for users
+  // Users
   Route::resource('/users',UsersController::class);
-  Route::get('/users/email/{email}',[UsersController::class,'search']);
+  Route::get('/users/search/{email}',[UsersController::class,'search']);
   Route::get('/users/role/{role}',[UsersController::class,'filterByRole']);
 
-  //routes for forms
+  // Forms
   Route::resource('/formulaires',FormulaireController::class);
   Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
   Route::get('/formulaires/filiere/{filiere}',[FormulaireController::class,'filterByFiliere']);
 
-  //routes for etudiants
+  // Etudiants
   Route::get('/etudiants',[EtudiantController::class,'index']);
   Route::get('/etudiants/filter/{filiere}',[EtudiantController::class,'filterByFiliere']);
 });
@@ -59,6 +56,7 @@ Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
 // Protected routes for admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
 Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
+  // Demandes
   Route::resource('demandes', DemandeController::class,['only' => ['index', 'show']]);
   Route::get('/demandes/search/{var}',[DemandeController::class,'search']);
   Route::get('/demandes/filter/{type}',[DemandeController::class,'filterByType']);
@@ -66,6 +64,7 @@ Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
 
 // Protected routes for admin and decanat
 Route::group(['middleware' => ['auth:sanctum','role:admin|decanat']], function(){
+  // Etudiants
   Route::put('/etudiants/{cin}',[EtudiantController::class,'update']);
 });
 

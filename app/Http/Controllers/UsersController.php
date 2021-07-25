@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use SheetDB\SheetDB;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -18,15 +19,12 @@ class UsersController extends Controller
         {   
             $users = array();
             foreach ( User::with('roles')->get() as $user ) {
-                foreach ($user->roles as $role) {
-                    $role=$role->name;
-                }
                 $users[] = ['id' => $user->id,
                            'email' => $user->email,
-                           'password' => $user->password,
-                           'role' => $user->role,
+                           'role' => $user->roles[0]->name,
                            ];
                 }
+    
             return response()->json([
                 'users' =>$users,
             ]);
@@ -42,10 +40,10 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $user=User::create($request->all());
+        $user=User::create(array('email' => $request->email,'password'=>Hash::make($request->password)));
         $user->attachRole($request->role);
         return response()->json([
-            'user' =>$user->with('roles')->find($user->id),
+            'user' =>$user,
         ]);
         
     }
@@ -73,11 +71,15 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $user =User::with('roles')->findOrFail($id);
-        foreach ($user->roles as $role) {
-            $user->detachRole($role->name);
+        if($request->roles){
+            foreach ($user->roles as $role) {
+                $user->detachRole($role->name);
+            }
+            $user->attachRole($request->role);
         }
-        $user->attachRole($request->role);
-        $user->update($request->all());
+       
+        
+        $user->update(array('email' => $request->email,'password'=>Hash::make($request->password)));
 
         return response()->json([
             'user' =>User::with('roles')->find($user->id),
@@ -94,6 +96,7 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
+
         return response()->json(['response' => 'User deleted successfully']);
     }
 
@@ -108,16 +111,16 @@ class UsersController extends Controller
         $users=array();
         foreach ( User::with('roles')->get() as $user ) 
             {
-            //test role
-            if($user->roles[0]->name==$role) 
-            {
-                $users[] = [   'id' => $user->id,
-                               'email' => $user->email,
-                               'password' => $user->password,
-                               'role' => $user->roles[0]->name
-                            ];
-            }
-        }    
+                //test role
+                if($user->roles[0]->name==$role) 
+                {
+                    $users[] = [   'id' => $user->id,
+                                'email' => $user->email,
+                                'role' => $user->roles[0]->name
+                                ];
+                }
+            }    
+            
         //return json response
         return response()->json([
            'users' => $users,
@@ -130,21 +133,11 @@ class UsersController extends Controller
      * @param String $email
      * @return \Illuminate\Http\Response
      */
-    public function search(String $email){
+    public function search(Request $request,String $email){
        return response()->json([
             'users' => User::where('email','like','%'.$email.'%')->get(),
        ]);
     }
-
-
-    // public function excel(){
-    //     $sheetdb=new SheetDB('ngzpkql8o6vky');
-    //     return response()->json([
-    //         'sheet' => $sheetdb->get(),
-    //     ]);
-    // }
-
-
-
-
-}
+    
+}   
+                    

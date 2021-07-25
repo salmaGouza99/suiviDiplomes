@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
-
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -21,18 +20,15 @@ class LoginController extends Controller
      * @return api_token
      */
     public function login(Request $request){
-        // if(!Auth::attempt(['email'=>$request->email, 'password'=>$request->password])){
-        //     return response()->json([
-        //         "success"=>'false',
-        //         'status'=>200,
-        //     ]);
         $attr = $request->validate([
             'email' => 'required|string|email|',
             'password' => 'required|string|min:6'
         ]);
 
         if (!Auth::attempt($attr)) {
-            return $this->error('Credentials not match', 401);
+            return response()->json([
+                'message' => 'username or password invalid'
+            ]);
         }
         $user = auth()->user();
         $token = $user->createToken('token');
