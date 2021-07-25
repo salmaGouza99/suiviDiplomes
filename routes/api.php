@@ -8,6 +8,8 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\FormulaireController;
 use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\ExportController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +23,7 @@ use App\Http\Controllers\DemandeController;
 */
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
-// Route::get('/excel',[UsersController::class,'excel']);
-
+Route::get('/export',[ExportController::class,'export']);
 
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
