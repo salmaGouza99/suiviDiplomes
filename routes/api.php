@@ -30,7 +30,7 @@ Route::get('/export',[ExportController::class,'export']);
 Route::resource('/diplomes',DiplomeController::class)->only('index','show');
 Route::get('/diplomes/search/{mc}',[DiplomeController::class,'search']);
 
-
+Route::get('/sendMail',[DiplomeController::class,'sendMail']);
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::post('/logout',[LoginController::class,'logout']);

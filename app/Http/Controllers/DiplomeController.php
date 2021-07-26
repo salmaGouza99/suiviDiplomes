@@ -6,8 +6,10 @@ use Carbon\Carbon;
 use App\Models\Demande;
 use App\Models\Diplome;
 use Illuminate\Http\Request;
+use App\Mail\NotificationDiplome;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class DiplomeController extends Controller
 {
@@ -89,7 +91,7 @@ class DiplomeController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id_diplome
-     * @return \Illuminate\Http\Response
+     * @return json_Response
      */
     public function updateDateEnvoiPresidence($id)
     {
@@ -109,7 +111,12 @@ class DiplomeController extends Controller
        ]);
     }
 
-    
+    /**
+     * chercher diplome par CNE cINE ou APPOGE
+     *
+     * @param [string] $mc
+     * @return json_response
+     */
     public function search($mc)
     {
         $demandes = DB::table('diplomes as d')
@@ -120,6 +127,17 @@ class DiplomeController extends Controller
             ->get()->sortByDesc('date_creationDossier_envoiAuServiceDiplome');
         
         return response()->json($demandes);
+    }
+
+    public function sendMAil(){
+        $mail=[
+            'object' => 'Notification de diplome',
+            'body' => 'votre diplome est pret',
+        ];
+        Mail::to('salma.gouza@uit.ac.ma')->send(new NotificationDiplome($mail));
+        return response()->json([
+            'response' => 'email sent',
+        ]);
     }
 
 }
