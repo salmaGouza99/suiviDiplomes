@@ -22,7 +22,7 @@ class Diplome extends Model
     'date_singature_renvoiAuServiceDiplome',
     'date_generationBorodeaux_envoiApresidence',
     'date_receptionParBureauOrdre_envoiAuGuichetRetrait',
-    'date_notificationetudiant',
+    'date_notificationEtudiant',
     'date_retraitDiplome_archiveDossier',
     ];
 

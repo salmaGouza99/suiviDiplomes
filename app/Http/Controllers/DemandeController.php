@@ -24,13 +24,13 @@ class DemandeController extends Controller
     /**
      * Display the specified demande
      *
-     * @param Demande $demande
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Demande $demande)
+    public function show($id)
     {
         return response()->json([
-            'demande' => $demande::with('etudiant')->first()
+            'demande' => Demande::with('etudiant')->find($id)
          ]);
     }
 

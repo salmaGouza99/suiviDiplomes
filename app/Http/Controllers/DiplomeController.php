@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use App\Models\Demande;
 use App\Models\Diplome;
 use Illuminate\Http\Request;
+use App\Mail\NotificationDiplome;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class DiplomeController extends Controller
 {
@@ -52,13 +54,13 @@ class DiplomeController extends Controller
     /**
      * Display the specified diplome.
      *
-     * @param  \App\Models\Diplome $diplome
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Diplome $diplome)
+    public function show($id)
     {
         return response()->json([
-           'diplome' => $diplome::with('demande','etudiant')->first()
+           'diplome' => Diplome::with('demande','etudiant')->find($id)
         ]);
     }
 
@@ -162,6 +164,7 @@ class DiplomeController extends Controller
     {
         // test if the specified date is null and the previous dates not null
         if( ! $diplome->date_retraitDiplome_archiveDossier 
+            and $diplome->date_notificationEtudiant
             and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait 
             and $diplome->date_generationBorodeaux_envoiApresidence 
             and $diplome->date_singature_renvoiAuServiceDiplome 
@@ -266,4 +269,45 @@ class DiplomeController extends Controller
                        ->sortByDesc('date_creationDossier_envoiAuServiceDiplome')  
          ]);
     }
+
+    /**
+     * Notify etudent by sending notif to his email with update date_notificationEtudiant
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function sendMAil($id)
+    {
+        $diplome = Diplome::with('etudiant')->find($id);
+        $mail=[
+            'object' => 'Notification de diplôme',
+            'body' => 'Votre diplome est prêt, 
+                       vous pous pouvez venir pour le récupérer dans un délai de 3 jours au maximum!',
+        ];
+
+        // test if the specified date is null and the previous dates not null
+        if( ! $diplome->date_notificationEtudiant
+            and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait 
+            and $diplome->date_generationBorodeaux_envoiApresidence 
+            and $diplome->date_singature_renvoiAuServiceDiplome 
+            and $diplome->date_impression_envoiAuDecanat)
+        {
+            $diplome->update([
+                'date_notificationEtudiant' => Carbon::today(),
+            ]);
+            // notify etudiant
+            Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
+
+            return response()->json([
+                'response' => 'email sent to '.$diplome->etudiant->email_inst,
+            ]);
+        }
+
+        return response()->json([
+            'response' => 'cannot send email!',
+        ]);
+
+        
+    }
+
 }

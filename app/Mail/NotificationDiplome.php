@@ -7,22 +7,21 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class MailToStudent extends Mailable
+class NotificationDiplome extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $details;
-  
+    public $mail;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($details)
+    public function __construct($mail)
     {
-        $this->details = $details;
+        $this->mail=$mail;
     }
-  
+
     /**
      * Build the message.
      *
@@ -30,7 +29,6 @@ class MailToStudent extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from FSJES Agdal')
-                    ->view('email');
+        return $this->subject('diplome')->view('mail');
     }
 }

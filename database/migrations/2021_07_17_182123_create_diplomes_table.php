@@ -25,7 +25,7 @@ class CreateDiplomesTable extends Migration
             $table->date('date_singature_renvoiAuServiceDiplome')->nullable();
             $table->date('date_generationBorodeaux_envoiApresidence')->nullable();
             $table->date('date_receptionParBureauOrdre_envoiAuGuichetRetrait')->nullable();
-            $table->date('date_notificationetudiant')->nullable();
+            $table->date('date_notificationEtudiant')->nullable();
             $table->date('date_retraitDiplome_archiveDossier')->nullable();
             $table->timestamps();
         });

@@ -34,7 +34,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::get('/etudiants/search/{var}',[EtudiantController::class,'search']);
 
   // Diplomes 
-  Route::get('/diplomes/{diplome}',[DiplomeController::class,'show']);
+  Route::get('/diplomes/{id}',[DiplomeController::class,'show']);
   Route::get('/diplomes/statut/{statut}',[DiplomeController::class,'filterByStatut']);
   Route::get('/diplomes/search/{mc}',[DiplomeController::class,'search']);
 });
@@ -102,6 +102,6 @@ Route::group(['middleware' => ['auth:sanctum','role:bureau_ordre']], function(){
 // Protected routes only for guichet_retrait
 Route::group(['middleware' => ['auth:sanctum','role:guichet_retrait']], function(){
   Route::put('/diplomes/retrait/{diplome}',[DiplomeController::class,'updateDateRetraitDiplomeArchiveDossier']);
-  //Route::get('/etudiants/notif/{email}',[EtudiantController::class,'notif']);
+  Route::get('/diplomes/notif/{id}',[DiplomeController::class,'sendMail']);
 });
 

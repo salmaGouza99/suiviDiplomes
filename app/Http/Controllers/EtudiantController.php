@@ -38,7 +38,7 @@ class EtudiantController extends Controller
     /**
      * Update the specified etudiant in storage
      *
-     * @param Request $request
+     * @param Illuminate\Http\Request $request
      * @param string $cin
      * @return \Illuminate\Http\Response 
      */
@@ -82,30 +82,4 @@ class EtudiantController extends Controller
         
     }
 
-    /**
-     * Notify etudiant with his email
-     *
-     * @param string $email
-     * @return \Illuminate\Http\Response 
-     */
-    public function notif($email)
-    {
-        $details = [
-            'title' => 'Diplome prêt | FSJES Agdal',
-            'body' => 'Vous pouvez venir retirer votre diplôme. Vous avez 3 jours au maximum!'
-        ];
-       
-        Mail::to($email)->send(new MailToStudent($details));
-        
-        return response()->json('Great! Successfully send');
-        //return dd("Email is Sent.");
-
-        /* Mail::to($email)->send(new MailToStudent());
- 
-        if (Mail::failures()) {
-            return response()->Fail('Sorry! Please try again latter');
-        } else {
-            return response()->success('Great! Successfully send in your mail');
-        } */
-    }    
 }
