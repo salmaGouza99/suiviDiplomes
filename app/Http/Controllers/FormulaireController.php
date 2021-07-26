@@ -8,7 +8,7 @@ use App\Models\Formulaire;
 class FormulaireController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of forms.
      *
      * @return \Illuminate\Http\Response
      */
@@ -20,7 +20,7 @@ class FormulaireController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created form in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -33,9 +33,9 @@ class FormulaireController extends Controller
         ]);
     }
     /**
-     * Display the specified resource.
+     * Display the specified form.
      *
-     * @param  int  $id
+     * @param  \App\Models\Formulaire $formulaire
      * @return \Illuminate\Http\Response
      */
     public function show(Formulaire $formulaire)
@@ -46,10 +46,10 @@ class FormulaireController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified form in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Formulaire $formulaire
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Formulaire $formulaire)
@@ -61,9 +61,9 @@ class FormulaireController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified form from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Formulaire $formulaire
      * @return \Illuminate\Http\Response
      */
     public function destroy(Formulaire $formulaire)
@@ -73,9 +73,9 @@ class FormulaireController extends Controller
     }
 
     /**
-     * filtrer les formulaire selon type(DEUG ou Licence).
+     * filter fors by type: DEUG or Licence.
      *
-     * @param  int  $type
+     * @param  string  $type
      * @return \Illuminate\Http\Response
      */
     public function filterByType($type)
@@ -86,9 +86,9 @@ class FormulaireController extends Controller
     }
 
      /**
-     * filtrer les formulaire selon filiere.
+     * filter forms by filiere.
      *
-     * @param  int  $type
+     * @param  string  $filiere
      * @return \Illuminate\Http\Response
      */
     public function filterByFiliere($filiere)

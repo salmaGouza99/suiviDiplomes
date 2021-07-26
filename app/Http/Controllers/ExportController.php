@@ -10,6 +10,9 @@ use App\Models\Etudiant;
 
 class ExportController extends Controller
 {
+    /**
+     * @return Maatwebsite\Excel\Facades\Excel
+     */
     public function export() 
     {
         return Excel::download(new ExportStudents, 'etudiants.xlsx');

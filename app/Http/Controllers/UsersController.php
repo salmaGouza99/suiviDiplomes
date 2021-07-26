@@ -17,7 +17,7 @@ class UsersController extends Controller
     public function index()
     {
         return response()->json([
-                'users' => User::with('roles')->get()
+                'users' => User::with('roles')->paginate(7)
         ]);
     }
 
@@ -60,7 +60,7 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $user =User::with('roles')->findOrFail($id);
-        if($request->roles){
+        if($request->role){
             foreach ($user->roles as $role) {
                 $user->detachRole($role->name);
             }
@@ -92,20 +92,20 @@ class UsersController extends Controller
      /**
      * filter users by role
      *
-     * @param  String  $role
+     * @param  string  $role
      * @return \Illuminate\Http\Response
      */
     public function filterByRole($role)
     {
         $users=array();
-        foreach ( User::with('roles')->get() as $user ) 
+        foreach ( User::with('roles')->paginate(7) as $user ) 
+        {
+            //test role
+            if($user->roles[0]->name==$role) 
             {
-                //test role
-                if($user->roles[0]->name==$role) 
-                {
-                    $users[] = $user;
-                }
-            }    
+                $users[] = $user;
+            }
+        }    
             
         //return json response
         return response()->json([
@@ -116,12 +116,12 @@ class UsersController extends Controller
     /**
      * search users by email
      *
-     * @param String $email
+     * @param string $email
      * @return \Illuminate\Http\Response
      */
-    public function search(Request $request,String $email){
+    public function search($email){
        return response()->json([
-            'users' => User::where('email','like','%'.$email.'%')->get(),
+            'users' => User::where('email','like','%'.$email.'%')->paginate(7),
        ]);
     }
     

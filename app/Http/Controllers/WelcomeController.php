@@ -16,7 +16,7 @@ class WelcomeController extends Controller
             return 'Welcome guichet droit arabe!';
         } elseif(Auth::user()->hasRole('guichet_droit_francais')) {
             return 'Welcome guichet droit francais!';
-        } elseif(Auth::user()->hasRole('guichet_droit_economie')) {
+        } elseif(Auth::user()->hasRole('guichet_economie')) {
             return 'Welcome guichet economie!';
         } elseif(Auth::user()->hasRole('service_diplomes')) {
             return 'Welcome guichet service diplomes!';
