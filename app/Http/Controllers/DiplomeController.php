@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Diplome;
 
 class DiplomeController extends Controller
 {
@@ -14,7 +15,9 @@ class DiplomeController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'diplomes' => Diplome::with('demande','etudiant')->get()
+        ]); 
     }
 
     /**
@@ -34,9 +37,11 @@ class DiplomeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Diplome $diplome)
     {
-        //
+        return response()->json([
+           'diplome' => $diplome::with('demande','etudiant')->first()
+        ]);
     }
 
     /**
@@ -51,14 +56,51 @@ class DiplomeController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function imprime(Diplome $diplome)
     {
-        //
+        return $diplome->update([
+            'statut' => 'imprime',
+            'date_impression_envoiAuDecanat' => now()
+        ]);
+    }
+
+    public function signe(Diplome $diplome)
+    {
+        return $diplome->update([
+            'statut' => 'signe',
+            'date_singature_renvoiAuServiceDiplome' => now()
+        ]);
+    }
+
+    public function envoye(Diplome $diplome)
+    {
+        return $diplome->update([
+            'statut' => 'envoye',
+            'date_generationBorodeaux_envoiApresidence' => now()
+        ]);
+    }
+
+    public function recu(Diplome $diplome)
+    {
+        return $diplome->update([
+            'statut' => 'recu',
+            'date_receptionParBureauOrdre_envoiAuGuichetRetrait' => now()
+        ]);
+    }
+
+    public function retire(Diplome $diplome)
+    {
+        return $diplome->update([
+            'statut' => 'retire_archive',
+            'date_retraitDiplome_archiveDossier' => now()
+        ]);
+    }
+    
+    public function filterByStatut($statut)
+    {
+        return response()->json([
+            'diplomes' => Diplome::with('demande','etudiant')->where('statut',$statut)->get()
+         ]);
+        
     }
 }

@@ -15,7 +15,7 @@ class FormulaireController extends Controller
     public function index()
     {
         return response()->json([
-            'formulaires' => Formulaire::all(),
+            'forms' => Formulaire::all(),
         ]);
     }
 
@@ -27,7 +27,7 @@ class FormulaireController extends Controller
      */
     public function store(Request $request)
     {
-        $form=Formulaire::create($request->all());
+        $form = Formulaire::create($request->all());
         return response()->json([
             'form' => $form,
         ]);
@@ -38,10 +38,10 @@ class FormulaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Formulaire $formulaire)
     {
         return response()->json([
-            'formulaire' =>Formulaire::findOrFail($id),
+            'form' => $formulaire,
         ]);
     }
 
@@ -52,12 +52,11 @@ class FormulaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Formulaire $formulaire)
     {
-        $formulaire=Formulaire::findOrFail($id);
         $formulaire->update($request->all());
         return response()->json([
-            'formulaire' => $formulaire,
+            'form' => $formulaire,
         ]);
     }
 
@@ -67,10 +66,9 @@ class FormulaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Formulaire $formulaire)
     {
-        $form = Formulaire::findOrFail($id);
-        $form->delete();
+        $formulaire->delete();
         return response()->json(['response' => 'form deleted successfully']);
     }
 
@@ -83,7 +81,7 @@ class FormulaireController extends Controller
     public function filterByType($type)
     {
         return response()->json([
-            'forms' => Formulaire::where('type_formulaire','like','%'.$type.'%')->get(),
+            'forms' => Formulaire::where('type_formulaire',$type)->get(),
         ]);
     }
 
@@ -96,7 +94,7 @@ class FormulaireController extends Controller
     public function filterByFiliere($filiere)
     {
         return response()->json([
-            'forms' => Formulaire::where('filiere','like','%'.$filiere.'%')->get(),
+            'forms' => Formulaire::where('filiere',$filiere)->get(),
         ]);
     }
 

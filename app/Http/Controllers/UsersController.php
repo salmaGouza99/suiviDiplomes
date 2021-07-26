@@ -16,20 +16,9 @@ class UsersController extends Controller
      */
     public function index()
     {
-        {   
-            $users = array();
-            foreach ( User::with('roles')->get() as $user ) {
-                $users[] = ['id' => $user->id,
-                           'email' => $user->email,
-                           'role' => $user->roles[0]->name,
-                           ];
-                }
-    
-            return response()->json([
-                'users' =>$users,
-            ]);
-        }
-       
+        return response()->json([
+                'users' => User::with('roles')->get()
+        ]);
     }
 
     /**
@@ -114,10 +103,7 @@ class UsersController extends Controller
                 //test role
                 if($user->roles[0]->name==$role) 
                 {
-                    $users[] = [   'id' => $user->id,
-                                'email' => $user->email,
-                                'role' => $user->roles[0]->name
-                                ];
+                    $users[] = $user;
                 }
             }    
             

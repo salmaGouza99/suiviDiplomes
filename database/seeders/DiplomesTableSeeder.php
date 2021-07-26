@@ -17,7 +17,6 @@ class DiplomesTableSeeder extends Seeder
         Diplome::create([
             'demande_id' => '1',
             'etudiant_cin' => 'AE009898',
-            'type_diplome' => 'diplome de deug',
             'statut' => 'cree',
             'date_creationDossier_envoiAuServiceDiplome' => '2021-06-20'
         ]);
@@ -25,7 +24,6 @@ class DiplomesTableSeeder extends Seeder
         Diplome::create([
             'demande_id' => '2',
             'etudiant_cin' => 'AE345668',
-            'type_diplome' => 'diplome de deug',
             'statut' => 'cree',
             'date_creationDossier_envoiAuServiceDiplome' => '2020-05-26'
         ]);
@@ -33,9 +31,8 @@ class DiplomesTableSeeder extends Seeder
         Diplome::create([
             'demande_id' => '3',
             'etudiant_cin' => 'AE345668',
-            'type_diplome' => 'diplome de licence',
             'statut' => 'cree',
-            'date_creationDossier_envoiAuServiceDiplome' => '2021-07-05'
+            'date_creationDossier_envoiAuServiceDiplome' => now()
         ]);
     }
 }

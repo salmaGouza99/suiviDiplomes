@@ -16,7 +16,6 @@ class Diplome extends Model
      */
     protected $fillable = ['etudiant_cin',
     'demande_id',
-    'type_diplome', 
     'statut',
     'date_creationDossier_envoiAuServiceDiplome',
     'date_impression_envoiAuDecanat',
