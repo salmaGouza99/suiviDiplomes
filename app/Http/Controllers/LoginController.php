@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\User;
-use App\Models\RoleUser;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -48,5 +45,40 @@ class LoginController extends Controller
         return response()->json(['success' => 'logged out']);
     }
 
+
+    /**
+     * afficher le profil de l'utlisateur connecté
+     *
+     * @return json_response
+     */
+    public function show(){
+        return response()->json([
+            User::find(auth()->user()->id),
+            // auth()->user(),
+        ]);
+    }
+
+    /**
+     * update password
+     *
+     * @param Request $request
+     * @return json_response
+     */
+    public function update(Request $request){
+        $user = User::find(auth()->user()->id);
+        if (Hash::check($request->oldPassword, $user->password)) {
+           $user->update([
+               'password' => Hash::make($request->newPassword),
+           ]);
+            return response()->json([
+               'response' => 'password updated successfully',
+           ]);
+           
+        }
+        return response()->json([
+            'response' => 'old password incorrect',
+        ]);
+        
+    }
 
 }

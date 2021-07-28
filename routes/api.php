@@ -23,11 +23,17 @@ use App\Http\Controllers\DiplomeController;
 */
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
+Route::post('/demandes/sheet',[DemandeController::class,'sheet']);
+
 
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::post('/logout',[LoginController::class,'logout']);
   Route::get('/welcome',[WelcomeController::class,'index']);
+
+  //profil
+  Route::get('/profil',[LoginController::class,'show']);
+  Route::put('/profil/newpassword',[LoginController::class,'update']);
 
   // Etudiants
   Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
@@ -41,6 +47,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
+
+
   // Users
   Route::resource('/users',UsersController::class);
   Route::get('/users/search/{email}',[UsersController::class,'search']);

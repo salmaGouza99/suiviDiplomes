@@ -23,6 +23,7 @@ class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, Wi
     public function collection()
     {
         return Etudiant::select('apogee','nom','prenom','filiere')->get();
+        
     }
 
     /**
@@ -30,7 +31,7 @@ class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, Wi
      */
     public function headings() :array
     {
-        return ["Code apogee", "Nom", "Prenom","Filière"];
+        return ["Appogé", "Nom", "Prenom","Filière"];
     }
 
     /**

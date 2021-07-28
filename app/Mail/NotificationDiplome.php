@@ -29,6 +29,6 @@ class NotificationDiplome extends Mailable
      */
     public function build()
     {
-        return $this->subject('diplome')->view('mail');
+        return $this->subject('')->view('mail');
     }
 }

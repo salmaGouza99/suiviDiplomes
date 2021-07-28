@@ -18,33 +18,14 @@ class FormulaireSeeder extends Seeder
     {
         Formulaire::create([
             'type_formulaire' => 'DEUG',
-            'filiere' =>'Droit arabe',
             'lien' =>Str::random(50),
+            'api_id' =>'tuqovq24un3kx'
         ]);
         Formulaire::create([
             'type_formulaire' => 'Licence',
-            'filiere' =>'Droit arabe',
             'lien' =>Str::random(50),
+            'api_id' => 'dzpxm1gtt89z1'
         ]);
-        Formulaire::create([
-            'type_formulaire' => 'DEUG',
-            'filiere' =>'Droit français',
-            'lien' =>Str::random(50),
-        ]);
-        Formulaire::create([
-            'type_formulaire' => 'licence',
-            'filiere' =>'Droit français',
-            'lien' =>Str::random(50),
-        ]);
-        Formulaire::create([
-            'type_formulaire' => 'DEUG',
-            'filiere' =>'Economie',
-            'lien' =>Str::random(50),
-        ]);
-        Formulaire::create([
-            'type_formulaire' => 'licence',
-            'filiere' =>'Economie',
-            'lien' =>Str::random(50),
-        ]);
+      
     }
 }

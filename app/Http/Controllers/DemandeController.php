@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Etud;
+use SheetDB\SheetDB;
 use App\Models\Demande;
+use App\Models\Etudiant;
+use App\Models\Formulaire;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class DemandeController extends Controller
 {
@@ -17,7 +23,10 @@ class DemandeController extends Controller
     public function index()
     {
         return response()->json([
-            'demandes' => Demande::with('etudiant')->where('diplome_cree','=',0)->paginate(7)->sortByDesc('date_demande')
+            'demandes' => Demande::with('etudiant')
+                    ->where('diplome_cree','=',0)
+                    ->paginate(7)
+                    ->sortByDesc('date_demande'),
         ]); 
     }
 
@@ -78,4 +87,60 @@ class DemandeController extends Controller
                         ->sortByDesc('date_demande')
         ]);
     }
-}
+
+    /**
+     * get demandes from googlesheet
+     *
+     * @return json_response
+     */
+    public function sheet() {
+        foreach(Formulaire::all() as $form)
+        {
+            $sheetdb = new SheetDB($form->api_id);
+                foreach ($sheetdb->get() as $row)
+                {
+                    // $etudiantExistant=Etudiant::where('cin',$row->cin)->get();
+                    // $demandeExistante=Demande::where('etudiant_cin',$row->cin)
+                    //         ->where('type_demande',$row->type_demande)->get();
+
+                    if(sizeof(Etudiant::where('cin',$row->cin)->get())==0)
+                    {
+                        Etudiant::create([
+                            'cin' => $row->cin,
+                            'apogee' => $row->apogee,
+                            'cne' => $row->cne,
+                            'nom' => Str::upper($row->nom),
+                            'prenom' => $row->prenom,
+                            'nom_arabe' => $row->nom_arabe,
+                            'prenom_arabe' => $row->prenom_arabe,
+                            'filiere' => $row->filiere,
+                            'option' => $row->option,
+                            'nationalite' =>$row->nationalite,
+                            'date_naiss' => Carbon::createFromFormat('d/m/Y', $row->date_de_naissance)->format('Y-m-d'),
+                            'lieu_naiss' => $row->lieu_de_naissance,
+                            'email_inst' => $row->email_intitutionnel,
+                        ]);
+                    }
+                    if(sizeof(Demande::where('etudiant_cin',$row->cin)
+                        ->where('type_demande',$row->type_demande)->get())==0)
+                    {
+                        Demande::create([
+                                'etudiant_cin' => $row->cin,
+                                'type_demande' => $row->type_demande,
+                                'date_demande' =>Carbon::createFromFormat('d/m/Y H:i:s', $row->Horodateur)->format('Y-m-d'),
+                        ]);
+                    }
+                   
+                } 
+            }
+        }
+            
+    }
+        
+
+
+        // return response()->json([
+        //     'all'=> $sheetdb->get()[0]->cin,// returns all spreadsheets data
+        //     'keys'=> $sheetdb->keys()[1], // returns all spreadsheets key names
+        //     // 'names'=> $sheetdb->name(), //sheet name
+        // ]);

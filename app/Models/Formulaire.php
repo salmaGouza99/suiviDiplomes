@@ -17,5 +17,6 @@ class Formulaire extends Model
     protected $fillable = ['type_formulaire',
         'filiere',
         'lien',
+        'api_id',
     ];
 }

@@ -15,25 +15,12 @@ class DemandesTableSeeder extends Seeder
     public function run()
     {
         Demande::create([
-            'etudiant_cin' => 'AE009898',
-            'type_demande' => 'diplome de deug',
+            'etudiant_cin' => 'IJ345668',
+            'type_demande' => 'deug',
             'date_demande' => '2021-06-01',
-            'diplome_cree' => 1
+            
         ]);
 
-        Demande::create([
-            'etudiant_cin' => 'AE345668',
-            'type_demande' => 'diplome de deug',
-            'date_demande' => '2020-05-13',
-            'diplome_cree' => 1
-        ]);
-
-        Demande::create([
-            'etudiant_cin' => 'AE345668',
-            'type_demande' => 'diplome de licence',
-            'date_demande' => '2021-06-22',
-            'diplome_cree' => 0
-        ]);
             
     }
 }
