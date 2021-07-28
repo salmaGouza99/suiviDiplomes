@@ -19,22 +19,15 @@ class WelcomeController extends Controller
         } elseif(Auth::user()->hasRole('guichet_economie')) {
             return 'Welcome guichet economie!';
         } elseif(Auth::user()->hasRole('service_diplomes')) {
-            return 'Welcome guichet service diplomes!';
+            return 'Welcome service diplomes!';
         } elseif(Auth::user()->hasRole('decanat')) {
             return 'Welcome decanat!';
         } elseif(Auth::user()->hasRole('bureau_ordre')) {
-            return 'Welcome guichet bureau ordre!';
+            return 'Welcome bureau ordre!';
         } elseif(Auth::user()->hasRole('guichet_retrait')) {
             return 'Welcome guichet retrait!';
         }
 
     }
 
-    // Just for admin
-    public function test()
-    {
-      return 'test of admin!';
-    }
-
-   
 }

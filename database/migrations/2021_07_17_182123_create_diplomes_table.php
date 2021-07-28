@@ -21,6 +21,8 @@ class CreateDiplomesTable extends Migration
             $table->foreign('etudiant_cin')->references('cin')->on('etudiants')->onDelete('cascade')->onUpdate('cascade');
             $table->string('statut');
             $table->date('date_creationDossier_envoiAuServiceDiplome');
+            $table->date('date_reedition')->nullable();
+            $table->string('type_erreur')->nullable();
             $table->date('date_impression_envoiAuDecanat')->nullable();
             $table->date('date_singature_renvoiAuServiceDiplome')->nullable();
             $table->date('date_generationBorodeaux_envoiApresidence')->nullable();

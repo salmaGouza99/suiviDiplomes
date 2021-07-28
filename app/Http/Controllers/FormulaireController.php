@@ -32,18 +32,18 @@ class FormulaireController extends Controller
             'form' => $form,
         ]);
     }
-    /**
+    /*
      * Display the specified form.
      *
      * @param  \App\Models\Formulaire $formulaire
      * @return \Illuminate\Http\Response
      */
-    public function show(Formulaire $formulaire)
+    /*public function show(Formulaire $formulaire)
     {
         return response()->json([
             'form' => $formulaire,
         ]);
-    }
+    }*/
 
     /**
      * Update the specified form in storage.
@@ -85,18 +85,18 @@ class FormulaireController extends Controller
         ]);
     }
 
-     /**
+     /*
      * filter forms by filiere.
      *
      * @param  string  $filiere
      * @return \Illuminate\Http\Response
      */
-    public function filterByFiliere($filiere)
+    /* public function filterByFiliere($filiere)
     {
         return response()->json([
             'forms' => Formulaire::where('filiere',$filiere)->get(),
         ]);
-    }
+    } */
 
 
 

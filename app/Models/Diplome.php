@@ -18,6 +18,8 @@ class Diplome extends Model
     'demande_id',
     'statut',
     'date_creationDossier_envoiAuServiceDiplome',
+    'date_reedition',
+    'type_erreur',
     'date_impression_envoiAuDecanat',
     'date_singature_renvoiAuServiceDiplome',
     'date_generationBorodeaux_envoiApresidence',
