@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DemandeController extends Controller
 {
@@ -24,9 +25,7 @@ class DemandeController extends Controller
     {
         return response()->json([
             'demandes' => Demande::with('etudiant')
-                    ->where('diplome_cree','=',0)
-                    ->paginate(7)
-                    ->sortByDesc('date_demande'),
+                ->where('traite','=',0)->paginate(7)->sortByDesc('date_demande')
         ]); 
     }
 
@@ -38,54 +37,99 @@ class DemandeController extends Controller
      */
     public function show($id)
     {
+        $demande = Demande::with('etudiant')->where('traite','=',0)->find($id);
+        $res = null;
+
+        // show demande for each role
+        if ($demande)
+        {
+            if(Auth::user()->hasRole('admin')) {
+                $res = $demande;
+            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
+                if ($demande->etudiant->filiere == 'Droit arabe حقوق عربية')
+                {
+                    $res = $demande;
+                }
+            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
+                if ($demande->etudiant->filiere == 'Droit francais حقوق فرنسية')
+                {
+                    $res = $demande;
+                }
+            } else if(Auth::user()->hasRole('guichet_economie')) {
+                if ($demande->etudiant->filiere == 'Economie اقتصاد')
+                {
+                    $res = $demande;
+                }
+            }
+        }
+        
         return response()->json([
-            'demande' => Demande::with('etudiant')->find($id)
+            'demande' => $res
          ]);
     }
 
     /**
-    * search demande by CIN, CNE, ou appoge
-    *
-    * @param string $mc 
-    * @return \Illuminate\Http\Response
-    */
-    function search($mc)
-    {
-        $res = array();
-        $demandes = DB::table('demandes as d')
-                    ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
-                    ->where('e.cin', 'like', '%'.$mc.'%')
-                    ->orWhere('e.cne', 'like', '%'.$mc.'%')
-                    ->orWhere('e.apogee', 'like', '%'.$mc.'%')
-                    ->paginate(7)
-                    ->sortByDesc('date_demande');
-        foreach ( $demandes as $demande ) 
-        {
-            if($demande->diplome_cree == 0) 
-            {
-                $res[] = $demande;
-            }
-        }
-        return response()->json([
-            'demandes' => $res
-        ]);
-    }
-
-    /**
-     * filter demandes by type: deug or licence
+     * filter demandes either by type or filiere
      *
      * @param string $type
+     * @param string $filiere
      * @return \Illuminate\Http\Response
      */
-    public function filterByType($type) 
+    public function filter($type, $filiere) 
     {
+        if ($type and $filiere)
+        {
+            $demandes =  DB::table('demandes as d')
+                    ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
+                    ->where('d.traite','=',0)
+                    ->where('d.type_demande', $type)
+                    ->where('e.filiere',$filiere)
+                    ->get();
+        }
+        if ($type and !$filiere)
+        {
+            $demandes =  DB::table('demandes as d')
+                    ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
+                    ->where('d.traite','=',0)
+                    ->where('d.type_demande', $type)
+                    ->get();
+        }
+        if ($filiere and !$type)
+        {
+            $demandes =  DB::table('demandes as d')
+                    ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
+                    ->where('d.traite','=',0)
+                    ->where('e.filiere',$filiere)
+                    ->get();
+        }
+
+        // show results for each role
+        $res = array();
+        foreach ($demandes as $demande)
+        {
+            if(Auth::user()->hasRole('admin')) {
+                $res[] = $demande;
+            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
+                if ($demande->filiere == 'Droit arabe حقوق عربية')
+                {
+                    $res[] = $demande;
+                }
+            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
+                if ($demande->filiere == 'Droit francais حقوق فرنسية')
+                {
+                    $res[] = $demande;
+                }
+            } else if(Auth::user()->hasRole('guichet_economie')) {
+                if ($demande->filiere == 'Economie اقتصاد')
+                {
+                    $res[] = $demande;
+                }
+            }
+        }
+        
         return response()->json([
-            'demandes' => Demande::with('etudiant')
-                        ->where('diplome_cree','=',0)
-                        ->where('type_demande',$type)
-                        ->paginate(7)
-                        ->sortByDesc('date_demande')
-        ]);
+            'demandes' => $res
+         ]);
     }
 
     /**

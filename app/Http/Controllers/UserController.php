@@ -7,7 +7,7 @@ use App\Models\User;
 use SheetDB\SheetDB;
 use Illuminate\Support\Facades\Hash;
 
-class UsersController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of users.
@@ -17,7 +17,7 @@ class UsersController extends Controller
     public function index()
     {
         return response()->json([
-                'users' => User::with('roles')->paginate(7)
+            'users' => User::with('roles')->paginate(7)
         ]);
     }
 
@@ -29,6 +29,12 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|string'
+        ]);
+
         $user=User::create(array('email' => $request->email,'password'=>Hash::make($request->password)));
         $user->attachRole($request->role);
         return response()->json([
@@ -113,17 +119,17 @@ class UsersController extends Controller
         ]);
     }
 
-    /**
+    /*
      * search users by email
      *
      * @param string $email
      * @return \Illuminate\Http\Response
      */
-    public function search($email){
+    /* public function search($email){
        return response()->json([
             'users' => User::where('email','like','%'.$email.'%')->paginate(7),
        ]);
-    }
+    } */
     
 }   
                     

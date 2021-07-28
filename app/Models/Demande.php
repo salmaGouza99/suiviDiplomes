@@ -17,7 +17,7 @@ class Demande extends Model
     protected $fillable = ['etudiant_cin',
     'type_demande', 
     'date_demande',
-    'diplome_cree'
+    'traite'
     ];
 
     public function diplome(){

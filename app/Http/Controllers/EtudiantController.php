@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Etudiant;
-use App\Mail\MailToStudent;
-use Mail;
+use Illuminate\Support\Facades\Auth;
+use App\Exports\ExportStudents;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EtudiantController extends Controller
 {   
@@ -30,8 +32,34 @@ class EtudiantController extends Controller
      */
     public function show($cin)
     {
+        $etudiant = Etudiant::with('demande','diplome')->where('cin',$cin)->first();
+        $res = null;
+
+        // show etudiant for each role
+        if ($etudiant)
+        {
+            if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
+                $res = $etudiant;
+            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
+                if ($etudiant->filiere == 'Droit arabe حقوق عربية')
+                {
+                    $res = $etudiant;
+                }
+            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
+                if ($etudiant->filiere == 'Droit francais حقوق فرنسية')
+                {
+                    $res = $etudiant;
+                }
+            } else if(Auth::user()->hasRole('guichet_economie')) {
+                if ($etudiant->filiere == 'Economie اقتصاد')
+                {
+                    $res = $etudiant;
+                }
+            }
+        }
+        
         return response()->json([
-            'etudiant' => Etudiant::with('demande','diplome')->where('cin',$cin)->first()
+            'etudiant' => $res
          ]);
     }
 
@@ -58,13 +86,39 @@ class EtudiantController extends Controller
      */
     function search($mc)
     {
+        $res = array();
+        $etudiants = Etudiant::with('demande','diplome')
+                ->where('cin', 'like', '%'.$mc.'%')
+                ->orWhere('cne', 'like', '%'.$mc.'%')
+                ->orWhere('apogee', 'like', '%'.$mc.'%')
+                ->paginate(7);
+
+        // show results for each role
+        foreach ($etudiants as $etudiant)
+        {
+            if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
+                $res[] = $etudiant;
+            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
+                if ($etudiant->filiere == 'Droit arabe حقوق عربية')
+                {
+                    $res[] = $etudiant;
+                }
+            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
+                if ($etudiant->filiere == 'Droit francais حقوق فرنسية')
+                {
+                    $res[] = $etudiant;
+                }
+            } else if(Auth::user()->hasRole('guichet_economie')) {
+                if ($etudiant->filiere == 'Economie اقتصاد')
+                {
+                    $res[] = $etudiant;
+                }
+            }
+        }
+
         return response()->json([
-            'etudiants' => Etudiant::with('demande','diplome')
-                        ->where('cin', 'like', '%'.$mc.'%')
-                        ->orWhere('cne', 'like', '%'.$mc.'%')
-                        ->orWhere('apogee', 'like', '%'.$mc.'%')
-                        ->paginate(7)
-         ]);
+            'etudiants' => $res
+        ]);
     }
 
     /**
@@ -80,6 +134,17 @@ class EtudiantController extends Controller
             'etudiants' => Etudiant::with('demande','diplome')->where('filiere',$filiere)->paginate(7)
         ]);
         
+    }
+
+    /**
+     * @param string $statut
+     * @param string $type
+     * @param string $filiere
+     * @return Maatwebsite\Excel\Facades\Excel
+     */
+    public function export($statut, $type, $filiere) 
+    {
+        return Excel::download(new ExportStudents($statut,$type,$filiere), 'etudiants.xlsx');
     }
 
 }
