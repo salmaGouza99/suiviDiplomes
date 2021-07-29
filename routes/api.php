@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\WelcomeController;
@@ -43,7 +43,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
   // Diplomes 
   Route::get('/diplomes/{id}',[DiplomeController::class,'show']);
-  Route::get('/diplomes/search/{mc}',[DiplomeController::class,'search']);
   Route::get('/diplomes/filter/{statut},{type},{filiere}',[DiplomeController::class,'filter']);
 });
 

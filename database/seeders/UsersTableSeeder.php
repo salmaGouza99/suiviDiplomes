@@ -25,7 +25,7 @@ class UsersTableSeeder extends Seeder
             'email' => 'salma@gmail.com',
             'password' => Hash::make('password2'),
         ]);
-        $user2->attachRole('admin');
+        $user2->attachRole('guichet_droit_arabe');
 
         $user3 = User::create([
             'email' => 'chakibe@gmail.com',

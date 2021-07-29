@@ -17,7 +17,7 @@ class FormulaireSeeder extends Seeder
     public function run()
     {
         Formulaire::create([
-            'type_formulaire' => 'DEUG',
+            'type_formulaire' => 'Deug',
             'lien' => Str::random(50),
             'api_id' =>'tuqovq24un3kx'
         ]);

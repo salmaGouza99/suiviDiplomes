@@ -265,7 +265,7 @@ class DiplomeController extends Controller
             and $diplome->date_impression_envoiAuDecanat)
         {
             $diplome->update([
-                'statut' => 'recu et envoyé au ghuichet de retrait',
+                'statut' => 'envoyé au guichet de retrait par le bureau d\'ordre',
                 'date_receptionParBureauOrdre_envoiAuGuichetRetrait' => Carbon::today()->format('Y-m-d'),
             ]);
         }
@@ -460,8 +460,11 @@ class DiplomeController extends Controller
         $diplome = Diplome::with('etudiant','demande')->find($id_diplome);
         $mail=[
             'object' => 'Notification de diplôme',
-            'body' => 'Bonjour '.$diplome->etudiant->nom.' '.$diplome->etudiant->prenom.', votre ' .$diplome->demande->type_demande. ' est prêt, 
-                       vous pouvez venir pour le récupérer auprès du guichet de retrait des diplômes dans un délai de 3 jours au maximum!',
+            'body' => 'Bonjour '
+                        .$diplome->etudiant->nom.' '.$diplome->etudiant->prenom.
+                        ', votre ' .$diplome->demande->type_demande. ' est prêt, 
+                       vous pouvez venir pour le récupérer auprès du guichet 
+                       de retrait des diplômes dans un délai de 3 jours au maximum!',
         ];
 
         // test if the specified date is null and the previous dates not null
