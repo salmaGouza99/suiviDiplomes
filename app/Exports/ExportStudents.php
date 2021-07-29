@@ -46,64 +46,71 @@ class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, Wi
                     ->where('dip.statut',$this->statut)
                     ->where('d.type_demande', $this->type)
                     ->where('e.filiere',$this->filiere)
-                    ->select('apogee','cin','nom','prenom')
+                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
                     ->get();
         }
-        if ($this->statut and $this->type and !$this->filiere)
+        elseif ($this->statut and $this->type and !$this->filiere)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
                     ->where('dip.statut',$this->statut)
                     ->where('d.type_demande', $this->type)
-                    ->select('apogee','cin','nom','prenom')
+                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
                     ->get();
         }
-        if ($this->statut and $this->filiere and !$this->type)
+        elseif ($this->statut and $this->filiere and !$this->type)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
                     ->where('dip.statut',$this->statut)
                     ->where('e.filiere',$this->filiere)
-                    ->select('apogee','cin','nom','prenom')
+                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
                     ->get();
         }
-        if ($this->type and $this->filiere and !$this->statut)
+        elseif ($this->type and $this->filiere and !$this->statut)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
                     ->where('d.type_demande', $this->type)
                     ->where('e.filiere',$this->filiere)
-                    ->select('apogee','cin','nom','prenom')
+                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
                     ->get();
         }
-        if ($this->statut and !$this->type and !$this->filiere)
+        elseif ($this->statut and !$this->type and !$this->filiere)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
                     ->where('dip.statut',$this->statut)
-                    ->select('apogee','cin','nom','prenom')
+                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
                     ->get();
         }
-        if ($this->type and !$this->statut and !$this->filiere)
+        elseif ($this->type and !$this->statut and !$this->filiere)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
                     ->where('d.type_demande', $this->type)
-                    ->select('apogee','cin','nom','prenom')
+                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
                     ->get();
         }
-        if ($this->filiere and !$this->statut and !$this->type)
+        elseif ($this->filiere and !$this->statut and !$this->type)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
                     ->where('e.filiere',$this->filiere)
-                    ->select('apogee','cin','nom','prenom')
+                   ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
+                    ->get();
+        }
+        else{
+            return  DB::table('diplomes as dip')
+                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
+                    ->join('demandes as d', 'dip.demande_id','=','d.id')
+                   ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
                     ->get();
         }
     }
@@ -113,7 +120,7 @@ class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, Wi
      */
     public function headings() :array
     {
-        return ["Code apogee", "CIN", "Nom", "Prenom"];
+        return ["Code apogee", "CIN",'CNE', "Nom", "Prenom","Type de diplome","Filière"];
     }
 
     /**
@@ -123,7 +130,7 @@ class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, Wi
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
-                $cellRange = 'A1:D1'; // All headers
+                $cellRange = 'A1:G1'; // All headers
                 $event->sheet->getDelegate()->getStyle($cellRange)->getFont()->setSize(12.5);
                 $event->sheet->getStyle($cellRange)->getFill()
                             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)

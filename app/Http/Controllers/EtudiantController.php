@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Etudiant;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Exports\ExportStudents;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class EtudiantController extends Controller
@@ -144,7 +145,8 @@ class EtudiantController extends Controller
      */
     public function export($statut, $type, $filiere) 
     {
-        return Excel::download(new ExportStudents($statut,$type,$filiere), 'etudiants.xlsx');
+        $prefix=Str::random(1);
+        return Excel::download(new ExportStudents($statut,$type,$filiere), $prefix.'_etudiants_'.$filiere.'_'.$type.'.xlsx');
     }
 
 }

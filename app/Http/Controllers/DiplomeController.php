@@ -70,7 +70,7 @@ class DiplomeController extends Controller
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
                         'statut' => 'créé et envoyé au service diplomes',
-                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today(),
+                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
@@ -82,7 +82,7 @@ class DiplomeController extends Controller
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
                         'statut' => 'créé et envoyé au service diplomes',
-                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today(),
+                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
                 }
             }
@@ -183,7 +183,7 @@ class DiplomeController extends Controller
             $diplome->update([
                 'statut' => 'réédité',
                 'type_erreur' => $request->type_erreur,
-                'date_reedition' => Carbon::today(),
+                'date_reedition' => Carbon::today()->format('Y-m-d'),
             ]);
         }
         return response()->json([
@@ -277,7 +277,7 @@ class DiplomeController extends Controller
             and $diplome->date_impression_envoiAuDecanat)
         {
             $diplome->update([
-                'statut' => 'recu et envoyé au ghuichet de retrait',
+                'statut' => 'envoyé au guichet de retrait par le bureau d\'ordre',
                 'date_receptionParBureauOrdre_envoiAuGuichetRetrait' => Carbon::today()->format('Y-m-d'),
             ]);
         }
@@ -475,8 +475,11 @@ class DiplomeController extends Controller
         $diplome = Diplome::with('etudiant','demande')->find($id_diplome);
         $mail=[
             'object' => 'Notification de diplôme',
-            'body' => 'Bonjour '.$diplome->etudiant->nom.' '.$diplome->etudiant->prenom.',  Votre ' .$diplome->demande->type_demande. ' est prêt, 
-                       vous pous pouvez venir pour le récupérer auprès du guichet de retrait des diplômes dans un délai de 3 jours au maximum!',
+            'body' => 'Bonjour '
+                        .$diplome->etudiant->nom.' '.$diplome->etudiant->prenom.
+                        ',  Votre ' .$diplome->demande->type_demande. ' est prêt, 
+                       vous pous pouvez venir pour le récupérer auprès du guichet 
+                       de retrait des diplômes dans un délai de 3 jours au maximum!',
         ];
 
         // test if the specified date is null and the previous dates not null

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Models\Etud;
 use SheetDB\SheetDB;
 use App\Models\Demande;
 use App\Models\Etudiant;
@@ -143,10 +142,6 @@ class DemandeController extends Controller
             $sheetdb = new SheetDB($form->api_id);
                 foreach ($sheetdb->get() as $row)
                 {
-                    // $etudiantExistant=Etudiant::where('cin',$row->cin)->get();
-                    // $demandeExistante=Demande::where('etudiant_cin',$row->cin)
-                    //         ->where('type_demande',$row->type_demande)->get();
-
                     if(sizeof(Etudiant::where('cin',$row->cin)->get())==0)
                     {
                         Etudiant::create([
