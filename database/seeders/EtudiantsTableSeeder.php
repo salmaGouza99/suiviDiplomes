@@ -22,7 +22,7 @@ class EtudiantsTableSeeder extends Seeder
             'prenom' => 'Ahmed',
             'nom_arabe' => 'المدني',
             'prenom_arabe' => 'احمد',
-            'filiere' => 'Droit ',
+            'filiere' => 'Droit',
             'option' => 'Francais',
             'nationalite' => 'Marocain',
             'date_naiss' => '1999-07-08',

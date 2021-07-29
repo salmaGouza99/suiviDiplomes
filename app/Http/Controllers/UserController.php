@@ -72,7 +72,6 @@ class UserController extends Controller
             }
             $user->attachRole($request->role);
         }
-       
         
         $user->update(array('email' => $request->email,'password'=>Hash::make($request->password)));
 

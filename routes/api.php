@@ -31,13 +31,11 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::post('/logout',[LoginController::class,'logout']);
   Route::get('/welcome',[WelcomeController::class,'index']);
 
-  //profil
-  Route::get('/profil',[LoginController::class,'show']);
-  Route::put('/profil/newpassword',[LoginController::class,'update']);
-  
-  // // Profile
-  // Route::get('/profile',[ProfileController::class,'show']);
-  // Route::put('/profile',[ProfileController::class,'update']);
+  // Profil
+  Route::get('/profil',[ProfileController::class,'show']);
+  Route::put('/profil',[ProfileController::class,'update']);
+  //Route::get('/profil',[LoginController::class,'show']);
+  //Route::put('/profil/newpassword',[LoginController::class,'update']);
 
   // Etudiants
   Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
@@ -51,8 +49,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
-
-
   // Users
   Route::resource('/users',UserController::class);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
@@ -76,21 +72,18 @@ Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
 // Protected routes for admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
 Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
-  // Demandes
   Route::get('/demandes/{id}',[DemandeController::class,'show']);
   Route::get('/demandes/filter/{type},{filiere}',[DemandeController::class,'filter']);
 });
 
 // Protected routes for admin and service_diplomes
 Route::group(['middleware' => ['auth:sanctum','role:admin|service_diplomes']], function(){
-  // Etudiants
   Route::put('/etudiants/{cin}',[EtudiantController::class,'update']);
 });
 
 // Protected routes for guichet_droit_arabe, guichet_droit_francais and guichet_economie
 Route::group(['middleware' => ['auth:sanctum','role:guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
-  // Diplomes
   Route::post('/diplomes/{demande_id}',[DiplomeController::class,'store']);
 });
 

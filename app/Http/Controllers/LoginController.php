@@ -46,25 +46,26 @@ class LoginController extends Controller
     }
 
 
-    /**
+    /*
      * afficher le profil de l'utlisateur connecté
      *
      * @return json_response
      */
-    public function show(){
+    /* public function show(){
         return response()->json([
             User::find(auth()->user()->id),
             // auth()->user(),
         ]);
     }
+    */
 
-    /**
+    /*
      * update password
      *
      * @param Request $request
      * @return json_response
      */
-    public function update(Request $request){
+    /* public function update(Request $request){
         $user = User::find(auth()->user()->id);
         if (Hash::check($request->oldPassword, $user->password)) {
            $user->update([
@@ -79,6 +80,6 @@ class LoginController extends Controller
             'response' => 'old password incorrect',
         ]);
         
-    }
+    } */
 
 }

@@ -16,9 +16,8 @@ class DemandesTableSeeder extends Seeder
     {
         Demande::create([
             'etudiant_cin' => 'IJ345668',
-            'type_demande' => 'deug',
+            'type_demande' => 'DEUG',
             'date_demande' => '2021-06-01',
-            
         ]);
 
             

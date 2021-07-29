@@ -12,6 +12,7 @@ class NotificationDiplome extends Mailable
     use Queueable, SerializesModels;
 
     public $mail;
+    
     /**
      * Create a new message instance.
      *
@@ -19,7 +20,7 @@ class NotificationDiplome extends Mailable
      */
     public function __construct($mail)
     {
-        $this->mail=$mail;
+        $this->mail = $mail;
     }
 
     /**

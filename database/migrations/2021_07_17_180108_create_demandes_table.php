@@ -19,7 +19,7 @@ class CreateDemandesTable extends Migration
             $table->foreign('etudiant_cin')->references('cin')->on('etudiants')->onDelete('cascade')->onUpdate('cascade');
             $table->string('type_demande');
             $table->date('date_demande');
-            $table->boolean('traité')->default('0');
+            $table->boolean('traite')->default('0');
             $table->timestamps();
         });
     }

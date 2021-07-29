@@ -41,17 +41,17 @@ class EtudiantController extends Controller
             if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
                 $res = $etudiant;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($etudiant->filiere == 'Droit arabe حقوق عربية')
+                if ($etudiant->filiere == 'droit' and $etudiant->option == 'arabe')
                 {
                     $res = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($etudiant->filiere == 'Droit francais حقوق فرنسية')
+                if ($etudiant->filiere == 'droit' and $etudiant->option == 'français')
                 {
                     $res = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($etudiant->filiere == 'Economie اقتصاد')
+                if ($etudiant->filiere == 'economie')
                 {
                     $res = $etudiant;
                 }
@@ -88,10 +88,10 @@ class EtudiantController extends Controller
     {
         $res = array();
         $etudiants = Etudiant::with('demande','diplome')
-                ->where('cin', 'like', '%'.$mc.'%')
-                ->orWhere('cne', 'like', '%'.$mc.'%')
-                ->orWhere('apogee', 'like', '%'.$mc.'%')
-                ->paginate(7);
+                    ->where('cin', 'like', '%'.$mc.'%')
+                    ->orWhere('cne', 'like', '%'.$mc.'%')
+                    ->orWhere('apogee', 'like', '%'.$mc.'%')
+                    ->paginate(7);
 
         // show results for each role
         foreach ($etudiants as $etudiant)
@@ -99,17 +99,17 @@ class EtudiantController extends Controller
             if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
                 $res[] = $etudiant;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($etudiant->filiere == 'Droit arabe حقوق عربية')
+                if ($etudiant->filiere == 'droit' and $etudiant->option == 'arabe')
                 {
                     $res[] = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($etudiant->filiere == 'Droit francais حقوق فرنسية')
+                if ($etudiant->filiere == 'droit' and $etudiant->option == 'français')
                 {
                     $res[] = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($etudiant->filiere == 'Economie اقتصاد')
+                if ($etudiant->filiere == 'economie')
                 {
                     $res[] = $etudiant;
                 }
@@ -129,7 +129,6 @@ class EtudiantController extends Controller
      */
     public function filterByFiliere($filiere)
     {
-        
         return response()->json([
             'etudiants' => Etudiant::with('demande','diplome')->where('filiere',$filiere)->paginate(7)
         ]);

@@ -21,6 +21,5 @@ class DiplomesTableSeeder extends Seeder
             'date_creationDossier_envoiAuServiceDiplome' => '2021-06-20'
         ]);
 
-
     }
 }

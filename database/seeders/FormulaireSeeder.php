@@ -18,12 +18,12 @@ class FormulaireSeeder extends Seeder
     {
         Formulaire::create([
             'type_formulaire' => 'DEUG',
-            'lien' =>Str::random(50),
+            'lien' => Str::random(50),
             'api_id' =>'tuqovq24un3kx'
         ]);
         Formulaire::create([
             'type_formulaire' => 'Licence',
-            'lien' =>Str::random(50),
+            'lien' => Str::random(50),
             'api_id' => 'dzpxm1gtt89z1'
         ]);
       

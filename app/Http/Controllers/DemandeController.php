@@ -46,17 +46,17 @@ class DemandeController extends Controller
             if(Auth::user()->hasRole('admin')) {
                 $res = $demande;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($demande->etudiant->filiere == 'Droit arabe حقوق عربية')
+                if ($demande->etudiant->filiere == 'droit' and $demande->etudiant->option == 'arabe')
                 {
                     $res = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($demande->etudiant->filiere == 'Droit francais حقوق فرنسية')
+                if ($demande->etudiant->filiere == 'droit' and $demande->etudiant->option == 'français')
                 {
                     $res = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($demande->etudiant->filiere == 'Economie اقتصاد')
+                if ($demande->etudiant->filiere == 'economie')
                 {
                     $res = $demande;
                 }
@@ -110,17 +110,17 @@ class DemandeController extends Controller
             if(Auth::user()->hasRole('admin')) {
                 $res[] = $demande;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($demande->filiere == 'Droit arabe حقوق عربية')
+                if ($demande->filiere == 'droit' and $demande->option == 'arabe')
                 {
                     $res[] = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($demande->filiere == 'Droit francais حقوق فرنسية')
+                if ($demande->filiere == 'droit' and $demande->option == 'français')
                 {
                     $res[] = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($demande->filiere == 'Economie اقتصاد')
+                if ($demande->filiere == 'economie')
                 {
                     $res[] = $demande;
                 }
@@ -135,51 +135,54 @@ class DemandeController extends Controller
     /**
      * get demandes from googlesheet
      *
-     * @return json_response
+     * @return void
      */
-    public function sheet() {
+    public function sheet() 
+    {
         foreach(Formulaire::all() as $form)
         {
             $sheetdb = new SheetDB($form->api_id);
-                foreach ($sheetdb->get() as $row)
-                {
-                    // $etudiantExistant=Etudiant::where('cin',$row->cin)->get();
-                    // $demandeExistante=Demande::where('etudiant_cin',$row->cin)
-                    //         ->where('type_demande',$row->type_demande)->get();
+            foreach ($sheetdb->get() as $row)
+            {
+                // $etudiantExistant=Etudiant::where('cin',$row->cin)->get();
+                // $demandeExistante=Demande::where('etudiant_cin',$row->cin)
+                //         ->where('type_demande',$row->type_demande)->get();
 
-                    if(sizeof(Etudiant::where('cin',$row->cin)->get())==0)
-                    {
-                        Etudiant::create([
-                            'cin' => $row->cin,
-                            'apogee' => $row->apogee,
-                            'cne' => $row->cne,
-                            'nom' => Str::upper($row->nom),
-                            'prenom' => $row->prenom,
-                            'nom_arabe' => $row->nom_arabe,
-                            'prenom_arabe' => $row->prenom_arabe,
-                            'filiere' => $row->filiere,
-                            'option' => $row->option,
-                            'nationalite' =>$row->nationalite,
-                            'date_naiss' => Carbon::createFromFormat('d/m/Y', $row->date_de_naissance)->format('Y-m-d'),
-                            'lieu_naiss' => $row->lieu_de_naissance,
-                            'email_inst' => $row->email_intitutionnel,
-                        ]);
-                    }
-                    if(sizeof(Demande::where('etudiant_cin',$row->cin)
-                        ->where('type_demande',$row->type_demande)->get())==0)
-                    {
-                        Demande::create([
-                                'etudiant_cin' => $row->cin,
-                                'type_demande' => $row->type_demande,
-                                'date_demande' =>Carbon::createFromFormat('d/m/Y H:i:s', $row->Horodateur)->format('Y-m-d'),
-                        ]);
-                    }
+                if(sizeof(Etudiant::where('cin',$row->cin)->get()) == 0)
+                {
+                    Etudiant::create([
+                        'cin' => $row->cin,
+                        'apogee' => $row->apogee,
+                        'cne' => $row->cne,
+                        'nom' => Str::upper($row->nom),
+                        'prenom' => $row->prenom,
+                        'nom_arabe' => $row->nom_arabe,
+                        'prenom_arabe' => $row->prenom_arabe,
+                        'filiere' => $row->filiere,
+                        'option' => $row->option,
+                        'nationalite' =>$row->nationalite,
+                        'date_naiss' => Carbon::createFromFormat('d/m/Y', $row->date_de_naissance)->format('Y-m-d'),
+                        'lieu_naiss' => $row->lieu_de_naissance,
+                        'email_inst' => $row->email_intitutionnel,
+                    ]);
+                }
+                if(sizeof(Demande::where('etudiant_cin',$row->cin)
+                    ->where('type_demande',$row->type_demande)->get()) == 0)
+                {
+                    Demande::create([
+                        'etudiant_cin' => $row->cin,
+                        'type_demande' => $form->type_formulaire,
+                        'date_demande' => Carbon::createFromFormat('d/m/Y H:i:s', $row->Horodateur)->format('Y-m-d'),
+                    ]);
+                }
                    
-                } 
-            }
+            } 
+
+            //echo 'adding demandes from Form '.$form->id.' done! ';
         }
-            
     }
+            
+}
         
 
 

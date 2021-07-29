@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Mail;
 
 class DiplomeController extends Controller
 {
-
-
-
-
     /**
      * Display a listing of diplomes.
      *
@@ -30,9 +26,6 @@ class DiplomeController extends Controller
                         ->sortByDesc('date_creationDossier_envoiAuServiceDiplome')
         ]); 
     }
-
-
-
 
     /**
      * creer un diplome avec date de cretation par GuichetDroitArabe,
@@ -50,7 +43,7 @@ class DiplomeController extends Controller
         if ($demande)
         {
             if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($demande->etudiant->filiere == 'Droit arabe حقوق عربية')
+                if ($demande->etudiant->filiere == 'droit' and $demande->etudiant->option == 'arabe')
                 {
                     $demande->traite = 1;
                     $demande->save();
@@ -62,7 +55,7 @@ class DiplomeController extends Controller
                     ));
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($demande->etudiant->filiere == 'Droit francais حقوق فرنسية')
+                if ($demande->etudiant->filiere == 'droit' and $demande->etudiant->option == 'français')
                 {
                     $demande->traite = 1;
                     $demande->save();
@@ -70,11 +63,11 @@ class DiplomeController extends Controller
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
                         'statut' => 'créé et envoyé au service diplomes',
-                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today(),
+                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($demande->etudiant->filiere == 'Economie اقتصاد')
+                if ($demande->etudiant->filiere == 'economie')
                 {
                     $demande->traite = 1;
                     $demande->save();
@@ -82,7 +75,7 @@ class DiplomeController extends Controller
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
                         'statut' => 'créé et envoyé au service diplomes',
-                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today(),
+                        'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
                 }
             }
@@ -114,19 +107,19 @@ class DiplomeController extends Controller
                 $res = $diplome;
             } elseif(Auth::user()->hasRole('guichet_droit_arabe')) {
                 if($diplome->statut == 'créé et envoyé au service diplomes' and
-                    $diplome->etudiant->filiere == 'Droit arabe حقوق عربية') 
+                    $diplome->etudiant->filiere == 'droit' and $diplome->etudiant->option == 'arabe') 
                 {
                     $res = $diplome;
                 }  
             } elseif(Auth::user()->hasRole('guichet_droit_francais')) {
                 if($diplome->statut == 'créé et envoyé au service diplomes' and
-                    $diplome->etudiant->filiere == 'Droit francais حقوق فرنسية') 
+                    $diplome->etudiant->filiere == 'droit' and $diplome->etudiant->option == 'français') 
                 {
                     $res = $diplome;
                 }  
             } elseif(Auth::user()->hasRole('guichet_economie')) {
                 if($diplome->statut == 'créé et envoyé au service diplomes' and
-                    $diplome->etudiant->filiere == 'Economie اقتصاد') 
+                    $diplome->etudiant->filiere == 'economie') 
                 {
                     $res = $diplome;
                 }  
@@ -183,7 +176,7 @@ class DiplomeController extends Controller
             $diplome->update([
                 'statut' => 'réédité',
                 'type_erreur' => $request->type_erreur,
-                'date_reedition' => Carbon::today(),
+                'date_reedition' => Carbon::today()->format('Y-m-d'),
             ]);
         }
         return response()->json([
@@ -234,8 +227,6 @@ class DiplomeController extends Controller
         ]);
     }
 
-
-
      /**
      * Update DateEnvoi du diplome a la presidence par service de diplomes.
      *
@@ -258,9 +249,6 @@ class DiplomeController extends Controller
             'diplome'=> $diplome,
         ]);
     }
-
-
-
 
      /**
      * Update DateReception du diplome par bureau d'ordre.
@@ -285,9 +273,6 @@ class DiplomeController extends Controller
             'diplome'=> $diplome,
         ]);
     }
-
-
-
 
      /**
      * Update DateRetrait du diplome et envoi du dossier au arhives par guichet de retrait.
@@ -395,19 +380,19 @@ class DiplomeController extends Controller
                 $res[] = $diplome;
             } elseif(Auth::user()->hasRole('guichet_droit_arabe')) {
                 if($diplome->statut == 'créé et envoyé au service diplomes' and
-                    $diplome->filiere == 'Droit arabe حقوق عربية') 
+                    $diplome->filiere == 'droit' and $diplome->option == 'arabe') 
                 {
                     $res[] = $diplome;
                 }  
             } elseif(Auth::user()->hasRole('guichet_droit_francais')) {
                 if($diplome->statut == 'créé et envoyé au service diplomes' and
-                    $diplome->filiere == 'Droit francais حقوق فرنسية') 
+                    $diplome->filiere == 'droit' and $diplome->option == 'français') 
                 {
                     $res[] = $diplome;
                 }  
             } elseif(Auth::user()->hasRole('guichet_economie')) {
                 if($diplome->statut == 'créé et envoyé au service diplomes' and
-                    $diplome->filiere == 'Economie اقتصاد') 
+                    $diplome->filiere == 'economie') 
                 {
                     $res[] = $diplome;
                 }  
@@ -447,7 +432,7 @@ class DiplomeController extends Controller
     }
 
     /*
-     * Filter diplomes either by statut, type or filiere
+     * Filter diplomes by dateFrom and dateTo
      *
      * @param date $dateFrom
      * @param date $dateTo
@@ -475,8 +460,8 @@ class DiplomeController extends Controller
         $diplome = Diplome::with('etudiant','demande')->find($id_diplome);
         $mail=[
             'object' => 'Notification de diplôme',
-            'body' => 'Bonjour '.$diplome->etudiant->nom.' '.$diplome->etudiant->prenom.',  Votre ' .$diplome->demande->type_demande. ' est prêt, 
-                       vous pous pouvez venir pour le récupérer auprès du guichet de retrait des diplômes dans un délai de 3 jours au maximum!',
+            'body' => 'Bonjour '.$diplome->etudiant->nom.' '.$diplome->etudiant->prenom.', votre ' .$diplome->demande->type_demande. ' est prêt, 
+                       vous pouvez venir pour le récupérer auprès du guichet de retrait des diplômes dans un délai de 3 jours au maximum!',
         ];
 
         // test if the specified date is null and the previous dates not null
@@ -492,7 +477,7 @@ class DiplomeController extends Controller
                 'date_notificationEtudiant' => Carbon::today()->format('Y-m-d'),
             ]);
             // notify etudiant
-            // Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
+            //Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
             Mail::to('gouzasalma@gmail.com')->send(new NotificationDiplome($mail));
 
                 return response()->json([
