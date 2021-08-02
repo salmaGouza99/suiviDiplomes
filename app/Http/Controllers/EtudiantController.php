@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Etudiant;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Exports\ExportStudents;
+use App\Exports\ExportEtudiants;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -42,17 +42,17 @@ class EtudiantController extends Controller
             if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
                 $res = $etudiant;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($etudiant->filiere == 'droit' and $etudiant->option == 'arabe')
+                if ($etudiant->filiere == 'القانون باللغة العربية')
                 {
                     $res = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($etudiant->filiere == 'droit' and $etudiant->option == 'français')
+                if ($etudiant->filiere == 'Droit en français')
                 {
                     $res = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($etudiant->filiere == 'economie')
+                if ($etudiant->filiere == 'Sciences Economiques et Gestion')
                 {
                     $res = $etudiant;
                 }
@@ -100,17 +100,17 @@ class EtudiantController extends Controller
             if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
                 $res[] = $etudiant;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($etudiant->filiere == 'droit' and $etudiant->option == 'arabe')
+                if ($etudiant->filiere == 'القانون باللغة العربية')
                 {
                     $res[] = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($etudiant->filiere == 'droit' and $etudiant->option == 'français')
+                if ($etudiant->filiere == 'Droit en français')
                 {
                     $res[] = $etudiant;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($etudiant->filiere == 'economie')
+                if ($etudiant->filiere == 'Sciences Economiques et Gestion')
                 {
                     $res[] = $etudiant;
                 }
@@ -137,15 +137,28 @@ class EtudiantController extends Controller
     }
 
     /**
+     * @param string $type
+     * @param string $filiere
+     * @return Maatwebsite\Excel\Facades\Excel
+     */
+    public function exportEtudiants($type, $filiere) 
+    {
+        $prefix = Str::random(1);
+        return Excel::download(new ExportEtudiants($type, $filiere),
+                $prefix.'_etudiants_'.$filiere.'_'.$type.'.xlsx');
+    }
+
+    /**
      * @param string $statut
      * @param string $type
      * @param string $filiere
      * @return Maatwebsite\Excel\Facades\Excel
      */
-    public function export($statut, $type, $filiere) 
+    public function exportParcoursDetaille($statut, $type, $filiere) 
     {
         $prefix = Str::random(1);
-        return Excel::download(new ExportStudents($statut,$type,$filiere), $prefix.'_etudiants_'.$filiere.'_'.$type.'.xlsx');
+        return Excel::download(new ExportParcoursDetaille($statut, $type, $filiere),
+                $prefix.'_parcours_detaille_'.$filiere.'_'.$type.'.xlsx');
     }
 
 }

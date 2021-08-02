@@ -18,14 +18,13 @@ class DemandesTableSeeder extends Seeder
      */
     public function run()
     {
-        // Demande::create([
-        //     'etudiant_cin' => 'IJ345668',
-        //     'type_demande' => 'Deug',
-        //     'date_demande' => '2021-06-01',
-            
-        // ]);
+        Demande::create([
+            'etudiant_cin' => 'IJ345668',
+            'type_demande' => 'DEUG',
+            'date_demande' => '2021-06-01',     
+        ]);
 
-        foreach(Formulaire::all() as $form)
+        /* foreach(Formulaire::all() as $form)
         {
             $sheetdb = new SheetDB($form->api_id);
                 foreach ($sheetdb->get() as $row)
@@ -42,7 +41,7 @@ class DemandesTableSeeder extends Seeder
                     }
                    
                 } 
-            }
+        } */
             
     }
 }

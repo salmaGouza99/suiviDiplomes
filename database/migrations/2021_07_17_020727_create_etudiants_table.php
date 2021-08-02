@@ -23,7 +23,7 @@ class CreateEtudiantsTable extends Migration
             $table->string('nom_arabe');
             $table->string('prenom_arabe');
             $table->string('filiere');
-            $table->string('option');
+            $table->string('option')->nullable();
             $table->string('nationalite');
             $table->date('date_naiss');
             $table->string('lieu_naiss');
