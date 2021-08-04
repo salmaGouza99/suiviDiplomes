@@ -31,7 +31,7 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'email' => 'string|email',
+            'email' => 'string',
             'newpassword' => 'string|min:6|confirmed'
         ]);
 
