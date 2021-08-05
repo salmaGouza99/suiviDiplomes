@@ -530,7 +530,8 @@ class ComposerStaticInitca4bd2534ab96ed0e6a6153f9a634e40
         ),
         'Fruitcake\\Cors\\' => 
         array (
-            0 => __DIR__ . '/..' . '/fruitcake/laravel-cors/src',
+            0 => __DIR__ . '/..' . '/barryvdh/laravel-cors/src',
+            1 => __DIR__ . '/..' . '/fruitcake/laravel-cors/src',
         ),
         'Fideloper\\Proxy\\' => 
         array (
@@ -665,6 +666,7 @@ class ComposerStaticInitca4bd2534ab96ed0e6a6153f9a634e40
         'App\\Http\\Middleware\\TrustHosts' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustHosts.php',
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
+        'App\\Http\\Middleware\\cors' => __DIR__ . '/../..' . '/app/Http/Middleware/cors.php',
         'App\\Mail\\NotificationDiplome' => __DIR__ . '/../..' . '/app/Mail/NotificationDiplome.php',
         'App\\Models\\Demande' => __DIR__ . '/../..' . '/app/Models/Demande.php',
         'App\\Models\\Diplome' => __DIR__ . '/../..' . '/app/Models/Diplome.php',
@@ -790,6 +792,7 @@ class ComposerStaticInitca4bd2534ab96ed0e6a6153f9a634e40
         'Database\\Seeders\\EtudiantsTableSeeder' => __DIR__ . '/../..' . '/database/seeders/EtudiantsTableSeeder.php',
         'Database\\Seeders\\FormulairesTableSeeder' => __DIR__ . '/../..' . '/database/seeders/FormulairesTableSeeder.php',
         'Database\\Seeders\\LaratrustSeeder' => __DIR__ . '/../..' . '/database/seeders/LaratrustSeeder.php',
+        'Database\\Seeders\\Statut_DiplomeTableSeeder' => __DIR__ . '/../..' . '/database/seeders/Statut_DiplomeTableSeeder.php',
         'Database\\Seeders\\UsersTableSeeder' => __DIR__ . '/../..' . '/database/seeders/UsersTableSeeder.php',
         'DeepCopy\\DeepCopy' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/DeepCopy.php',
         'DeepCopy\\Exception\\CloneException' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/Exception/CloneException.php',
@@ -1852,8 +1855,8 @@ class ComposerStaticInitca4bd2534ab96ed0e6a6153f9a634e40
         'Faker\\ValidGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/ValidGenerator.php',
         'Fideloper\\Proxy\\TrustProxies' => __DIR__ . '/..' . '/fideloper/proxy/src/TrustProxies.php',
         'Fideloper\\Proxy\\TrustedProxyServiceProvider' => __DIR__ . '/..' . '/fideloper/proxy/src/TrustedProxyServiceProvider.php',
-        'Fruitcake\\Cors\\CorsServiceProvider' => __DIR__ . '/..' . '/fruitcake/laravel-cors/src/CorsServiceProvider.php',
-        'Fruitcake\\Cors\\HandleCors' => __DIR__ . '/..' . '/fruitcake/laravel-cors/src/HandleCors.php',
+        'Fruitcake\\Cors\\CorsServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-cors/src/CorsServiceProvider.php',
+        'Fruitcake\\Cors\\HandleCors' => __DIR__ . '/..' . '/barryvdh/laravel-cors/src/HandleCors.php',
         'GrahamCampbell\\ResultType\\Error' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Error.php',
         'GrahamCampbell\\ResultType\\Result' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Result.php',
         'GrahamCampbell\\ResultType\\Success' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Success.php',
