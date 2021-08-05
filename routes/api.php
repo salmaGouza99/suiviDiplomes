@@ -21,6 +21,7 @@ use App\Http\Controllers\ProfileController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
 Route::post('/demandes/sheet',[DemandeController::class,'sheet']);

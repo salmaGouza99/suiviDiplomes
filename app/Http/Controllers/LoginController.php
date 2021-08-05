@@ -29,7 +29,10 @@ class LoginController extends Controller
         }
         $user = auth()->user();
         $token = $user->createToken('token');
-        return $token->plainTextToken;
+        return response()->json([
+            'token' =>$token->plainTextToken,
+        ]);
+       
     }
 
 
