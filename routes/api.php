@@ -109,4 +109,3 @@ Route::group(['middleware' => ['auth:sanctum','role:guichet_retrait']], function
   Route::put('/diplomes/retrait/{diplome}',[DiplomeController::class,'updateDateRetraitDiplomeArchiveDossier']);
   Route::get('/diplomes/notif/{id}',[DiplomeController::class,'sendMail']);
 });
-

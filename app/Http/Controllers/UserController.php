@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use SheetDB\SheetDB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -35,7 +36,8 @@ class UserController extends Controller
             'role' => 'required|string'
         ]);
 
-        $user=User::create(array('email' => $request->email,'password'=>Hash::make($request->password)));
+        $user = User::create(array('email' => Str::lower($request->email),
+            'password'=>Hash::make($request->password)));
         $user->attachRole($request->role);
         return response()->json([
             'user' =>$user,
@@ -65,7 +67,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user =User::with('roles')->findOrFail($id);
+        $user = User::with('roles')->findOrFail($id);
         if($request->role){
             foreach ($user->roles as $role) {
                 $user->detachRole($role->name);
