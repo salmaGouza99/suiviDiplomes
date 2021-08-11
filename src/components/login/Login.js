@@ -71,16 +71,15 @@ export default function Login(props) {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const emailx = email?.toLowerCase();
     setMessage(error ? "Mot de passe invalid." : "");
-    //console.log('Login: ', emailx, password);
+    //console.log('Login: ', email, password);
     if (error) {
       setMessage("Mot de passe invalid.");
     } else {
       setLoading(true);
       setDisable(true);
       setMessage("");
-      authService.login(emailx, password).then(
+      authService.login(email, password).then(
         (response) => {
           if (!response.msgError) {
             history.push("/Acceuil");
