@@ -1,6 +1,5 @@
 import React, { useState} from 'react';
 import axios from 'axios';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -10,7 +9,6 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -20,6 +18,9 @@ import img from "../../img.jpg";
 import PersonIcon from '@material-ui/icons/Person';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+
 
 function Copyright() {
   return (
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(8),
     backgroundColor: 'rgba(255,255,255,0.8)',
     
+  },
+  nav:{
+      width: "100%"
   },
   image:{
     backgroundImage: 'url(https://source.unsplash.com/random)',
@@ -93,6 +97,15 @@ export default function Login() {
 
   return (
  <div className={classes.image}>
+  
+  <BottomNavigation
+      className={classes.nav}
+      showLabels
+    >
+      <BottomNavigationAction label="Suivi Diplomes"  />
+    </BottomNavigation>
+
+
   <Grid   container
           direction="row"
           justifyContent="center"
