@@ -5,11 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-<<<<<<< HEAD
-        'reference' => '0dcc7a3d9fb9fbbb5eef6e889def1e6e1bdddc64',
-=======
-        'reference' => '56fd02ac9df6acc8a0a77a2f40738ab177e4af46',
->>>>>>> 311c34d1a0515fb25bb36c1d7ba84ab41a0374d9
+        'reference' => '3492dc036acb6c8e1a44fd6499eace85dc44111e',
         'name' => 'laravel/laravel',
         'dev' => true,
     ),
@@ -21,6 +17,15 @@
             'install_path' => __DIR__ . '/../asm89/stack-cors',
             'aliases' => array(),
             'reference' => '9cb795bf30988e8c96dd3c40623c48a877bc6714',
+            'dev_requirement' => false,
+        ),
+        'barryvdh/laravel-cors' => array(
+            'pretty_version' => 'v2.0.4',
+            'version' => '2.0.4.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../barryvdh/laravel-cors',
+            'aliases' => array(),
+            'reference' => 'a8ccedc7ca95189ead0e407c43b530dc17791d6a',
             'dev_requirement' => false,
         ),
         'brick/math' => array(
@@ -467,11 +472,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-<<<<<<< HEAD
-            'reference' => '0dcc7a3d9fb9fbbb5eef6e889def1e6e1bdddc64',
-=======
-            'reference' => '56fd02ac9df6acc8a0a77a2f40738ab177e4af46',
->>>>>>> 311c34d1a0515fb25bb36c1d7ba84ab41a0374d9
+            'reference' => '3492dc036acb6c8e1a44fd6499eace85dc44111e',
             'dev_requirement' => false,
         ),
         'laravel/sail' => array(

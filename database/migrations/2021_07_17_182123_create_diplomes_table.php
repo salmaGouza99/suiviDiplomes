@@ -19,7 +19,8 @@ class CreateDiplomesTable extends Migration
             $table->foreign('demande_id')->references('id')->on('demandes')->onDelete('cascade');
             $table->string('etudiant_cin');
             $table->foreign('etudiant_cin')->references('cin')->on('etudiants')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('statut');
+            $table->unsignedBigInteger('statut_id');
+            $table->foreign('statut_id')->references('id')->on('statut_diplome')->onDelete('cascade')->onUpdate('cascade');
             $table->date('date_creationDossier_envoiAuServiceDiplome');
             $table->date('date_reedition')->nullable();
             $table->string('type_erreur')->nullable();

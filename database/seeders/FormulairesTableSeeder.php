@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Crypt;
 
-class FormulaireSeeder extends Seeder
+class FormulairesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,14 +17,16 @@ class FormulaireSeeder extends Seeder
     public function run()
     {
         Formulaire::create([
-            'type_formulaire' => 'Deug',
-            'lien' => Str::random(50),
-            'api_id' =>'tuqovq24un3kx'
+            'type_formulaire' => 'DEUG',
+            'lien' => 'https://forms.gle/VwdDr2EbcJXtL3Ni6',
+            'api_id' => 'k66wmrh4rkfrh'
+            //'api_id' =>'tuqovq24un3kx'
         ]);
         Formulaire::create([
             'type_formulaire' => 'Licence',
-            'lien' => Str::random(50),
-            'api_id' => 'dzpxm1gtt89z1'
+            'lien' => 'https://forms.gle/VdXwWqeNHuFT5YA9A',
+            'api_id' => 'upxtu5n2f2asi'
+            //'api_id' => 'dzpxm1gtt89z1'
         ]);
       
     }

@@ -24,7 +24,7 @@ class DemandeController extends Controller
     {
         return response()->json([
             'demandes' => Demande::with('etudiant')
-                ->where('traite','=',0)->paginate(7)->sortByDesc('date_demande')
+                ->where('traite','=',0)->get(),
         ]); 
     }
 
@@ -45,17 +45,17 @@ class DemandeController extends Controller
             if(Auth::user()->hasRole('admin')) {
                 $res = $demande;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($demande->etudiant->filiere == 'droit' and $demande->etudiant->option == 'arabe')
+                if ($demande->etudiant->filiere == 'القانون باللغة العربية')
                 {
                     $res = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($demande->etudiant->filiere == 'droit' and $demande->etudiant->option == 'français')
+                if ($demande->etudiant->filiere == 'Droit en français')
                 {
                     $res = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($demande->etudiant->filiere == 'economie')
+                if ($demande->etudiant->filiere == 'Sciences Economiques et Gestion')
                 {
                     $res = $demande;
                 }
@@ -109,17 +109,17 @@ class DemandeController extends Controller
             if(Auth::user()->hasRole('admin')) {
                 $res[] = $demande;
             } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($demande->filiere == 'droit' and $demande->option == 'arabe')
+                if ($demande->filiere == 'القانون باللغة العربية')
                 {
                     $res[] = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($demande->filiere == 'droit' and $demande->option == 'français')
+                if ($demande->filiere == 'Droit en français')
                 {
                     $res[] = $demande;
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($demande->filiere == 'economie')
+                if ($demande->filiere == 'Sciences Economiques et Gestion')
                 {
                     $res[] = $demande;
                 }
@@ -143,41 +143,41 @@ class DemandeController extends Controller
             $sheetdb = new SheetDB($form->api_id);
             foreach ($sheetdb->get() as $row)
             {
-                // $etudiantExistant=Etudiant::where('cin',$row->cin)->get();
-                // $demandeExistante=Demande::where('etudiant_cin',$row->cin)
-                //         ->where('type_demande',$row->type_demande)->get();
-
-                if(sizeof(Etudiant::where('cin',$row->cin)->get()) == 0)
+                if(sizeof(Etudiant::where('cin',$row->{'CIN رقم بطاقة التعريف الوطنية'})->get()) == 0)
                 {
                     Etudiant::create([
-                        'cin' => $row->cin,
-                        'apogee' => $row->apogee,
-                        'cne' => $row->cne,
-                        'nom' => Str::upper($row->nom),
-                        'prenom' => $row->prenom,
-                        'nom_arabe' => $row->nom_arabe,
-                        'prenom_arabe' => $row->prenom_arabe,
-                        'filiere' => $row->filiere,
-                        'option' => $row->option,
-                        'nationalite' =>$row->nationalite,
-                        'date_naiss' => Carbon::createFromFormat('d/m/Y', $row->date_de_naissance)->format('Y-m-d'),
-                        'lieu_naiss' => $row->lieu_de_naissance,
-                        'email_inst' => $row->email_intitutionnel,
+                        'cin' => $row->{'CIN رقم بطاقة التعريف الوطنية'},
+                        'apogee' => $row->{'Code APOGEE رقم الطالب'},
+                        'cne' => $row->{'CNE ou MASSAR الرقم الوطني للطالب او مسار'},
+                        'nom' => Str::upper($row->{'Nom en français الاسم العائلي بالفرنسية'}),
+                        'prenom' => Str::ucfirst($row->{'Prénom en français الاسم الشخصي بالفرنسية'}),
+                        'nom_arabe' => $row->{'Nom en arabe الاسم العائلي بالعربية'},
+                        'prenom_arabe' => $row->{'Prénom en arabe الاسم الشخصي بالعربية'},
+                        'filiere' => $row->{'Filière المسلك'}, 
+                        'nationalite' => $row->{'Nationalité الجنسية'},
+                        'date_naiss' => Carbon::createFromFormat('d/m/Y', $row->{'Date de naissance تاريخ الازدياد'})->format('Y-m-d'),
+                        'lieu_naiss' => $row->{'Lieu de naissance مكان الازدياد'},
+                        'email_inst' => $row->{'Adresse e-mail institutionnel البريد الالكتروني للطالب'},
                     ]);
+                    //echo "\n adding student ".$row->{'CIN رقم بطاقة التعريف الوطنية'};
                 }
-                if(sizeof(Demande::where('etudiant_cin',$row->cin)
-                    ->where('type_demande',$row->type_demande)->get()) == 0)
+                if(sizeof(Demande::where('etudiant_cin',$row->{'CIN رقم بطاقة التعريف الوطنية'})
+                    ->where('type_demande',$form->type_formulaire)->get()) == 0)
                 {
                     Demande::create([
-                        'etudiant_cin' => $row->cin,
+                        'etudiant_cin' => $row->{'CIN رقم بطاقة التعريف الوطنية'},
                         'type_demande' => $form->type_formulaire,
                         'date_demande' => Carbon::createFromFormat('d/m/Y H:i:s', $row->Horodateur)->format('Y-m-d'),
                     ]);
+                    if($form->type_formulaire == 'Licence')
+                    {
+                        Etudiant::where('cin',$row->{'CIN رقم بطاقة التعريف الوطنية'})->update(['option' => $row->{'Option الاختيار'}]);
+                    }
+                    //echo ' and his demand of  '.$form->type_formulaire.' done! ';
                 }
                    
             } 
 
-            //echo 'adding demandes from Form '.$form->id.' done! ';
         }
     }
             

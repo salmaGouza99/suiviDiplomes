@@ -19,19 +19,20 @@ class FormulaireController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created form in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $form = Formulaire::create($request->all());
-        return response()->json([
-            'form' => $form,
-        ]);
-    }
+    // /**
+    //  * Store a newly created form in storage.
+    //  *
+    //  * @param  \Illuminate\Http\Request  $request
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function store(Request $request)
+    // {
+    //     $form = Formulaire::create($request->all());
+    //     return response()->json([
+    //         'form' => $form,
+    //         'message' => 'Formulaire ajouté'
+    //     ]);
+    // }
     /*
      * Display the specified form.
      *
@@ -57,6 +58,7 @@ class FormulaireController extends Controller
         $formulaire->update($request->all());
         return response()->json([
             'form' => $formulaire,
+            'message' => 'Formulaire modifié'
         ]);
     }
 
@@ -69,21 +71,23 @@ class FormulaireController extends Controller
     public function destroy(Formulaire $formulaire)
     {
         $formulaire->delete();
-        return response()->json(['response' => 'form deleted successfully']);
-    }
-
-    /**
-     * filter fors by type: DEUG or Licence.
-     *
-     * @param  string  $type
-     * @return \Illuminate\Http\Response
-     */
-    public function filterByType($type)
-    {
         return response()->json([
-            'forms' => Formulaire::where('type_formulaire',$type)->get(),
+            'message' => 'Formulaire supprimé'
         ]);
     }
+
+    // /**
+    //  * filter fors by type: DEUG or Licence.
+    //  *
+    //  * @param  string  $type
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function filterByType($type)
+    // {
+    //     return response()->json([
+    //         'forms' => Formulaire::where('type_formulaire',$type)->get(),
+    //     ]);
+    // }
 
      /*
      * filter forms by filiere.

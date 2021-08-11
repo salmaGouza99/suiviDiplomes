@@ -2,14 +2,15 @@
 
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\FormulaireController;
-use App\Http\Controllers\EtudiantController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\DiplomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\EtudiantController;
+use App\Http\Controllers\FormulaireController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,8 +25,9 @@ use App\Http\Controllers\ProfileController;
 
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
-Route::post('/demandes/sheet',[DemandeController::class,'sheet']);
 
+
+Route::get('/roles',[RoleController::class,'index']);
 
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
@@ -50,17 +52,21 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
-  Route::resource('/users',UserController::class);
+  
+  Route::get('/users/search/{email?}',[UserController::class,'search']);
+  Route::resource('/users',UserController::class,['except' => 'index']);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
-  // Forms
-  Route::resource('/formulaires',FormulaireController::class,['except' => 'show']);
-  Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
+
+// Forms
+  Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
+  // Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
 
   // Etudiants
   Route::get('/etudiants',[EtudiantController::class,'index']);
   Route::get('/etudiants/filiere/{filiere}',[EtudiantController::class,'filterByFiliere']);
-  Route::get('/export/{statut},{type},{filiere}',[EtudiantController::class,'export']);
+  Route::get('/exportEtudiants/{type},{filiere}',[EtudiantController::class,'exportEtudiants']);
+  Route::get('/exportParcours/{statut},{type},{filiere}',[EtudiantController::class,'exportParcoursDetaille']);
 
   // Demandes
   Route::get('/demandes',[DemandeController::class,'index']);
@@ -74,6 +80,7 @@ Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
   Route::get('/demandes/{id}',[DemandeController::class,'show']);
   Route::get('/demandes/filter/{type},{filiere}',[DemandeController::class,'filter']);
+  Route::post('/demandes/nouvellesDemandes',[DemandeController::class,'sheet']);
 });
 
 // Protected routes for admin and service_diplomes
@@ -86,7 +93,6 @@ Route::group(['middleware' => ['auth:sanctum','role:guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
   Route::post('/diplomes/{demande_id}',[DiplomeController::class,'store']);
 });
-
 
 // Protected routes only for service_diplomes
 Route::group(['middleware' => ['auth:sanctum','role:service_diplomes']], function(){

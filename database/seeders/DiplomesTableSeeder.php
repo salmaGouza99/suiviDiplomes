@@ -15,12 +15,12 @@ class DiplomesTableSeeder extends Seeder
     public function run()
     {
         Diplome::create([
-            'demande_id' =>'1',
-            'etudiant_cin' => 'AE12300',
-            'statut' => 'créé et envoyé au service diplomes',
+            'demande_id' => 1,
+            'etudiant_cin' => 'IJ345668',
+            'statut_id' => 1,
             'date_creationDossier_envoiAuServiceDiplome' => '2021-06-20'
         ]);
-        Diplome::create([
+        /* Diplome::create([
             'demande_id' =>'2',
             'etudiant_cin' => 'AE12301',
             'statut' => 'créé et envoyé au service diplomes',
@@ -75,6 +75,6 @@ class DiplomesTableSeeder extends Seeder
              'statut' => 'créé et envoyé au service diplomes',
              'date_creationDossier_envoiAuServiceDiplome' => '2021-06-20'
          ]);
-
+ */
     }
 }

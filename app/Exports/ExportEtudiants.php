@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -14,20 +15,18 @@ Sheet::macro('styleCells', function (Sheet $sheet, string $cellRange, array $sty
     $sheet->getDelegate()->getStyle($cellRange)->applyFromArray($style);
 });
 
-class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, WithEvents
+class ExportEtudiants implements FromCollection, WithHeadings, ShouldAutoSize, WithEvents
 {
     protected $type, $filiere;
 
     /**
     * constructor
     *
-    * @param string $statut 
     * @param string $type 
     * @param string $filiere 
     */
-    function __construct($statut, $type, $filiere) 
+    function __construct($type, $filiere) 
     {
-        $this->statut = $statut;
         $this->type = $type;
         $this->filiere = $filiere;
     } 
@@ -37,79 +36,44 @@ class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, Wi
     */
     public function collection()
     {
-        if ($this->statut and $this->type and $this->filiere)
+        if ($this->type and $this->filiere)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut',$this->statut)
+                    ->where('dip.statut_id',6)
                     ->where('d.type_demande', $this->type)
                     ->where('e.filiere',$this->filiere)
-                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
+                    ->select('apogee','cin','nom','prenom','filiere','type_demande')
                     ->get();
         }
-        elseif ($this->statut and $this->type and !$this->filiere)
+        elseif ($this->type and !$this->filiere)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut',$this->statut)
+                    ->where('dip.statut_id',6)
                     ->where('d.type_demande', $this->type)
-                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
+                    ->select('apogee','cin','nom','prenom','filiere','type_demande')
                     ->get();
         }
-        elseif ($this->statut and $this->filiere and !$this->type)
+        elseif ($this->filiere and !$this->type)
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut',$this->statut)
+                    ->where('dip.statut_id',6)
                     ->where('e.filiere',$this->filiere)
-                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
+                    ->select('apogee','cin','nom','prenom','filiere','type_demande')
                     ->get();
         }
-        elseif ($this->type and $this->filiere and !$this->statut)
+        else 
         {
             return  DB::table('diplomes as dip')
                     ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
                     ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('d.type_demande', $this->type)
-                    ->where('e.filiere',$this->filiere)
-                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
-                    ->get();
-        }
-        elseif ($this->statut and !$this->type and !$this->filiere)
-        {
-            return  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut',$this->statut)
-                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
-                    ->get();
-        }
-        elseif ($this->type and !$this->statut and !$this->filiere)
-        {
-            return  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('d.type_demande', $this->type)
-                    ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
-                    ->get();
-        }
-        elseif ($this->filiere and !$this->statut and !$this->type)
-        {
-            return  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('e.filiere',$this->filiere)
-                   ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
-                    ->get();
-        }
-        else{
-            return  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                   ->select('apogee','cin','cne','nom','prenom','type_demande','filiere')
+                    ->where('dip.statut_id',6)
+                    ->select('apogee','cin','nom','prenom','filiere','type_demande')
                     ->get();
         }
     }
@@ -119,7 +83,7 @@ class ExportStudents implements FromCollection, WithHeadings, ShouldAutoSize, Wi
      */
     public function headings() :array
     {
-        return ["Code apogee", "CIN", 'CNE', "Nom", "Prénom", "Type de diplôme", "Filière"];
+        return ["Code apogée", "CIN", "Nom", "Prénom", "Filière", "Type de diplôme"];
     }
 
     /**
