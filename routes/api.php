@@ -2,14 +2,15 @@
 
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\FormulaireController;
-use App\Http\Controllers\EtudiantController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\DiplomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\EtudiantController;
+use App\Http\Controllers\FormulaireController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,7 @@ use App\Http\Controllers\ProfileController;
 
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
+Route::get('/roles',[RoleController::class,'index']);
 
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
@@ -33,8 +35,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
   // Profil
   Route::get('/profil',[ProfileController::class,'show']);
   Route::put('/profil',[ProfileController::class,'update']);
-  //Route::get('/profil',[LoginController::class,'show']);
-  //Route::put('/profil/newpassword',[LoginController::class,'update']);
 
   // Etudiants
   Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
@@ -48,12 +48,13 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
-  Route::resource('/users',UserController::class);
+  Route::resource('/users',UserController::class,['except' => 'index']);
+  Route::get('/users/search/{email?}',[UserController::class,'search']);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
   // Forms
-  Route::resource('/formulaires',FormulaireController::class,['except' => 'show']);
-  Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
+  Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
+  // Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
 
   // Etudiants
   Route::get('/etudiants',[EtudiantController::class,'index']);

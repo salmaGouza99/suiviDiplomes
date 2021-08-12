@@ -4,7 +4,6 @@ namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -17,7 +16,7 @@ Sheet::macro('styleCells', function (Sheet $sheet, string $cellRange, array $sty
 
 class ExportEtudiants implements FromCollection, WithHeadings, ShouldAutoSize, WithEvents
 {
-    protected $statut, $type, $filiere;
+    protected $type, $filiere;
 
     /**
     * constructor

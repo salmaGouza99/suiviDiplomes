@@ -22,8 +22,7 @@ class DiplomeController extends Controller
     public function index()
     {
         return response()->json([
-            'diplomes' => Diplome::with('demande','etudiant')->paginate(7)
-                        ->sortByDesc('date_creationDossier_envoiAuServiceDiplome')
+            'diplomes' => Diplome::with('demande','etudiant')->get(),
         ]); 
     }
 

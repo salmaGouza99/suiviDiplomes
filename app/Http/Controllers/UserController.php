@@ -2,25 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
 use SheetDB\SheetDB;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    /**
+    /*
      * Display a listing of users.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        return response()->json([
-            'users' => User::with('roles')->paginate(7)
-        ]);
-    }
+    // public function index()
+    // {
+    //     $listUsers=[] ;
+    //     foreach (User::with('roles')->get() as $user){
+    //         $user=[
+    //             'id'=>$user->id,
+    //             'email'=>$user->email,
+    //             'role'=>Str::replace('_',' ',$user->roles[0]->name),
+    //         ];
+    //         array_push($listUsers,$user);
+    //     }
+    //     return response()->json([
+    //        'users'=> $listUsers
+    //     ]);
+    // }
 
     /**
      * Store a newly created user in storage.
@@ -32,15 +42,16 @@ class UserController extends Controller
     {
         $request->validate([
             'email' => 'required|string',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|string'
+            'password' => 'required|string|min:6',
+            'role' => 'required'
         ]);
 
-        $user = User::create(array('email' => Str::lower($request->email),
+        $user = User::create(array('email' => $request->email),
             'password'=>Hash::make($request->password)));
         $user->attachRole($request->role);
         return response()->json([
-            'user' =>$user,
+            'user' =>$user, 
+            'message' => 'Utilisateur ajouté !'
         ]);
         
     }
@@ -53,8 +64,15 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $user=User::with('roles')->find($id);
+         $user=[
+                'id'=>$user->id,
+                'email'=>$user->email,
+                'roleId' =>$user->roles[0]->id,
+                'role'=>Str::replace('_',' ',$user->roles[0]->name),
+            ];
         return response()->json([
-            'user' => User::with('roles')->find($id),
+            'user' => $user,
         ]);
     }
 
@@ -79,6 +97,7 @@ class UserController extends Controller
 
         return response()->json([
             'user' =>User::with('roles')->find($user->id),
+            'message' => 'Utilisateur edité',
         ]);
     }
 
@@ -93,24 +112,28 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json(['response' => 'User deleted successfully']);
+        return response()->json(['message' => 'Utilisateur supprimé']);
     }
 
      /**
      * filter users by role
      *
-     * @param  string  $role
+     * @param  int  $role
      * @return \Illuminate\Http\Response
      */
     public function filterByRole($role)
     {
         $users=array();
-        foreach ( User::with('roles')->paginate(7) as $user ) 
+        foreach ( User::with('roles')->get() as $user ) 
         {
             //test role
-            if($user->roles[0]->name==$role) 
+            if($user->roles[0]->id==$role) 
             {
-                $users[] = $user;
+                $users[] = [
+                    'id'=>$user->id,
+                    'email'=>$user->email,
+                    'role'=>Str::replace('_',' ',$user->roles[0]->name),
+                ];;
             }
         }    
             
@@ -120,17 +143,26 @@ class UserController extends Controller
         ]);
     }
 
-    /*
+    /** 
      * search users by email
      *
      * @param string $email
      * @return \Illuminate\Http\Response
      */
-    /* public function search($email){
-       return response()->json([
-            'users' => User::where('email','like','%'.$email.'%')->paginate(7),
-       ]);
-    } */
+     public function search($email = ''){
+        $listUsers=[] ;
+        foreach (User::where('email','like','%'.$email.'%')->get() as $user){
+            $user=[
+                'id'=>$user->id,
+                'email'=>$user->email,
+                'role'=>Str::replace('_',' ',$user->roles[0]->name),
+            ];
+            array_push($listUsers,$user);
+        }
+        return response()->json([
+           'users'=> $listUsers
+        ]);
+     }
     
 }   
                     

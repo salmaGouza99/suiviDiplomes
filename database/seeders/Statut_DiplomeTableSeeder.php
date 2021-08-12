@@ -15,16 +15,16 @@ class Statut_DiplomeTableSeeder extends Seeder
     public function run()
     {
         DB::table('statut_diplome')->insert([
-            'statut' => 'créé et envoyé au service diplomes',
+            'statut' => 'créé et envoyé au service diplômes',
         ]);
         DB::table('statut_diplome')->insert([
             'statut' => 'réédité',
         ]);
         DB::table('statut_diplome')->insert([
-            'statut' => 'imprimé et envoyé au decanat',
+            'statut' => 'imprimé et envoyé au décanat',
         ]);
         DB::table('statut_diplome')->insert([
-            'statut' => 'signé et renvoyé au service de diplomes',
+            'statut' => 'signé et renvoyé au service de diplômes',
         ]);
         DB::table('statut_diplome')->insert([
             'statut' => 'envoyé à la présidence',
@@ -33,7 +33,7 @@ class Statut_DiplomeTableSeeder extends Seeder
             'statut' => 'recu et envoyé au ghuichet de retrait',
         ]);
         DB::table('statut_diplome')->insert([
-            'statut' => 'diplome retiré et dossier archivé',
+            'statut' => 'diplôme retiré et dossier archivé',
         ]);
     }
 }

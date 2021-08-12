@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,23 +16,14 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $user1 = User::create([
-            'email' => 'asma@gmail.com',
-            'password' => Hash::make('password1'),
-        ]);
-        $user1->attachRole('admin');
 
-        $user2 = User::create([
-            'email' => 'salma@gmail.com',
-            'password' => Hash::make('password2'),
-        ]);
-        $user2->attachRole('guichet_droit_arabe');
-
-        $user3 = User::create([
-            'email' => 'chakibe@gmail.com',
-            'password' => Hash::make('password3'),
-        ]);
-        $user3->attachRole('guichet_retrait');
+        for($i=0 ; $i <1000 ; $i++){
+            $user=User::create([
+                'email' => Str::random(10).'@gmail.com',
+                'password' => Hash::make('password'),
+            ]);
+            $user->attachRole(random_int(1,8));
+        }
 
     }
 }
