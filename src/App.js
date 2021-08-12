@@ -2,7 +2,10 @@ import React, { useState, useEffect, initialState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./Components/Login/Login";
 import Acceuil from "./Components/Interfaces/Acceuil";
-import Paperbase from "./Components/Demandes/Paperbase";
+import DemandesGrid from "./Components/Demandes/DemandesGrid";
+import UsersGrid from "./Components/Users/UsersGrid";
+import FormsPage from "./Components/formulaires/FormsPage";
+import Profil from "./Components/Users/Profil";
 import authService from "./Services/authService";
 
 function App() {
@@ -26,8 +29,14 @@ function App() {
           { !user ? 
           (<> <Route component={() => (<Login user={user} />)}/> </>) 
           : 
-          (<> <Route exact path="/Acceuil" component={() => (<Acceuil/>)}/> 
-              <Route exact path="/Demandes" component={() => (<Paperbase user={user} role={role} />)}/>
+          (<> {/* Routes for all users */}
+              <Route exact path="/Acceuil" component={() => (<Acceuil/>)}/> 
+              <Route exact path="/Profil" component={() => (<Profil user={user} />)}/>
+              {/* Routes for admin */}
+              <Route exact path="/Users" component={() => (<UsersGrid role={role} />)}/>
+              <Route exact path="/Forms" component={() => (<FormsPage role={role} />)}/>
+              {/* Routes for guichets: arabe, francais et economie */}
+              <Route exact path="/Demandes" component={() => (<DemandesGrid user={user} role={role} />)}/>
           </>)}
         </Switch>
       </div>

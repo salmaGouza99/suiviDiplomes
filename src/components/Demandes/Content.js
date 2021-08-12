@@ -15,7 +15,6 @@ import Box from '@material-ui/core/Box';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { makeStyles } from '@material-ui/styles';
 import { DataGrid, useGridSlotComponentProps, frFR } from '@material-ui/data-grid';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
 import userService from "../../Services/userService";
 
@@ -143,7 +142,7 @@ function Content(props) {
         });
       }
       getAllDemandes(); */
-      console.log(index);
+      // console.log(index);
       async function filterDemandes() {
         if(index === 0) {
           await userService.filterDemandes("Licence","القانون باللغة العربية").then((response) => {

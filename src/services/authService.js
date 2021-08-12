@@ -12,12 +12,10 @@ const login = (email, password) => {
       return response.data;
     });
 };
-
 const logout = () => {
   localStorage.removeItem("user");
   localStorage.setItem("logedOut", true);
 };
-
 const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("user"));
 };
