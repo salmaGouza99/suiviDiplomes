@@ -26,12 +26,15 @@ use App\Http\Controllers\FormulaireController;
 
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
+<<<<<<< HEAD
 Route::get('/users/search/{email?}',[UserController::class,'search']);
 Route::resource('/users',UserController::class,['except' => 'index']);
 Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
 Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
 
+=======
+>>>>>>> 38b84c8e05937b9c8fc77f4ddee65410140bd60a
 Route::get('/roles',[RoleController::class,'index']);
 
 Route::get('/dashboard/{date_debut}/{date_fin}',[DashboardController::class,'dashboard']);
@@ -48,8 +51,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
   // Profil
   Route::get('/profil',[ProfileController::class,'show']);
   Route::put('/profil',[ProfileController::class,'update']);
-  //Route::get('/profil',[LoginController::class,'show']);
-  //Route::put('/profil/newpassword',[LoginController::class,'update']);
 
   // Etudiants
   Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
@@ -63,11 +64,20 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
+<<<<<<< HEAD
   
   // Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
   // Forms
   // Route::resource('/formulaires',FormulaireController::class,['except' => 'show']);
+=======
+  Route::resource('/users',UserController::class,['except' => 'index']);
+  Route::get('/users/search/{email?}',[UserController::class,'search']);
+  Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
+
+  // Forms
+  Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
+>>>>>>> 38b84c8e05937b9c8fc77f4ddee65410140bd60a
   // Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
 
   // Etudiants
@@ -124,4 +134,3 @@ Route::group(['middleware' => ['auth:sanctum','role:guichet_retrait']], function
   Route::put('/diplomes/retrait/{diplome}',[DiplomeController::class,'updateDateRetraitDiplomeArchiveDossier']);
   Route::get('/diplomes/notif/{id}',[DiplomeController::class,'sendMail']);
 });
-

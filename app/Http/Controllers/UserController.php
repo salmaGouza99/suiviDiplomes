@@ -7,10 +7,11 @@ use SheetDB\SheetDB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    /**
+    /*
      * Display a listing of users.
      *
      * @return \Illuminate\Http\Response
@@ -45,7 +46,8 @@ class UserController extends Controller
             'role' => 'required'
         ]);
 
-        $user=User::create(array('email' => $request->email,'password'=>Hash::make($request->password)));
+        $user = User::create(array('email' => $request->email),
+            'password'=>Hash::make($request->password)));
         $user->attachRole($request->role);
         return response()->json([
             'user' =>$user, 
@@ -83,7 +85,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user =User::with('roles')->findOrFail($id);
+        $user = User::with('roles')->findOrFail($id);
         if($request->role){
             foreach ($user->roles as $role) {
                 $user->detachRole($role->name);
@@ -119,7 +121,7 @@ class UserController extends Controller
      * @param  int  $role
      * @return \Illuminate\Http\Response
      */
-    public function filterByRole($role  )
+    public function filterByRole($role)
     {
         $users=array();
         foreach ( User::with('roles')->get() as $user ) 

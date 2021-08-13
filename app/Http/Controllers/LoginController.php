@@ -24,29 +24,29 @@ class LoginController extends Controller
 
         if (!Auth::attempt($attr)) {
             return response()->json([
-                'message' => 'username or password invalid'
+                'msgError' => 'Email ou mot de passe est incorrect.'
             ]);
         }
         $user = auth()->user();
-        $token = $user->createToken('token');
+        $token = $user->createToken('token')->plainTextToken;
         return response()->json([
-            'token' =>$token->plainTextToken,
+            'user' => User::with('roles')->find(auth()->user()->id),
+            'accessToken' => $token,
         ]);
-       
     }
 
 
-    /**
+    /*
      * Logout function
      *
      * @param Request $request
      * @return json_responce
      */
-    public function logout(Request $request){
+    /*  public function logout(Request $request){
         $user = auth()->user(); //user authentified
         $user->tokens()->delete();
         return response()->json(['success' => 'logged out']);
-    }
+    } */
 
 
     /*

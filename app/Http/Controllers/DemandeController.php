@@ -22,10 +22,9 @@ class DemandeController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'demandes' => Demande::with('etudiant')
-                ->where('traite','=',0)->get(),
-        ]); 
+        return response()->json( Demande::with('etudiant')
+                ->where('traite','=',0)->get()->sortByDesc('date_demande')
+        ); 
     }
 
     /**
@@ -83,7 +82,7 @@ class DemandeController extends Controller
                     ->where('d.traite','=',0)
                     ->where('d.type_demande', $type)
                     ->where('e.filiere',$filiere)
-                    ->get();
+                    ->get()->sortByDesc('date_demande');
         }
         if ($type and !$filiere)
         {
@@ -91,7 +90,7 @@ class DemandeController extends Controller
                     ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
                     ->where('d.traite','=',0)
                     ->where('d.type_demande', $type)
-                    ->get();
+                    ->get()->sortByDesc('date_demande');
         }
         if ($filiere and !$type)
         {
@@ -99,7 +98,7 @@ class DemandeController extends Controller
                     ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
                     ->where('d.traite','=',0)
                     ->where('e.filiere',$filiere)
-                    ->get();
+                    ->get()->sortByDesc('date_demande');
         }
 
         // show results for each role

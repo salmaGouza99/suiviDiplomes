@@ -17,9 +17,7 @@ class ProfileController extends Controller
      */
     public function show()
     {
-        return response()->json([
-            'the authenticated user' => auth()->user()
-        ]);
+        return response()->json(User::with('roles')->find(auth()->user()->id));
     }
 
     /**
