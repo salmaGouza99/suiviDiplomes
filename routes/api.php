@@ -10,6 +10,7 @@ use App\Http\Controllers\DiplomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\EtudiantController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FormulaireController;
 
 /*
@@ -25,9 +26,19 @@ use App\Http\Controllers\FormulaireController;
 
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
+Route::get('/users/search/{email?}',[UserController::class,'search']);
+Route::resource('/users',UserController::class,['except' => 'index']);
+Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
+Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
 
 Route::get('/roles',[RoleController::class,'index']);
+
+Route::get('/dashboard/{date_debut}/{date_fin}',[DashboardController::class,'dashboard']);
+Route::get('/dashboard',[DashboardController::class,'currentYear']);
+Route::get('/currents',[DashboardController::class,'index']);
+
+Route::get('/etudiants',[EtudiantController::class,'index']);
 
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
@@ -53,17 +64,14 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
   
-  Route::get('/users/search/{email?}',[UserController::class,'search']);
-  Route::resource('/users',UserController::class,['except' => 'index']);
-  Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
+  // Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
-
-// Forms
-  Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
+  // Forms
+  // Route::resource('/formulaires',FormulaireController::class,['except' => 'show']);
   // Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
 
   // Etudiants
-  Route::get('/etudiants',[EtudiantController::class,'index']);
+  // Route::get('/etudiants',[EtudiantController::class,'index']);
   Route::get('/etudiants/filiere/{filiere}',[EtudiantController::class,'filterByFiliere']);
   Route::get('/exportEtudiants/{type},{filiere}',[EtudiantController::class,'exportEtudiants']);
   Route::get('/exportParcours/{statut},{type},{filiere}',[EtudiantController::class,'exportParcoursDetaille']);

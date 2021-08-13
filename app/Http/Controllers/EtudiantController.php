@@ -6,6 +6,7 @@ use App\Models\Etudiant;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Exports\ExportEtudiants;
+use App\Exports\ExportParcoursDetaille;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -20,8 +21,9 @@ class EtudiantController extends Controller
      */
     public function index()
     {
+        $etudiants=Etudiant::with('demande','diplome')->get();
         return response()->json([
-            'etudiants' => Etudiant::with('demande','diplome')->paginate(7)
+            'etudiants' => $etudiants,
         ]); 
     }
 
@@ -34,33 +36,37 @@ class EtudiantController extends Controller
     public function show($cin)
     {
         $etudiant = Etudiant::with('demande','diplome')->where('cin',$cin)->first();
-        $res = null;
+        // $res = null;
 
-        // show etudiant for each role
-        if ($etudiant)
-        {
-            if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
-                $res = $etudiant;
-            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($etudiant->filiere == 'القانون باللغة العربية')
-                {
-                    $res = $etudiant;
-                }
-            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($etudiant->filiere == 'Droit en français')
-                {
-                    $res = $etudiant;
-                }
-            } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($etudiant->filiere == 'Sciences Economiques et Gestion')
-                {
-                    $res = $etudiant;
-                }
-            }
-        }
+        // // show etudiant for each role
+        // if ($etudiant)
+        // {
+        //     if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
+        //         $res = $etudiant;
+        //     } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
+        //         if ($etudiant->filiere == 'القانون باللغة العربية')
+        //         {
+        //             $res = $etudiant;
+        //         }
+        //     } else if(Auth::user()->hasRole('guichet_droit_francais')) {
+        //         if ($etudiant->filiere == 'Droit en français')
+        //         {
+        //             $res = $etudiant;
+        //         }
+        //     } else if(Auth::user()->hasRole('guichet_economie')) {
+        //         if ($etudiant->filiere == 'Sciences Economiques et Gestion')
+        //         {
+        //             $res = $etudiant;
+        //         }
+        //     }
+        // }
         
-        return response()->json([
-            'etudiant' => $res
+        // return response()->json([
+        //     'etudiant' => $res
+        //  ]);
+
+         return response()->json([
+            'etudiant' => $etudiant
          ]);
     }
 

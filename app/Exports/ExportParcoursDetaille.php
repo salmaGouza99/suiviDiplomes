@@ -14,7 +14,7 @@ Sheet::macro('styleCells', function (Sheet $sheet, string $cellRange, array $sty
     $sheet->getDelegate()->getStyle($cellRange)->applyFromArray($style);
 });
 
-class ExportEtudiants implements FromCollection, WithHeadings, ShouldAutoSize, WithEvents
+class ExportParcoursDetaille implements FromCollection, WithHeadings, ShouldAutoSize, WithEvents
 {
     protected $type, $filiere;
 

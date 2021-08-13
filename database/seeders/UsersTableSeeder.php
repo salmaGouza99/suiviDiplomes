@@ -17,12 +17,12 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
 
-        for($i=0 ; $i <1000 ; $i++){
+        for($i=1 ; $i <7 ; $i++){
             $user=User::create([
                 'email' => Str::random(10).'@gmail.com',
                 'password' => Hash::make('password'),
             ]);
-            $user->attachRole(random_int(1,8));
+            $user->attachRole($i);
         }
 
     }
