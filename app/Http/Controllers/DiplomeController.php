@@ -21,8 +21,25 @@ class DiplomeController extends Controller
      */
     public function index()
     {
+        $diplomes=[];
+        foreach(Diplome::with('demande','etudiant')->get() as $diplome){
+            $diplome=[
+                'id' => $diplome->id,
+                'cin' => $diplome->etudiant->cin,
+                'apogee' => $diplome->etudiant->apogee,
+                'cne' => $diplome->etudiant->cne,
+                'nom' => $diplome->etudiant->nom,
+                'prenom' => $diplome->etudiant->prenom,
+                'filiere' => $diplome->etudiant->filiere,
+                'option' => $diplome->etudiant->option,
+                'type_demande' => $diplome->demande->type_demande,
+            ];
+            array_push($diplomes,$diplome);
+        }
         return response()->json([
-            'diplomes' => Diplome::with('demande','etudiant')->get(),
+ 
+            'diplomes' =>$diplomes
+
         ]); 
     }
 
@@ -97,56 +114,83 @@ class DiplomeController extends Controller
     public function show($id)
     {
         $diplome = Diplome::with('demande','etudiant')->find($id);
-        $res = null;
+        // $res = null;
 
-        // show diplome for each role
-        if ($diplome)
-        {
-            if(Auth::user()->hasRole('admin')) {
-                $res = $diplome;
-            } elseif(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if($diplome->statut_id == 1 and
-                    $diplome->etudiant->filiere == 'القانون باللغة العربية') 
-                {
-                    $res = $diplome;
-                }  
-            } elseif(Auth::user()->hasRole('guichet_droit_francais')) {
-                if($diplome->statut_id == 1 and
-                    $diplome->etudiant->filiere == 'Droit en français') 
-                {
-                    $res = $diplome;
-                }  
-            } elseif(Auth::user()->hasRole('guichet_economie')) {
-                if($diplome->statut_id == 1 and $diplome->etudiant->filiere == 'Sciences Economiques et Gestion') 
-                {
-                    $res = $diplome;
-                }  
-            } elseif(Auth::user()->hasRole('service_diplomes')) {
-                if($diplome->statut_id == 1 or $diplome->statut_id == 2 or $diplome->statut_id == 3 or 
-                    $diplome->statut_id == 4 or $diplome->statut_id == 5) 
-                {
-                    $res = $diplome;
-                }    
-            } elseif(Auth::user()->hasRole('decanat')) {
-                if($diplome->statut_id == 3 or $diplome->statut_id == 4) 
-                {
-                    $res = $diplome;
-                }    
-            } elseif(Auth::user()->hasRole('bureau_ordre')) {
-                if($diplome->statut_id == 5 or $diplome->statut_id == 6) 
-                {
-                    $res = $diplome;
-                }  
-            } elseif(Auth::user()->hasRole('guichet_retrait')) {
-                if($diplome->statut_id == 6 or $diplome->statut_id == 7) 
-                {
-                    $res = $diplome;
-                }
-            }
-        }
+        // // show diplome for each role
+        // if ($diplome)
+        // {
+        //     if(Auth::user()->hasRole('admin')) {
+        //         $res = $diplome;
+        //     } elseif(Auth::user()->hasRole('guichet_droit_arabe')) {
+        //         if($diplome->statut_id == 1 and
+        //             $diplome->etudiant->filiere == 'القانون باللغة العربية') 
+        //         {
+        //             $res = $diplome;
+        //         }  
+        //     } elseif(Auth::user()->hasRole('guichet_droit_francais')) {
+        //         if($diplome->statut_id == 1 and
+        //             $diplome->etudiant->filiere == 'Droit en français') 
+        //         {
+        //             $res = $diplome;
+        //         }  
+        //     } elseif(Auth::user()->hasRole('guichet_economie')) {
+        //         if($diplome->statut_id == 1 and $diplome->etudiant->filiere == 'Sciences Economiques et Gestion') 
+        //         {
+        //             $res = $diplome;
+        //         }  
+        //     } elseif(Auth::user()->hasRole('service_diplomes')) {
+        //         if($diplome->statut_id == 1 or $diplome->statut_id == 2 or $diplome->statut_id == 3 or 
+        //             $diplome->statut_id == 4 or $diplome->statut_id == 5) 
+        //         {
+        //             $res = $diplome;
+        //         }    
+        //     } elseif(Auth::user()->hasRole('decanat')) {
+        //         if($diplome->statut_id == 3 or $diplome->statut_id == 4) 
+        //         {
+        //             $res = $diplome;
+        //         }    
+        //     } elseif(Auth::user()->hasRole('bureau_ordre')) {
+        //         if($diplome->statut_id == 5 or $diplome->statut_id == 6) 
+        //         {
+        //             $res = $diplome;
+        //         }  
+        //     } elseif(Auth::user()->hasRole('guichet_retrait')) {
+        //         if($diplome->statut_id == 6 or $diplome->statut_id == 7) 
+        //         {
+        //             $res = $diplome;
+        //         }
+        //     }
+        // }
+        $diplome=[
+            'id' => $diplome->id,
+            'cin' => $diplome->etudiant->cin,
+            'apogee' => $diplome->etudiant->apogee,
+            'cne' => $diplome->etudiant->cne,
+            'nom' => $diplome->etudiant->nom,
+            'prenom' => $diplome->etudiant->prenom,
+            'nom_arabe' => $diplome->etudiant->nom_arabe,
+            'prenom_arabe' => $diplome->etudiant->prenom_arabe,
+            'filiere' => $diplome->etudiant->filiere,
+            'option' => $diplome->etudiant->option,
+            'nationalite' => $diplome->etudiant->nationalite,
+            'date_naiss' => $diplome->etudiant->date_naiss,
+            'lieu_naiss' => $diplome->etudiant->lieu_naiss,
+            'email_inst' => $diplome->etudiant->email_inst,
+            'type_demande' => $diplome->demande->type_demande,
+            'date_demande' => $diplome->demande->date_demande,
+            'date_creationDossier_envoiAuServiceDiplome' => $diplome->date_creationDossier_envoiAuServiceDiplome,
+            'date_impression_envoiAuDecanat' => $diplome->date_impression_envoiAuDecanat,
+            'date_singature_renvoiAuServiceDiplome' => $diplome->date_singature_renvoiAuServiceDiplome,
+            'date_generationBorodeaux_envoiApresidence' => $diplome->date_generationBorodeaux_envoiApresidence,
+            'date_receptionParBureauOrdre_envoiAuGuichetRetrait' => $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait,
+            'date_notificationEtudiant' => $diplome->date_notificationEtudiant,
+            'date_retraitDiplome_archiveDossier' => $diplome->date_retraitDiplome_archiveDossier,
+            'date_reedition' => $diplome->date_reedition,
+            'type_erreur' => $diplome->type_erreur,
+        ];
         
         return response()->json([
-            'diplome' => $res
+            'diplome' => $diplome
          ]);
     }
 

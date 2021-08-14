@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use SheetDB\SheetDB;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -46,8 +45,9 @@ class UserController extends Controller
             'role' => 'required'
         ]);
 
-        $user = User::create(array('email' => $request->email),
-            'password'=>Hash::make($request->password)));
+       
+        $user = User::create(['email' => $request->email,
+            'password' => Hash::make($request->password),]);
         $user->attachRole($request->role);
         return response()->json([
             'user' =>$user, 

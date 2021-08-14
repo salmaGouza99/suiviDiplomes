@@ -26,15 +26,6 @@ use App\Http\Controllers\FormulaireController;
 
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
-<<<<<<< HEAD
-Route::get('/users/search/{email?}',[UserController::class,'search']);
-Route::resource('/users',UserController::class,['except' => 'index']);
-Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
-
-Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
-
-=======
->>>>>>> 38b84c8e05937b9c8fc77f4ddee65410140bd60a
 Route::get('/roles',[RoleController::class,'index']);
 
 Route::get('/dashboard/{date_debut}/{date_fin}',[DashboardController::class,'dashboard']);
@@ -64,20 +55,12 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
-<<<<<<< HEAD
-  
-  // Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
-
-  // Forms
-  // Route::resource('/formulaires',FormulaireController::class,['except' => 'show']);
-=======
-  Route::resource('/users',UserController::class,['except' => 'index']);
   Route::get('/users/search/{email?}',[UserController::class,'search']);
+  Route::resource('/users',UserController::class,['except' => 'index']);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
   // Forms
   Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
->>>>>>> 38b84c8e05937b9c8fc77f4ddee65410140bd60a
   // Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
 
   // Etudiants

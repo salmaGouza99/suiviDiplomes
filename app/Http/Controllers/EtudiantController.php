@@ -98,7 +98,7 @@ class EtudiantController extends Controller
                     ->where('cin', 'like', '%'.$mc.'%')
                     ->orWhere('cne', 'like', '%'.$mc.'%')
                     ->orWhere('apogee', 'like', '%'.$mc.'%')
-                    ->paginate(7);
+                    ->get();
 
         // show results for each role
         foreach ($etudiants as $etudiant)

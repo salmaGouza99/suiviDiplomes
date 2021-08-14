@@ -19,7 +19,7 @@ class UsersTableSeeder extends Seeder
 
         for($i=1 ; $i <7 ; $i++){
             $user=User::create([
-                'email' => Str::random(10).'@gmail.com',
+                'email' => 'salma'.$i.'@gmail.com',
                 'password' => Hash::make('password'),
             ]);
             $user->attachRole($i);
