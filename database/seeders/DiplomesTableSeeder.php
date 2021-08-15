@@ -17,7 +17,6 @@ class DiplomesTableSeeder extends Seeder
         Diplome::create([
             'demande_id' => 1,
             'etudiant_cin' => 'IJ345668',
-            'statut_id' => 1,
             'date_creationDossier_envoiAuServiceDiplome' => '2021-06-20'
         ]);
         /* Diplome::create([

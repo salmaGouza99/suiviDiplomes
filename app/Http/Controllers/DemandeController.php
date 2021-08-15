@@ -133,10 +133,13 @@ class DemandeController extends Controller
     /**
      * get demandes from googlesheet
      *
-     * @return void
+     * @param string $filiere
+     * @return \Illuminate\Http\Response
      */
-    public function sheet() 
+    public function sheet($filiere) 
     {
+        $countDemandesDeug = 0;
+        $countDemandesLicence = 0;
         foreach(Formulaire::all() as $form)
         {
             $sheetdb = new SheetDB($form->api_id);
@@ -172,12 +175,27 @@ class DemandeController extends Controller
                     {
                         Etudiant::where('cin',$row->{'CIN رقم بطاقة التعريف الوطنية'})->update(['option' => $row->{'Option الاختيار'}]);
                     }
+                    if($row->{'Filière المسلك'} === $filiere) 
+                    {
+                        if($form->type_formulaire == 'DEUG')
+                        {
+                            $countDemandesDeug += 1;
+                        } 
+                        else {
+                            $countDemandesLicence +=1;
+                        }
+                    }
                     //echo ' and his demand of  '.$form->type_formulaire.' done! ';
                 }
                    
             } 
 
         }
+
+        return response()->json([
+            'Deug' => $countDemandesDeug,
+            'Licence' => $countDemandesLicence,
+         ]);
     }
             
 }

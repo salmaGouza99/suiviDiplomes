@@ -44,42 +44,36 @@ class DiplomeController extends Controller
             if(Auth::user()->hasRole('guichet_droit_arabe')) {
                 if ($demande->etudiant->filiere == 'القانون باللغة العربية')
                 {
-                    $demande->traite = 1;
-                    $demande->save();
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
-                        'statut_id' => 1,
                         'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
+                    $demande->traite = 1;
+                    $demande->save();
                 }
             } else if(Auth::user()->hasRole('guichet_droit_francais')) {
                 if ($demande->etudiant->filiere == 'Droit en français')
                 {
-                    $demande->traite = 1;
-                    $demande->save();
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
-                        'statut_id' => 1,
                         'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
+                    $demande->traite = 1;
+                    $demande->save();
                 }
             } else if(Auth::user()->hasRole('guichet_economie')) {
                 if ($demande->etudiant->filiere == 'Sciences Economiques et Gestion')
                 {
-                    $demande->traite = 1;
-                    $demande->save();
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
-                        'statut_id' => 1,
                         'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
+                    $demande->traite = 1;
+                    $demande->save();
                 }
-            }
-            else{
-                
             }
         }
         

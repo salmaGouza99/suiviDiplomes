@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -48,8 +47,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
-  Route::resource('/users',UserController::class,['except' => 'index']);
   Route::get('/users/search/{email?}',[UserController::class,'search']);
+  Route::resource('/users',UserController::class,['except' => 'index']);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
   // Forms
@@ -74,7 +73,7 @@ Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
        guichet_droit_francais|guichet_economie']], function(){
   Route::get('/demandes/{id}',[DemandeController::class,'show']);
   Route::get('/demandes/filter/{type},{filiere}',[DemandeController::class,'filter']);
-  Route::post('/demandes/nouvellesDemandes',[DemandeController::class,'sheet']);
+  Route::post('/demandes/nouvellesDemandes/{filiere}',[DemandeController::class,'sheet']);
 });
 
 // Protected routes for admin and service_diplomes
