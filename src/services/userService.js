@@ -30,12 +30,16 @@ const getAllRoles = () => {
 const getAllDemandes = () => {
   return axios.get( API_URL + "demandes", authHeaders() )
 };
-const getNewDemandes = () => {
-  console.log(authHeaders());
-  return axios.post( API_URL + "demandes/nouvellesDemandes", authHeaders() )
+const nouvellesDemandes = (filiere) => {
+  return axios.post( API_URL + `demandes/nouvellesDemandes/${filiere}`, {}, authHeaders() )
 };
 const filterDemandes = (type, filiere) => {
   return axios.get( API_URL + `demandes/filter/${type},${filiere}`, authHeaders() )
+};
+
+// Diplomes
+const CreerDossiers = (demandeId) => {
+  return axios.post( API_URL + `diplomes/${demandeId}`, {}, authHeaders() )
 };
 
 // Forms
@@ -48,7 +52,7 @@ const updateForm = (formId, type_formulaire, lien, api_id) => {
 
 const userService = {
     getAllDemandes,
-    getNewDemandes,
+    nouvellesDemandes,
     filterDemandes,
     getAllForms,
     updateForm,
@@ -59,6 +63,7 @@ const userService = {
     updateUser,
     delateUser,
     getAllRoles,
+    CreerDossiers,
 };
 export default userService;
   
