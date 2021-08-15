@@ -19,8 +19,33 @@ class DemandesTableSeeder extends Seeder
     public function run()
     {
         Demande::create([
-            'etudiant_cin' => 'IJ345668',
+            'etudiant_cin' => 'AB345668',
             'type_demande' => 'DEUG',
+            'date_demande' => '2021-06-01',     
+        ]);
+        Demande::create([
+            'etudiant_cin' => 'AB222222',
+            'type_demande' => 'DEUG',
+            'date_demande' => '2021-06-01',     
+        ]);
+        Demande::create([
+            'etudiant_cin' => 'AB222222',
+            'type_demande' => 'licence',
+            'date_demande' => '2021-06-01',     
+        ]);
+        Demande::create([
+            'etudiant_cin' => 'AB345668',
+            'type_demande' => 'licence',
+            'date_demande' => '2021-06-01',     
+        ]);
+        Demande::create([
+            'etudiant_cin' => 'WA11111111',
+            'type_demande' => 'DEUG',
+            'date_demande' => '2021-06-01',     
+        ]);
+        Demande::create([
+            'etudiant_cin' => 'WA11111111',
+            'type_demande' => 'licence',
             'date_demande' => '2021-06-01',     
         ]);
 

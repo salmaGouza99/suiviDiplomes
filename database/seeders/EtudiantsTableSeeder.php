@@ -20,9 +20,39 @@ class EtudiantsTableSeeder extends Seeder
     public function run()
     {
         Etudiant::create([
-            'cin' => 'IJ345668',
-            'apogee' => '15008877',
-            'cne' => 'J1309776',
+            'cin' => 'AB345668',
+            'apogee' => '17008877',
+            'cne' => 'J1209776',
+            'nom' => 'ELMADANI',
+            'prenom' => 'Ahmed',
+            'nom_arabe' => 'المدني',
+            'prenom_arabe' => 'احمد',
+            'filiere' => 'Droit ',
+            'option' => 'Francais',
+            'nationalite' => 'Marocain',
+            'date_naiss' => '1999-07-08',
+            'lieu_naiss' => 'Rabat',
+            'email_inst' => 'Ahmed.el@um5.ac.ma'
+        ]);
+        Etudiant::create([
+            'cin' => 'AB222222',
+            'apogee' => '11111177',
+            'cne' => 'J11119776',
+            'nom' => 'ELMADANI',
+            'prenom' => 'Ahmed',
+            'nom_arabe' => 'المدني',
+            'prenom_arabe' => 'احمد',
+            'filiere' => 'Droit ',
+            'option' => 'Francais',
+            'nationalite' => 'Marocain',
+            'date_naiss' => '1999-07-08',
+            'lieu_naiss' => 'Rabat',
+            'email_inst' => 'Ahmed.el@um5.ac.ma'
+        ]);
+        Etudiant::create([
+            'cin' => 'WA11111111',
+            'apogee' => '0000444222',
+            'cne' => '1113334567',
             'nom' => 'ELMADANI',
             'prenom' => 'Ahmed',
             'nom_arabe' => 'المدني',

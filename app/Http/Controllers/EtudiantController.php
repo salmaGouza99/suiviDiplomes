@@ -36,34 +36,6 @@ class EtudiantController extends Controller
     public function show($cin)
     {
         $etudiant = Etudiant::with('demande','diplome')->where('cin',$cin)->first();
-        // $res = null;
-
-        // // show etudiant for each role
-        // if ($etudiant)
-        // {
-        //     if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
-        //         $res = $etudiant;
-        //     } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-        //         if ($etudiant->filiere == 'القانون باللغة العربية')
-        //         {
-        //             $res = $etudiant;
-        //         }
-        //     } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-        //         if ($etudiant->filiere == 'Droit en français')
-        //         {
-        //             $res = $etudiant;
-        //         }
-        //     } else if(Auth::user()->hasRole('guichet_economie')) {
-        //         if ($etudiant->filiere == 'Sciences Economiques et Gestion')
-        //         {
-        //             $res = $etudiant;
-        //         }
-        //     }
-        // }
-        
-        // return response()->json([
-        //     'etudiant' => $res
-        //  ]);
 
          return response()->json([
             'etudiant' => $etudiant
@@ -84,49 +56,41 @@ class EtudiantController extends Controller
             'etudiant' => Etudiant::with('demande','diplome')->where('cin',$request->cin)->first()
         ]);
     }
+//  /**
+//      * search etudiant by CNE,CIN or APPOGE
+//      *
+//      * @param string $mc
+//      * @return \Illuminate\Http\Response 
+//      */
+//     function search($mc = '')
+//     {
+//         $etudiantsList = array();
+//         $etudiants = Etudiant::with('demande','diplome')
+//                     ->where('cin', 'like', '%'.$mc.'%')
+//                     ->orWhere('cne', 'like', '%'.$mc.'%')
+//                     ->orWhere('apogee', 'like', '%'.$mc.'%')
+//                     ->get();
+//         foreach($etudiants as $etudiant){
+//             $etudiant=[
+//                 'id' => $etudiant->diplome->id,
+//                 'cin' => $etudiant->cin,
+//                 'apogee' => $etudiant->apogee,
+//                 'cne' => $etudiant->cne,
+//                 'nom' => $etudiant->etudiant->nom,
+//                 'prenom' => $etudiant->prenom,
+//                 'filiere' => $etudiant->filiere,
+//                 'type_demande' => $etudiant->demande->type_demande,
 
-    /**
-     * search etudiant by CNE,CIN or APPOGE
-     *
-     * @param string $mc
-     * @return \Illuminate\Http\Response 
-     */
-    function search($mc)
-    {
-        $res = array();
-        $etudiants = Etudiant::with('demande','diplome')
-                    ->where('cin', 'like', '%'.$mc.'%')
-                    ->orWhere('cne', 'like', '%'.$mc.'%')
-                    ->orWhere('apogee', 'like', '%'.$mc.'%')
-                    ->get();
+//             ];
+//             array_push($etudiantsList,$etudiant);
+//         }
+//         return response()->json([
+ 
+//             'diplomes' =>$etudiantsList
 
-        // show results for each role
-        foreach ($etudiants as $etudiant)
-        {
-            if(Auth::user()->hasRole('admin|service_diplomes|decanat|bureau_ordre|guichet_retrait')) {
-                $res[] = $etudiant;
-            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($etudiant->filiere == 'القانون باللغة العربية')
-                {
-                    $res[] = $etudiant;
-                }
-            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($etudiant->filiere == 'Droit en français')
-                {
-                    $res[] = $etudiant;
-                }
-            } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($etudiant->filiere == 'Sciences Economiques et Gestion')
-                {
-                    $res[] = $etudiant;
-                }
-            }
-        }
+//         ]); 
 
-        return response()->json([
-            'etudiants' => $res
-        ]);
-    }
+//     }
 
     /**
      * filter etudiant by filiere

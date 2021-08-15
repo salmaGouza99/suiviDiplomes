@@ -28,29 +28,10 @@ use App\Http\Controllers\FormulaireController;
 Route::post('/login',[LoginController::class,'login']);
 Route::get('/roles',[RoleController::class,'index']);
 
-Route::get('/dashboard/{date_debut}/{date_fin}',[DashboardController::class,'dashboard']);
-Route::get('/dashboard',[DashboardController::class,'currentYear']);
-Route::get('/currents',[DashboardController::class,'index']);
+
 
 Route::get('/etudiants',[EtudiantController::class,'index']);
 
-// Protected routes for all users
-Route::group(['middleware' => 'auth:sanctum'], function(){
-  Route::post('/logout',[LoginController::class,'logout']);
-  Route::get('/welcome',[WelcomeController::class,'index']);
-
-  // Profil
-  Route::get('/profil',[ProfileController::class,'show']);
-  Route::put('/profil',[ProfileController::class,'update']);
-
-  // Etudiants
-  Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
-  Route::get('/etudiants/search/{mc}',[EtudiantController::class,'search']);
-
-  // Diplomes 
-  Route::get('/diplomes/{id}',[DiplomeController::class,'show']);
-  Route::get('/diplomes/filter/{statut},{type},{filiere}',[DiplomeController::class,'filter']);
-});
 
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
@@ -73,8 +54,35 @@ Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   Route::get('/demandes',[DemandeController::class,'index']);
 
   // Diplomes
+  Route::get('/diplomes/search/{mc?}',[DiplomeController::class,'search']);
   Route::get('/diplomes',[DiplomeController::class,'index']);
+  Route::get('/diplomes/dates/{dateDebut?}/{dateFin?}',[DiplomeController::class,'searchByDates']);
+  Route::get('/diplomes/type/{type}',[DiplomeController::class,'filterByType']);
+
+  //dashboard 
+  Route::get('/dashboard/{date_debut}/{date_fin}',[DashboardController::class,'dashboard']);
+Route::get('/dashboard',[DashboardController::class,'currentYear']);
+Route::get('/currents',[DashboardController::class,'index']);
 });
+// Protected routes for all users
+Route::group(['middleware' => 'auth:sanctum'], function(){
+  Route::post('/logout',[LoginController::class,'logout']);
+  Route::get('/welcome',[WelcomeController::class,'index']);
+
+  // Profil
+  Route::get('/profil',[ProfileController::class,'show']);
+  Route::put('/profil',[ProfileController::class,'update']);
+
+  // Etudiants
+  Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
+  Route::get('/etudiants/search/{mc?}',[EtudiantController::class,'search']);
+
+  // Diplomes 
+  Route::get('/diplomes/{id}',[DiplomeController::class,'show']);
+  Route::get('/diplomes/filter/{statut},{type},{filiere}',[DiplomeController::class,'filter']);
+});
+
+
 
 // Protected routes for admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
 Route::group(['middleware' => ['auth:sanctum','role:admin|guichet_droit_arabe|
