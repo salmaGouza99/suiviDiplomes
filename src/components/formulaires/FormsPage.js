@@ -11,6 +11,7 @@ import Container from '@material-ui/core/Container';
 import Form from "./Form";
 import Message from './Message';
 import userService from "../../Services/userService";
+import Paper from '@material-ui/core/Paper';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -68,10 +69,10 @@ export default function FormsPage(props) {
   const history = useHistory();
 
   useEffect(() => {
-    if (props?.role !== 1) {
-      history.push("/Acceuil");
-      window.location.reload();  
-    }
+    // if (props?.role !== 1) {
+    //   history.push("/Acceuil");
+    //   window.location.reload();  
+    // }
 
     userService.getAllForms().then((response) => {
         response.data.forms.forEach(form => {
@@ -93,9 +94,8 @@ export default function FormsPage(props) {
   };
 
   return (
-    <Container className={classes.container}>
-    <div className={classes.root} >
-    {error && <Message message={message} success="error"/>}
+    <Paper className={classes.paper}>
+     {error && <Message message={message} success="error"/>}
       <AppBar position="static" color="default">
         <Tabs
           value={value}
@@ -115,9 +115,6 @@ export default function FormsPage(props) {
       <TabPanel value={value} index={1}>
         <Form form={formLicence} />
       </TabPanel>
-
-      
-    </div>
-    </Container>
+</Paper>
   );
 }

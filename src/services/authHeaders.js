@@ -7,6 +7,7 @@ export default function authHeaders() {
                 'Content-Type': 'application/json;charset=UTF-8',
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${user.accessToken}`
+                
             }
         };
     } else {

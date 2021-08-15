@@ -1,9 +1,9 @@
 import axios from "axios";
 import authHeaders from "./authHeaders";
 
-const API_URL = "http://localhost:8000/api/";
+const API_URL = "http://127.0.0.1:8000/api/";
 
-// User
+// User/
 const addNewUser = (email, password, role) => {
     return axios.post( API_URL + "users", {email, password, role}, authHeaders() );
 };
@@ -46,6 +46,25 @@ const updateForm = (formId, type_formulaire, lien, api_id) => {
   return axios.put( API_URL + `formulaires/${formId}`, {type_formulaire, lien, api_id}, authHeaders() )
 };
 
+
+
+//Diplomes
+const getAllDiplomes = (searchItem) => {
+  return axios.get( API_URL + `diplomes/search/${searchItem}`, authHeaders() )
+};
+
+const showDiplome = (id) => {
+  return axios.get( API_URL + `diplomes/${id}`, authHeaders() )
+}
+
+const diplomesByDates= (dateDebut,dateFin) => {
+  return axios.get( API_URL + `diplomes/dates/${dateDebut}/${dateFin}`, authHeaders() )
+}
+
+const diplomesByType = (type) => {
+  return axios.get( API_URL + `diplomes/type/${type}`, authHeaders() )
+}
+
 const userService = {
     getAllDemandes,
     getNewDemandes,
@@ -59,6 +78,10 @@ const userService = {
     updateUser,
     delateUser,
     getAllRoles,
+    getAllDiplomes,
+    showDiplome,
+    diplomesByDates,
+    diplomesByType,
 };
 export default userService;
   

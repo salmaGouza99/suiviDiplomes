@@ -16,20 +16,22 @@ import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import authService from "../../Services/authService";
+import { Link } from "react-router-dom";
+
 
 const categories = [
   {
     id: 'Menu',
     children: [
-      { id: 'Demandes', icon: <AssignmentIndIcon />, active: true },
-      { id: 'Dossiers créés', icon: <FolderIcon /> },
+      { id: 'Demandes', icon: <AssignmentIndIcon />, active: true,link :'/Acceuil' },
+      { id: 'Dossiers créés', icon: <FolderIcon />,link :'/Profil' },
     ],
   },
   {
     id: 'Profil',
     children: [
-      { id: 'Afficher', icon: <VisibilityIcon /> },
-      { id: 'Modifier', icon: <EditIcon /> },
+      { id: 'Afficher', icon: <VisibilityIcon /> , link :'/Acceuil'},
+      { id: 'Modifier', icon: <EditIcon /> , link :'/Profil'},
     ],
   },
 ];
@@ -132,6 +134,7 @@ function Navigator(props) {
               </ListItemText>
             </ListItem>
             {children.map(({ id: childId, icon, active }) => (
+            
               <ListItem
                 key={childId}
                 button
@@ -146,6 +149,7 @@ function Navigator(props) {
                   {childId}
                 </ListItemText>
               </ListItem>
+            
             ))}
             <Divider className={classes.divider} />
           </React.Fragment>

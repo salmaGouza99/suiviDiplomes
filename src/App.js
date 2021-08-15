@@ -1,12 +1,13 @@
 import React, { useState, useEffect, initialState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Login from "./Components/Login/Login";
-import Acceuil from "./Components/Interfaces/Acceuil";
-import DemandesGrid from "./Components/Demandes/DemandesGrid";
-import UsersGrid from "./Components/Users/UsersGrid";
-import FormsPage from "./Components/formulaires/FormsPage";
-import Profil from "./Components/Users/Profil";
+import Login from "./components/Login/Login";
+import Acceuil from "./components/Interfaces/Acceuil";
+import DemandesGrid from "./components/Demandes/DemandesGrid";
+import UsersGrid from "./components/Users/UsersGrid";
+import FormsPage from "./components/formulaires/FormsPage";
+import Profil from "./components/Users/Profil";
 import authService from "./Services/authService";
+import AdminAcceuil from './components/Interfaces/AdminAcceuil';
 
 function App() {
   const [user, setUser] = useState(initialState);
@@ -23,7 +24,7 @@ function App() {
   
   return (
     <Router>
-      <div className="App">
+    <div className="App">
         <Switch>
           <Route exact path="/" component={() => (<Login user={user} />)}/>
           { !user ? 
@@ -31,12 +32,21 @@ function App() {
           : 
           (<> {/* Routes for all users */}
               <Route exact path="/Acceuil" component={() => (<Acceuil/>)}/> 
-              <Route exact path="/Profil" component={() => (<Profil user={user} />)}/>
+              {/* <Route exact path="/Profil" component={() => (<Profil user={user} />)}/> */}
               {/* Routes for admin */}
-              <Route exact path="/Users" component={() => (<UsersGrid role={role} />)}/>
-              <Route exact path="/Forms" component={() => (<FormsPage role={role} />)}/>
+              <Route exact path="/Admin" component={() => 
+                              (<AdminAcceuil title="Acceuil" role={role} />)}/>
+              <Route exact path="/Users" component={() => 
+                              (<AdminAcceuil openUser={true} title="Utilisateurs" role={role}/>)}/>
+              <Route exact path="/Forms" component={() => 
+                              (<AdminAcceuil openForms={true} title="Formulaires" role={role}/>)}/>
+              <Route exact path="/Diplomes" component={() => 
+                              (<AdminAcceuil openDiplomes={true} title="Diplomes" role={role}/>)}/>
+              <Route exact path="/Profil" component={() => 
+                              (<AdminAcceuil openProfil={true} title="Profil Personnel" role={role}/>)}/>
               {/* Routes for guichets: arabe, francais et economie */}
-              <Route exact path="/Demandes" component={() => (<DemandesGrid user={user} role={role} />)}/>
+              <Route exact path="/Demandes" component={() => 
+                                (<DemandesGrid user={user} role={role} />)}/>
           </>)}
         </Switch>
       </div>

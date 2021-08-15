@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import EditIcon from '@material-ui/icons/Edit';
 import Tooltip from '@material-ui/core/Tooltip';
-import Container from '@material-ui/core/Container';
-import ProfilInfos from './ProfilInfos';
-import IconButton from '@material-ui/core/IconButton';
-import profilIcon from "../../profilIcon.jpg";
-import profilIconCircle from "../../profilIconCircle.jpg";
-import ProfilEdit from "./ProfilEdit";
+import Button from '@material-ui/core/Button';
+import UserForm from "./UserForm";
 import userService from "../../Services/userService";
+import authService from "../../Services/authService";
+import DetailsRow from '../Diplomes/DetailsRow';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import CardActions from '@material-ui/core/CardActions';
+import { Container } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         marginTop: theme.spacing(15),
-        width: "55%",
-
-    },
-    cover: {
-        width: 220,
-        // backgroundImage: `url(${profilIconCircle})`,
-        backgroundImage: 'url(https://source.unsplash.com/random)',
-        marginRight: theme.spacing(2),
 
     },
     absolute: {
@@ -39,48 +33,70 @@ export default function Profil(props) {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        userService.showUser(props?.user?.id).then((response) => {
-                setUser(response?.data.user);
-            }).catch(err => {
-                // setMessage("Erreur de chargement , veuillez reessayer !");
-            })
+        const loggedInUser = authService.getCurrentUser();
+        userService.showUser(loggedInUser?.user?.id).then((response) => {
+            setUser(response?.data.user);
+        }).catch(err => {
+            // setMessage("Erreur de chargement , veuillez reessayer !");
+        })
     }, []);
 
-    const handleEditProfil = (e) =>{
+    const handleEditProfil = (e) => {
         setOpen(true);
     }
 
+    const handleCloseCallback = (open) => {
+        setOpen(open);
+    }
 
     return (
         <Container>
-
-            <Card className={classes.root}>
-
-                <CardMedia
-                    className={classes.cover}
-                    image=""
-                    title="Live from space album cover"
-                />
-
-                <div>
-                    <CardContent >
+            <Card >
+                <CardContent>
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="flex-start"
+                        spacing={6}>
+                        <Grid item xs={6}>
+                            <Typography variant="body" component="h3" >
+                                Informations Personnelles
+                            </Typography><br />
+                            <DetailsRow title="Identifiant" data={user.email} />
+                            <DetailsRow title="Mot de passe" data="******************" />
+                            <DetailsRow title="Role" data={user.role} />
+                        </Grid>
+                    </Grid>
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="flex-end"
+                        spacing={6}>
+                        <Grid item xs={12}>
                         <Tooltip title="Editer Profil">
-                            <IconButton aria-label="edit" className={classes.absolute}
+                        <Button variant="contained" color="primary" size="small"
+                            startIcon={<EditIcon />}
                             onClick={handleEditProfil}>
-                                <EditIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </CardContent>
-                    <div className={classes.controls}>
-                        <ProfilInfos title="Identifiant" data={user.email} />
-                        <ProfilInfos title="Mot de passe" data="***********************" />
-                        <ProfilInfos title="Profil" data={user.role} /><br /><br />
-                    </div>
-                </div>
-            </Card>
+                            Editer
+                        </Button>
+                    </Tooltip>
+                        </Grid>
+                    </Grid>
 
-            {open && <ProfilEdit handleOpen={open} 
-                            user={user} title="Editer Profil"/>}
+
+                </CardContent>
+                <CardActions>
+                    
+                </CardActions>
+            </Card>
+            {
+                open && <UserForm handleOpen={open} user={user}
+                    closeCallback={handleCloseCallback} title="Editer Profil" formType="edit"
+                    closeCallback={handleCloseCallback}
+                />
+            }
         </Container>
     );
 }
