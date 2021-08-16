@@ -9,7 +9,10 @@ import Message from './Message';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import LinkIcon from '@material-ui/icons/Link';
 import CodeIcon from '@material-ui/icons/Code';
-import userService from "../../Services/userService";
+import UserService from "../../Services/UserService";
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import Link from '@material-ui/core/Link';
+
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -22,6 +25,17 @@ const useStyles = makeStyles((theme) => ({
             width: '40ch',
         },
     },
+    button: {
+        marginTop: theme.spacing(2)
+    },
+    help: {
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(79)
+    },
+    link :{
+       
+        marginLeft: theme.spacing(90)
+    }
 }));
 
 export default function Form(props) {
@@ -40,7 +54,7 @@ export default function Form(props) {
         setTypeFormulaire(props.form.type_formulaire);
         setLien(props.form.lien);
         setApiId(props.form.api_id);
-    },[]);
+    }, []);
 
     const handleLien = (event) => {
         setLien(event.target.value);
@@ -55,21 +69,21 @@ export default function Form(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         userService.updateForm(formId, type_formulaire, lien, api_id).then((response) => {
-                console.log(response);
-                setSuccess(true);
-                setMessage(response.data.message);
-            }).catch(err => {
-                console.log(err.response);
-                setErrors(true);
-                setMessage("Une erreur est survenu, veuillez réessayer..");
-            })
+            console.log(response);
+            setSuccess(true);
+            setMessage(response.data.message);
+        }).catch(err => {
+            console.log(err.response);
+            setErrors(true);
+            setMessage("Une erreur est survenu, veuillez réessayer..");
+        })
     }
 
 
     return (
         <div>
-            {success && <Message message={message} success="success"/>}
-            {errors && <Message message={message} success="error"/>}
+            {success && <Message message={message} success="success" />}
+            {errors && <Message message={message} success="error" />}
 
             <form className={classes.root} onSubmit={handleSubmit}>
                 <Typography gutterBottom variant="h5" component="h2" color="primary">
@@ -79,11 +93,11 @@ export default function Form(props) {
                     <TextField
                         onChange={handleLien}
                         InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                            <LinkIcon />
-                            </InputAdornment>
-                        ),
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <LinkIcon />
+                                </InputAdornment>
+                            ),
                         }}
                         value={lien}
                         variant="outlined"
@@ -96,13 +110,13 @@ export default function Form(props) {
                         autoFocus
                     />
                     <TextField
-                       onChange={handleApiId}
+                        onChange={handleApiId}
                         InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                            <CodeIcon />
-                            </InputAdornment>
-                        ),
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <CodeIcon />
+                                </InputAdornment>
+                            ),
                         }}
                         id="outlined-uncontrolled"
                         label="API ID du formulaire"
@@ -110,10 +124,17 @@ export default function Form(props) {
                         variant="outlined"
                         required
                     />
+                    <Button type='submit' variant="contained" color="primary" className={classes.button}
+                        startIcon={<AddBoxRoundedIcon />} disabled={disableButton}
+                    >Modifier</Button>
+
+                    <Button variant="contained" color="secondary" className={classes.help}
+                        startIcon={<HelpOutlineIcon />} size="small"
+                    >Comment Obtenir API ID du formulaire</Button>
                 </div>
-                <Button type='submit' variant="contained" color="primary"
-                    startIcon={<AddBoxRoundedIcon />}  disabled={disableButton} 
-                >Modifier</Button>
+                    <Link href="https://sheetdb.io/"  target="_blank" className={classes.link}>
+                        Obtenir API ID
+                    </Link>
             </form>
         </div>
 

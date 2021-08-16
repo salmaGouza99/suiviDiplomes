@@ -1,4 +1,4 @@
-export default function authHeaders() {
+export default function AuthHeaders() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (user && user.accessToken) {
@@ -7,6 +7,7 @@ export default function authHeaders() {
                 'Content-Type': 'application/json;charset=UTF-8',
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${user.accessToken}`
+                
             }
         };
     } else {

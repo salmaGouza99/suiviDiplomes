@@ -22,7 +22,7 @@ import swal from 'sweetalert';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import AddBoxRoundedIcon from '@material-ui/icons/AddBoxRounded';
-import userService from "../../Services/userService";
+import UserService from "../../Services/UserService";
 
 const useStyles = makeStyles((theme) => ({
   root: {

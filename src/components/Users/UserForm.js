@@ -22,7 +22,7 @@ import swal from 'sweetalert';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import AddBoxRoundedIcon from '@material-ui/icons/AddBoxRounded';
-import userService from "../../Services/userService";
+import UserService from "../../Services/UserService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,6 +68,7 @@ export default function UserForm(props) {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [errors, setErrors] = useState('');
   const [role, setRole] = useState('');
+  const [roleName, setRoleName] = useState('');
   const [idUser, setIdUser] = useState('');
   const [formType, setFormType] = useState('');
   const [success, setSuccess] = useState(false);
@@ -77,6 +78,7 @@ export default function UserForm(props) {
   useEffect(() => {
     setOpen(props.handleOpen);
     props.user ? setRole(props.user.roleId) : setRole('');
+    props.user ? setRoleName(props.user.role) : setRole('');
     props.user ? setEmail(props.user.email) : setEmail('');
     props.user ? setIdUser(props.user.id) : setIdUser('');
     setFormType(props.formType);
@@ -124,8 +126,12 @@ export default function UserForm(props) {
 
 
   const handleClose = (e) => {
-    window.location.reload();
-    // setOpen(false)
+    if(props.formType  === "edit"){
+      props.closeCallback(false,"edit");
+  }else if(props.formType  === "add"){
+    props.closeCallback(false,"add");
+  }
+    
   }
   /////////////////////////////////////////
 
@@ -151,9 +157,10 @@ export default function UserForm(props) {
                 icon: "success",
                
               });
-              setTimeout(function(){
-                window.location.reload();
-             }, 300);
+            //   setTimeout(function(){
+            //     window.location.reload();
+            //  }, 300);
+            props.closeCallback(false,"add");
               
             }).catch(err => {
               console.log(err.response);
@@ -185,10 +192,11 @@ export default function UserForm(props) {
                 text: "",
                 icon: "success",
               });
-              setTimeout(function(){
-                window.location.reload();
-             }, 300);
+            //   setTimeout(function(){
+            //     window.location.reload();
+            //  }, 300);
               
+            props.closeCallback(false,"edit");
               
             }).catch(err => {
               console.log(err.response);
@@ -266,6 +274,7 @@ export default function UserForm(props) {
                     error={Boolean(errors?.email)}
                     helperText={errors?.email}
                   />
+        {/* /////////////////////////////////////////////////77 */}
                   <TextField
                     onChange={handlePassword}
                     InputProps={{
@@ -289,7 +298,7 @@ export default function UserForm(props) {
                     error={Boolean(errors?.password)}
                     helperText={errors?.password}
                   />
-
+{/* /////////////////////////////////////////////////////////////// */}
                   <TextField
                     onChange={handlePasswordConfirm}
                     InputProps={{
@@ -313,8 +322,8 @@ export default function UserForm(props) {
                     error={Boolean(errors?.passwordConfirm)}
                     helperText={errors?.passwordConfirm}
                   />
-
-
+{/* //////////////////////////////////////////////////////////////// */}
+                  {props.title === "Editer utilisateur" ? 
                   <TextField
                     id="standard-select-currency"
                     select
@@ -334,6 +343,29 @@ export default function UserForm(props) {
                       </MenuItem>
                     ))}
                   </TextField>
+                  :
+                  <TextField
+                    id="standard-select-currency"
+                    label="Profil"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <VpnKeyIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                    value={roleName}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    required
+                    size="small"
+                    disabled
+                  >
+                  </TextField>
+                  }
+
+            {/* ///////////////////////////////////////////// */}
                   {props.formType === "add" ?
                     <Button type='submit' variant="contained" color="primary" size="small"
                       className={classes.fab} startIcon={<AddBoxRoundedIcon />}

@@ -18,7 +18,7 @@ import { DataGrid, GridOverlay, useGridSlotComponentProps, frFR } from '@materia
 import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import userService from "../../Services/userService";
+import UserService from "../../Services/UserService";
 import InfoGrid from "./InfoGrid";
 
 const useStyles = makeStyles((theme) => ({
@@ -92,7 +92,7 @@ const styles = (theme) => ({
     margin: '20px 16px',
   },
   footer: {
-    marginLeft: theme.spacing(50),
+    marginLeft: theme.spacing(49.5),
     marginTop: -theme.spacing(10),
     background: '#4fc3f7',
     '&:hover': {
@@ -110,64 +110,11 @@ const styles = (theme) => ({
   },
 });
 
-const columns = [
-  {
-    field: 'id',
-    headerName: 'N°',
-    width: 73,
-  },
-  {
-    field: 'type',
-    headerName: 'Type',
-    width: 90,
-  },
-  {
-    field: 'date',
-    headerName: 'Date',
-    width: 110,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Faite par',
-    width: 160,
-  },
-  {
-    field: 'apogee',
-    headerName: 'Apogée',
-    width: 130,
-  },
-  {
-    field: 'cin',
-    headerName: 'CIN',
-    width: 120,
-  },
-  {
-    field: 'statut',
-    headerName: 'Statut',
-    sortable: false,
-    width: 100,
-  },
-  {
-    field: 'info',
-    headerName: ' ',
-    sortable: false,
-    width: 60,
-    renderCell: () => (
-      <Tooltip title='Afficher détails'>
-      <IconButton style={{ marginLeft: 3 }}>
-        <Visibility onClick={showInfo}
-          style={{ color: 'gray' }} />
-      </IconButton></Tooltip>
-    ),
-  },
-];
-
-let showInfo;
 
 function Content(props) {
   const { classes } = props;
-  const [openInfo, setOpenInfo] = useState(false);
-  const [demandeInfo, setDemandeInfo] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [demandeId, setDemandeId] = useState(null);
   const [demandes, setDemandes] = useState();
   const [demandesTraitees, setDemandesTraitees] = useState([]);
   const [search, setSearch] = useState("");
@@ -181,16 +128,77 @@ function Content(props) {
   const [number, setNumber] = useState();
   const [selectionModel, setSelectionModel] = useState([]);
   const index = props.currentIndex;
+
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'N°',
+      width: 73,
+    },
+    {
+      field: 'type',
+      headerName: 'Type',
+      width: 90,
+    },
+    {
+      field: 'date',
+      headerName: 'Date',
+      width: 110,
+    },
+    {
+      field: 'fullName',
+      headerName: 'Faite par',
+      width: 160,
+    },
+    {
+      field: 'apogee',
+      headerName: 'Apogée',
+      width: 130,
+    },
+    {
+      field: 'cin',
+      headerName: 'CIN',
+      width: 120,
+    },
+    {
+      field: 'statut',
+      headerName: 'Statut',
+      sortable: false,
+      width: 100,
+    },
+    {
+      field: 'info',
+      headerName: ' ',
+      sortable: false,
+      width: 60,
+      renderCell: (params) => {
+        const showInfo = () => {
+          setOpen(true);
+          setDemandeId(params.id);
+        };
+          
+        return (
+          <Tooltip title='Afficher détails'>
+            <IconButton style={{ marginLeft: 3 }}>
+              <Visibility onClick={showInfo}
+                style={{ color: 'gray' }} />
+            </IconButton>
+          </Tooltip>
+        );
+      }
+    },
+  ];
+
   const data = filtredDemandes?.map((demande) => (
     {
       id: demande.id, type: demande.type_demande, date: demande.date_demande,
       fullName: demande.nom + ' ' + demande.prenom,
       apogee: demande.apogee, cin: demande.etudiant_cin,
-      statut: DT(demande.id),
+      statut: getStatut(demande.id),
     }
   ));
 
-  function DT(demandeId) {
+  function getStatut(demandeId) {
     return (demandesTraitees.indexOf(demandeId) > -1 ? 'Traitée' : 'Non traitée')
   }
 
@@ -240,12 +248,6 @@ function Content(props) {
     filterDemandes();
   };
 
-  showInfo = () => {
-    console.log(openInfo);
-    setOpenInfo(true);
-    setDemandeInfo("demande");
-  };
-
   const handleNewDemands = () => {
     setLoad(true);
     setDisable(true);
@@ -286,6 +288,7 @@ function Content(props) {
       setMessage(null);
       setError("Veuillez séléctionner un dossier d'abord.");
     } else {
+      let dt = [];
       selectionModel?.map((id) => (
         userService.CreerDossiers(id)
           .then((response) => {
@@ -294,9 +297,10 @@ function Content(props) {
             setNumber(null);
             setMessage(null);
             if (response?.data.diplomeCree !== null) {
-              setMessage(selectionModel?.length === 1 ? "Dossier créé avec succès." :
-                selectionModel?.length + " dossiers créés avec succès.");
               demandesTraitees.push(id);
+              dt.push(id);
+              setMessage(dt?.length === 1 ? "Dossier créé avec succès." :
+                dt?.length + " dossiers créés avec succès.");
             } else {
               setError("Cette demande n'existe plus.");
             }
@@ -312,6 +316,10 @@ function Content(props) {
       ));
     }
   };
+
+  const handleCloseCallback = (open) => {
+    setOpen(open);
+  }
 
   return (
     <Paper className={classes.paper}>
@@ -397,8 +405,8 @@ function Content(props) {
           </Button>
         </div>
       </div>
-      {openInfo ?
-        <InfoGrid handleOpen={openInfo} demande={demandeInfo} title="Informations Personnelles" />
+      {open?
+        <InfoGrid handleOpen={open} demandeId={demandeId} closeCallback={handleCloseCallback} />
         : <div></div>}
     </Paper>
   );

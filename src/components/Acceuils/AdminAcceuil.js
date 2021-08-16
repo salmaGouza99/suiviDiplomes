@@ -1,22 +1,35 @@
-import React,  {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
 import PropTypes from 'prop-types';
 import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
-import Navigator from './Navigator';
-import Content from './Content';
-import Header from './Header';
+import NavBar from '../Navigation/NavBar';
+import UsersGrid from '../Users/UsersGrid';
+import Header from '../Navigation/Header';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import FolderIcon from '@material-ui/icons/Folder';
+import EditIcon from '@material-ui/icons/Edit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import PersonIcon from '@material-ui/icons/Person';
+import Profil from '../Users/Profil';
+import FormsPage from '../Formulaires/FormsPage';
+import AllDiplomes from '../Diplomes/AllDiplomes'
+import TimeLine from '../Diplomes/TimeLine';
+import LinkIcon from '@material-ui/icons/Link';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import SchoolIcon from '@material-ui/icons/School';
+import TimelineIcon from '@material-ui/icons/Timeline';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-          {'Copyright © Suivi de Diplômes '}
-          {new Date().getFullYear()}
-          {'.'}
-        </Typography>
-      );
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {'Copyright © Suivi de Diplômes '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
 }
 
 let theme = createTheme({
@@ -158,20 +171,48 @@ const styles = {
   },
 };
 
-function DemandesGrid(props) {
+function AdminAcceuil(props) {
 
-  const { classes, title } = props;
+  const { classes, openUser , openForms , openProfil , openDiplomes, title } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [currentIndex,setCurrentIndex] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const [navItems, setNavItems] = useState([]);
   const history = useHistory();
 
   //console.log(props);
   useEffect(() => {
-    if (props?.role !== 2 && props?.role !== 3 && props?.role !== 4) {
+    if (props?.role !== 1) {
       history.push("/Acceuil");
       window.location.reload();  // reload here obligatory
     }
-  });
+    else {
+      setNavItems(
+        [
+          {
+            id: 'Menu',
+            children: [
+              { id: 'Utilisateurs', icon: <PersonIcon />, active: true, link: '/Users' },
+              { id: 'Formulaires', icon: <LinkIcon />, link: '/Forms' },
+              { id: 'Demandes en attente', icon: <InsertDriveFileIcon />, link: '/DemandesEnAttente' },
+              { id: 'Diplômes', icon: <SchoolIcon />, link: '/Diplomes' },
+            ],
+          },
+          {
+            id: 'Profil',
+            children: [
+              { id: 'Afficher', icon: <VisibilityIcon />, link: '/Profil' },
+            ],
+          },
+          {
+            id: 'Tableau de bord',
+            children: [
+              { id: 'Statistiques', icon: <TimelineIcon />, active: true, link: '/Statistiques' },
+            ],
+          },
+        ]
+      );
+    }
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -180,29 +221,25 @@ function DemandesGrid(props) {
   const handleCallback = (childData) => {
     setCurrentIndex(childData);
   };
-  
+
 
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
         <CssBaseline />
         <nav className={classes.drawer}>
-          <Hidden smUp implementation="js">
-            <Navigator
-              PaperProps={{ style: { width: drawerWidth } }}
-              variant="temporary"
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-            />
-          </Hidden>
-          <Hidden xsDown implementation="css">
-            <Navigator PaperProps={{ style: { width: drawerWidth } }} />
-          </Hidden>
+          <NavBar PaperProps={{ style: { width: drawerWidth } }}
+            navItems={navItems} />
         </nav>
         <div className={classes.app}>
-          <Header onDrawerToggle={handleDrawerToggle} parentCallback={handleCallback} title={title}/>
+          <Header onDrawerToggle={handleDrawerToggle} parentCallback={handleCallback} title={title} />
           <main className={classes.main}>
-            <Content currentIndex={currentIndex}/>
+            {openUser && <UsersGrid />}
+            {openForms && <FormsPage />}
+            {openDiplomes && <AllDiplomes />}
+            {openProfil && <Profil />}
+
+
           </main>
           <footer className={classes.footer}>
             <Copyright />
@@ -213,8 +250,8 @@ function DemandesGrid(props) {
   );
 }
 
-DemandesGrid.propTypes = {
+AdminAcceuil.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DemandesGrid);
+export default withStyles(styles)(AdminAcceuil);

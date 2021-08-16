@@ -19,7 +19,7 @@ import Alert from "@material-ui/lab/Alert";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import authService from "../../Services/authService";
+import AuthService from "../../Services/AuthService";
 import { makeStyles } from '@material-ui/core/styles';
 import img from "../../FSJES_Agdal.png";
 
