@@ -1,9 +1,19 @@
 import axios from "axios";
-import AuthHeaders from "./AuthHeaders";
+import authHeaders from "./authHeaders";
 
 const API_URL = "http://127.0.0.1:8000/api/";
 
-// User
+
+// Profil 
+const showProfil = () => {
+  return axios.get( API_URL + "profil", authHeaders() );
+};
+const updateProfil = (email, password, role) => {
+  return axios.put( API_URL + "profil", {email, password, role}, authHeaders() );
+};
+
+
+// Users
 const addNewUser = (email, password, role) => {
     return axios.post( API_URL + "users", {email, password, role}, authHeaders() );
 };
@@ -26,6 +36,16 @@ const getAllRoles = () => {
     return axios.get( API_URL + "roles", authHeaders() );
 };
 
+
+// Forms
+const getAllForms = () => {
+  return axios.get( API_URL + `formulaires`, authHeaders() )
+};
+const updateForm = (formId, type_formulaire, lien, api_id) => {
+  return axios.put( API_URL + `formulaires/${formId}`, {type_formulaire, lien, api_id}, authHeaders() )
+};
+
+
 // Demandes
 const getAllDemandes = () => {
   return axios.get( API_URL + "demandes", authHeaders() )
@@ -40,45 +60,28 @@ const showDemande = (id) => {
   return axios.get( API_URL + `demandes/${id}`, authHeaders() )
 };
 
+
 // Diplomes
 const CreerDossiers = (demandeId) => {
   return axios.post( API_URL + `diplomes/${demandeId}`, {}, authHeaders() )
 };
-
-// Forms
-const getAllForms = () => {
-  return axios.get( API_URL + `formulaires`, authHeaders() )
+const getAllDiplomes = () => {
+  return axios.get( API_URL + "diplomes", authHeaders() )
 };
-const updateForm = (formId, type_formulaire, lien, api_id) => {
-  return axios.put( API_URL + `formulaires/${formId}`, {type_formulaire, lien, api_id}, authHeaders() )
-};
-
-
-
-//Diplomes
-const getAllDiplomes = (searchItem) => {
-  return axios.get( API_URL + `diplomes/search/${searchItem}`, authHeaders() )
-};
-
 const showDiplome = (id) => {
   return axios.get( API_URL + `diplomes/${id}`, authHeaders() )
-}
-
+};
 const diplomesByDates= (dateDebut,dateFin) => {
   return axios.get( API_URL + `diplomes/dates/${dateDebut}/${dateFin}`, authHeaders() )
-}
-
+};
 const diplomesByType = (type) => {
   return axios.get( API_URL + `diplomes/type/${type}`, authHeaders() )
-}
+};
 
-const UserService = {
-    getAllDemandes,
-    nouvellesDemandes,
-    filterDemandes,
-    showDemande,
-    getAllForms,
-    updateForm,
+
+const userService = {
+    showProfil,
+    updateProfil,
     addNewUser,
     searchUser,
     filterUser,
@@ -86,11 +89,17 @@ const UserService = {
     updateUser,
     delateUser,
     getAllRoles,
+    getAllForms,
+    updateForm,
+    getAllDemandes,
+    nouvellesDemandes,
+    filterDemandes,
+    showDemande,
     CreerDossiers,
     getAllDiplomes,
     showDiplome,
     diplomesByDates,
     diplomesByType,
 };
-export default UserService;
+export default userService;
   

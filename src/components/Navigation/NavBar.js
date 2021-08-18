@@ -10,7 +10,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import AuthService from "../../Services/AuthService";
+import authService from "../../Services/authService";
 import Divider from '@material-ui/core/Divider';
 import { Link } from "react-router-dom";
 

@@ -172,18 +172,16 @@ const styles = {
 };
 
 function AdminAcceuil(props) {
-
   const { classes, openUser , openForms , openProfil , openDiplomes, title } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [navItems, setNavItems] = useState([]);
   const history = useHistory();
 
-  //console.log(props);
   useEffect(() => {
     if (props?.role !== 1) {
-      history.push("/Acceuil");
-      window.location.reload();  // reload here obligatory
+      history.push("/");
+      window.location.reload();
     }
     else {
       setNavItems(

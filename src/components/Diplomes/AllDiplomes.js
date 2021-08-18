@@ -11,7 +11,7 @@ import swal from 'sweetalert';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
-import UserService from "../../Services/UserService";
+import userService from "../../Services/userService";
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -176,12 +176,12 @@ function AllDiplomes(props) {
     ///Callback function to close forms
     const handleCloseCallback = (open) => {
         setOpen(open);
-    }
+    };
     /////////////////////////////////////////////////////////
     const handleRowSelection = (e) => {
         setId(e[0]);
         setDisableButton(false);
-    }
+    };
 
     const handleLoad = () => {
         setSearchItem('');
@@ -194,21 +194,11 @@ function AllDiplomes(props) {
 
     const handleSearch = (e) => {
         setSearchItem(e.target.value);
-
-
-    }
+    };
 
     const showDetails = () => {
-        userService.showDiplome(id).then(response => {
-            setDiplome(response.data.diplome);
-            setOpen(true)
-
-        }).catch(err => {
-            console.log(err);
-            setMessage("Erreur de chargement , veuillez reessayer !");
-
-        })
-    }
+        setOpen(true);
+    };
 
     const handleDatesSelection = () => {
         setDisableButton(true)
@@ -218,15 +208,16 @@ function AllDiplomes(props) {
             console.log(err);
             setMessage("Erreur de chargement , veuillez reessayer !");
         })
-    }
+    };
 
     const handleDeug = () => {
        setType("DEUG");
-    }
+    };
+
     const handleLicence = () => {
         setType("licence")
         
-    }
+    };
     ////////////////////////////////////////////////////////////
 
 
@@ -349,8 +340,8 @@ function AllDiplomes(props) {
                 </div>
             </div>
             {open &&
-                <DetailsDiplome handleOpen={open} diplome={diplome} title="Détails"
-                    closeCallback={handleCloseCallback} />
+                <DetailsDiplome handleOpen={open} diplomeId={id} title="Détails"
+                    closeCallback={handleCloseCallback} button="Imprimer"/>
             }
         </Paper>
 

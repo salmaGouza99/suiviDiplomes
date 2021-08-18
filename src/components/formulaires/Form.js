@@ -9,7 +9,7 @@ import Message from './Message';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import LinkIcon from '@material-ui/icons/Link';
 import CodeIcon from '@material-ui/icons/Code';
-import UserService from "../../Services/UserService";
+import userService from "../../Services/userService";
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Link from '@material-ui/core/Link';
 

@@ -6,14 +6,15 @@ import CardMedia from '@material-ui/core/CardMedia';
 import EditIcon from '@material-ui/icons/Edit';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
-import UserForm from "./UserForm";
-import UserService from "../../Services/UserService";
-import AuthService from "../../Services/AuthService";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import userService from "../../Services/userService";
+import Alert from "@material-ui/lab/Alert";
 import DetailsRow from '../Diplomes/DetailsRow';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
 import { Container } from '@material-ui/core';
+import ProfilEdit from './ProfilEdit';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,29 +31,53 @@ const useStyles = makeStyles((theme) => ({
 export default function Profil(props) {
     const classes = useStyles();
     const [user, setUser] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [changed, setChanged] = useState(false);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        const loggedInUser = authService.getCurrentUser();
-        userService.showUser(loggedInUser?.user?.id).then((response) => {
+        setLoading(true);
+        setChanged(false);
+        userService.showProfil().then((response) => {
+            setLoading(false);
             setUser(response?.data.user);
         }).catch(err => {
-            // setMessage("Erreur de chargement , veuillez reessayer !");
+            setLoading(false);
+            console.log(err);
+            setError("Erreur de chargement, veuillez reessayer.");
         })
-    }, []);
+    }, [changed]);
 
     const handleEditProfil = (e) => {
         setOpen(true);
     }
 
-    const handleCloseCallback = (open) => {
+    const closeCallback = (open) => {
         setOpen(open);
+        setChanged(true);
     }
 
     return (
         <Container>
             <Card >
+                {loading && (
+                    <div align='center' >
+                    <LinearProgress />
+                    </div>
+                )}
                 <CardContent>
+                {error && (
+                <Alert 
+                  severity="error"
+                  onClose={() => {
+                    setError(null);
+                  }}
+                >
+                  {error}
+                </Alert>
+                )}
+                <br></br>
                     <Grid
                         container
                         direction="row"
@@ -65,7 +90,7 @@ export default function Profil(props) {
                             </Typography><br />
                             <DetailsRow title="Identifiant" data={user.email} />
                             <DetailsRow title="Mot de passe" data="******************" />
-                            <DetailsRow title="Role" data={user.role} />
+                            <DetailsRow title="Rôle" data={user.role} />
                         </Grid>
                     </Grid>
                     <Grid
@@ -85,16 +110,14 @@ export default function Profil(props) {
                         </Grid>
                     </Grid>
 
-
                 </CardContent>
                 <CardActions>
                     
                 </CardActions>
             </Card>
             {
-                open && <UserForm handleOpen={open} user={user}
-                    closeCallback={handleCloseCallback} title="Editer Profil" formType="edit"
-                    closeCallback={handleCloseCallback}
+                open && <ProfilEdit handleOpen={open} user={user}
+                        closeCallback={closeCallback} title="Editer Profil"
                 />
             }
         </Container>

@@ -19,7 +19,7 @@ import Alert from "@material-ui/lab/Alert";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import AuthService from "../../Services/AuthService";
+import authService from "../../Services/authService";
 import { makeStyles } from '@material-ui/core/styles';
 import img from "../../FSJES_Agdal.png";
 
@@ -97,7 +97,11 @@ export default function Login(props) {
   
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("logedOut")) === false && props?.user) {
-      history.push("/Acceuil");
+      history.push(props?.role === 1 ? "/Admin" :
+                   props?.role === 2 || props?.role === 3 || props?.role === 4 ? "/GuichetScolarite" :
+                   props?.role === 5 ? "/ServiceDiplomes" :
+                   props?.role === 6 ? "/Decanat" : 
+                   props?.role === 7 ? "BureauOrdre" : "/GuichetRetrait");
       window.location.reload();
     }
   });
@@ -133,7 +137,12 @@ export default function Login(props) {
       authService.login(email, password).then(
         (response) => {
           if (!response.msgError) {
-            history.push("/Acceuil");
+            history.push(response?.user?.roles[0]?.id === 1 ? "/Admin" :
+                         response?.user?.roles[0]?.id === 2 || response?.user?.roles[0]?.id === 3 || 
+                         response?.user?.roles[0]?.id === 4 ? "/GuichetScolarite" :
+                         response?.user?.roles[0]?.id === 5 ? "/ServiceDiplomes" :
+                         response?.user?.roles[0]?.id === 6 ? "/Decanat" : 
+                         response?.user?.roles[0]?.id === 7 ? "BureauOrdre" : "/GuichetRetrait");
             window.location.reload();
           } else {
             setLoading(false);

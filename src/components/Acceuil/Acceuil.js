@@ -18,8 +18,7 @@ import { DataGrid, GridOverlay, useGridSlotComponentProps, frFR } from '@materia
 import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import UserService from "../../Services/UserService";
-import InfoGrid from "./InfoGrid";
+import userService from "../../Services/userService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -111,7 +110,7 @@ const styles = (theme) => ({
 });
 
 
-function Content(props) {
+function Acceuil(props) {
   const { classes } = props;
   const [open, setOpen] = useState(false);
   const [demandeId, setDemandeId] = useState(null);
@@ -127,7 +126,7 @@ function Content(props) {
   const [error, setError] = useState();
   const [number, setNumber] = useState();
   const [selectionModel, setSelectionModel] = useState([]);
-  const index = props.currentIndex;
+  const index = props?.currentIndex;
 
   const columns = [
     {
@@ -178,7 +177,7 @@ function Content(props) {
         };
           
         return (
-          <Tooltip title='Afficher détails'>
+          <Tooltip title='Voir détails'>
             <IconButton style={{ marginLeft: 3 }}>
               <Visibility onClick={showInfo}
                 style={{ color: 'gray' }} />
@@ -204,7 +203,7 @@ function Content(props) {
 
   function filterDemandes() {
     setLoad(true);
-    userService.filterDemandes(index === 0 ? "Licence" : "DEUG", "القانون باللغة العربية")
+    userService.filterDemandes(index === 0 ? "DEUG" : "Licence", "القانون باللغة العربية")
       .then((response) => {
         setLoad(false);
         setError(null);
@@ -255,17 +254,20 @@ function Content(props) {
       setDisable(false);
       setError(null);
       filterDemandes();
-      setMessage(response?.data.Deug + response?.data.Licence === 0 ? "Aucune nouvelle demande." :
-        response?.data.Deug + response?.data.Licence + " demandes ajoutées: " +
+      let total = response?.data.Deug + response?.data.Licence;
+      setMessage(total === 0 ? "Aucune nouvelle demande." :
+        response?.data.Deug === 1 && response?.data.Licence === 0 ? "Une seule damande de DEUG est ajoutée." :
+        response?.data.Deug === 0 && response?.data.Licence === 1 ? "Une seule damande de Licence est ajoutée." :
+        total + " demandes ajoutées: " +
         response?.data.Deug + " DEUG et " + response?.data.Licence + " Licence.");
-      setNumber(response?.data.Deug + response?.data.Licence);
+      setNumber(total);
     }).catch((error) => {
       console.log(error);
       setDisable(false);
       setLoad(false);
       setMessage(null);
       setNumber(null);
-      setError("Une erreur est servenue, veuillez réssayer.");
+      setError("Une connexion internet est obligatoire pour charger les nouvelles demandes, veuillez réssayer.");
     });
   };
 
@@ -332,7 +334,7 @@ function Content(props) {
             <Grid item xs>
               <TextField
                 fullWidth
-                placeholder="Chercher par Apogée, CIN ou CNE ..."
+                placeholder="Chercher étudiant par Apogée, CIN ou CNE ..."
                 fontWeight="fontWeightBold"
                 InputProps={{
                   disableUnderline: true,
@@ -343,10 +345,10 @@ function Content(props) {
             </Grid>
             <Grid item>
               <Button variant="contained"
-                disabled={disable}
+                disabled={true}
                 className={classes.newDemands}
                 onClick={handleNewDemands}>
-                <Box fontWeight="fontWeightBold">Nouvelles demandes</Box>
+                <Box fontWeight="fontWeightBold">Exporter fiche étudiant</Box>
               </Button>
               <Tooltip title="Recharger">
                 <IconButton onClick={handleReload}>
@@ -357,7 +359,7 @@ function Content(props) {
           </Grid>
         </Toolbar>
       </AppBar>
-      <div className={classes.contentWrapper}>
+      {/* <div className={classes.contentWrapper}>
         {(message || error) && (
           <Alert className={classes.alert}
             icon={number === 0 ? false : null}
@@ -373,47 +375,15 @@ function Content(props) {
           </Alert>
         )}
 
-        <div style={{ height: 375, width: '100%' }} className={classes.MuiDataGrid}>
-          <DataGrid
-            localeText={frFR.props.MuiDataGrid.localeText}
-            rows={data ? data : []}
-            columns={columns}
-            getCellClassName={(params) => {
-              return (params.value === 'Traitée' ? 'traitee' : params.value === 'Non traitée' ? 'nonTraitee' : '')
-            }}
-            /* sortModel={[
-              { field: 'date', sort: 'desc' },
-            ]} */
-            checkboxSelection
-            disableSelectionOnClick
-            disableColumnMenu
-            pageSize={pageSize}
-            onSelectionModelChange={handleSelection}
-            selectionModel={selectionModel}
-            //onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            //rowsPerPageOptions={[5, 7, 10]}
-            components={{
-              Pagination: CustomPagination,
-              LoadingOverlay: CustomLoadingOverlay,
-            }}
-            pagination
-            loading={load}
-          />
-          <Button variant="contained" disabled={selectionModel?.length === 0 || disable1 ? true : false}
-            className={classes.footer} onClick={handleCreateFolders}>
-            <Box fontWeight="fontWeightBold">Créer dossier</Box>
-          </Button>
-        </div>
-      </div>
-      {open?
-        <InfoGrid handleOpen={open} demandeId={demandeId} closeCallback={handleCloseCallback} />
-        : <div></div>}
+        
+      </div> */}
+     
     </Paper>
   );
 }
 
-Content.propTypes = {
+Acceuil.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Content);
+export default withStyles(styles)(Acceuil);

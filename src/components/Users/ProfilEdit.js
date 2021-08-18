@@ -22,7 +22,7 @@ import swal from 'sweetalert';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import AddBoxRoundedIcon from '@material-ui/icons/AddBoxRounded';
-import UserService from "../../Services/UserService";
+import userService from "../../Services/userService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,7 +80,6 @@ export default function ProfilEdit(props) {
     setOpen(props.handleOpen);
     props.user ? setRole(props.user.role) : setRole('');
     props.user ? setEmail(props.user.email) : setEmail('');
-    props.user ? setIdUser(props.user.id) : setIdUser('');
     props.handleOpen ? setOpen(props.handleOpen) : setOpen(false);
     // props.roles ? setRoles(props.roles) : setRoles([]);
   }, []);
@@ -123,8 +122,7 @@ export default function ProfilEdit(props) {
 
 
   const handleClose = (e) => {
-    window.location.reload();
-    // setOpen(false)
+      props.closeCallback(false,null);
   }
   /////////////////////////////////////////
 
@@ -134,31 +132,29 @@ export default function ProfilEdit(props) {
       if (passwordConfirm === password) {
         setErrors({ ...errors, passwordConfirm: null });
       } else {
-        setErrors({ ...errors, passwordConfirm: "Les password doivent etre identiques" });
+        setErrors({ ...errors, passwordConfirm: "Les mots de passe doivent être identiques." });
       }
       if (!Object.values(errors).some((x) => x !== null && x !== "")) {
-        console.log('heeere submit Edit');
+        // console.log('heeere submit Edit');
         if (password === passwordConfirm) {
-          userService.updateUser(idUser, email, password, role).then((response) => {
+          userService.updateProfil(email, password, role).then((response) => {
               console.log(response);
               swal({
-                title: response.data.message,
+                title: response?.data?.message,
                 text: "",
                 icon: "success",
               });
-              setTimeout(function(){
-                window.location.reload();
-             }, 300);
+              props.closeCallback(false);
               
             }).catch(err => {
               console.log(err.response);
-              if (err.response.status === 500) {
-                setMessage("Cette adresse mail est déjà utilisée");
+              if (err.response?.status === 500) {
+                setMessage("Cette adresse mail est déjà utilisée.");
               }
             })
 
         } else {
-          setMessage("Les mots de passe doivent être identiques");
+          setMessage("Les mots de passe doivent être identiques.");
         }
       }
     }
@@ -235,12 +231,11 @@ export default function ProfilEdit(props) {
                     }}
                     variant="outlined"
                     margin="normal"
-                    required
                     fullWidth
                     size="small"
                     name="password"
                     placeholder="********"
-                    label="Nouveau Password "
+                    label="Nouveau mot de passe"
                     type="password"
                     id="password"
                     autoComplete="current-password"
@@ -259,12 +254,11 @@ export default function ProfilEdit(props) {
                     }}
                     variant="outlined"
                     margin="normal"
-                    required
                     fullWidth
                     size="small"
                     name="password"
                     placeholder="********"
-                    label="Confirmer Password "
+                    label="Confirmer mot de passe"
                     type="password"
                     id="password"
                     autoComplete="current-password"

@@ -9,8 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CloseIcon from '@material-ui/icons/Close';
 import Alert from '@material-ui/lab/Alert';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import IconButton from '@material-ui/core/IconButton';
-import UserService from "../../Services/UserService";
+import userService from "../../Services/userService";
 import DetailsRow from '../Diplomes/DetailsRow';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,26 +33,33 @@ const useStyles = makeStyles((theme) => ({
         marginTop: -theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
+    loading: {
+        color: '#0268B5',
+    },
 }));
 
 export default function DetailsDiplome(props) {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [demande, setDemande] = useState();
     const [error, setError] = useState("");
 
     useEffect(() => {
         setOpen(props?.handleOpen);
-        console.log(props?.openInfo, props?.demandeId);
+        setLoading(true);
         if (props?.demandeId != null) {
             userService.showDemande(props?.demandeId).then((response) => {
+                setLoading(false);
                 setDemande(response?.data.demande)
             }).catch(err => {
                 console.log(err);
-                setError("Erreur de chargement, veuillez reessayer !");
+                setLoading(false);
+                setError("Erreur de chargement, veuillez reessayer.");
             })
         } else {
-            setError("Erreur de chargement, veuillez reessayer !");
+            setLoading(false);
+            setError("Erreur de chargement, veuillez reessayer.");
         }
     }, []);
 
@@ -70,6 +78,11 @@ export default function DetailsDiplome(props) {
                     <CloseIcon onClick={handleClose} />
                 </IconButton>
                 <DialogContent>
+                    {loading && (
+                        <div align='center' >
+                            <LinearProgress className={classes.loading} />
+                        </div>
+                    )}
                     {error && (
                         <Alert className={classes.alert}
                             severity="error"
@@ -93,10 +106,9 @@ export default function DetailsDiplome(props) {
                                     <Typography variant="body" component="h3">
                                         Informations Personnelles
                                     </Typography><br />
-
+                                    <DetailsRow title="Apogée" data={demande?.etudiant?.apogee} />
                                     <DetailsRow title="CIN" data={demande?.etudiant?.cin} />
                                     <DetailsRow title="CNE" data={demande?.etudiant?.cne} />
-                                    <DetailsRow title="Apogée" data={demande?.etudiant?.apogee} />
                                     <DetailsRow title="Nom" data={demande?.etudiant?.nom} />
                                     <DetailsRow title="Prénom" data={demande?.etudiant?.prenom} />
                                     <DetailsRow title="Nom arabe" data={demande?.etudiant?.nom_arabe} />

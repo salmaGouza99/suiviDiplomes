@@ -15,7 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import IconButton from '@material-ui/core/IconButton';
-import UserService from "../../Services/UserService";
+import userService from "../../Services/userService";
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';

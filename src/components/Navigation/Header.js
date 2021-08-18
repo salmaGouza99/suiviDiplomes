@@ -15,7 +15,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import AuthService from "../../Services/AuthService";
+import authService from "../../Services/authService";
 import { useEffect } from 'react';
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
