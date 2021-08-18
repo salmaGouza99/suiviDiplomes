@@ -12,7 +12,7 @@ return [
     'truncate_tables' => true,
 
     'roles_structure' => [
-        'admin' => [
+        'Admin' => [
             'profile' => 'r,u',
             'users' => 'c,r,u,d',
             'formulaires' => 'c,r,u,d',
@@ -23,41 +23,41 @@ return [
             'roles' => 'c,r,u,d',
             'permissions' => 'c,r,u,d',
         ],
-        'guichet_droit_arabe' => [
+        'Guichet Droit Arabe' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'demandes' => 'r',
             'diplomes' => 'c,r,u'
         ],
-        'guichet_droit_francais' => [
+        'Guichet Droit Francais' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'demandes' => 'r',
             'diplomes' => 'c,r,u'
         ],  
-        'guichet_economie' => [
+        'Guichet Economie' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'demandes' => 'r',
             'diplomes' => 'c,r,u'
         ],
-        'service_diplomes' => [
+        'Service de Diplômes' => [
             'profile' => 'r,u',
             'etudiants' => 'r,u',
             'diplomes' => 'r',
             'diplomes_reedites' => 'c,r,u'
         ],
-        'decanat' => [
+        'Décanat' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'diplomes' => 'r,u'
         ],
-        'bureau_ordre' => [
+        'Bureau d\'Ordre' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'diplomes' => 'r,u'
         ],
-        'guichet_retrait' => [
+        'Guichet de Retrait' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'diplomes' => 'r,u'

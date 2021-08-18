@@ -17,7 +17,15 @@ class ProfileController extends Controller
      */
     public function show()
     {
-        return response()->json(User::with('roles')->find(auth()->user()->id));
+        // return response()->json(User::with('roles')->find(auth()->user()->id));
+        $user = User::with('roles')->find(auth()->user()->id);
+         $user=[
+                'email'=>$user->email,
+                'role'=> $user->roles[0]->name,
+            ];
+        return response()->json([
+            'user' => $user,
+        ]);
     }
 
     /**
@@ -28,7 +36,20 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $request->validate([
+        $user = User::with('roles')->find(auth()->user()->id);
+        $user->update(array('email' => $request->email,'password'=>Hash::make($request->password)));
+
+        $updaterUser = User::with('roles')->find(auth()->user()->id);
+
+        return response()->json([
+            'user' => [
+                'email'=>$updaterUser->email,
+                'role'=> $updaterUser->roles[0]->name,
+                ],
+            'message' => 'Profil édité',
+        ]);
+
+        /* $request->validate([
             'email' => 'string',
             'newpassword' => 'string|min:6|confirmed'
         ]);
@@ -63,7 +84,7 @@ class ProfileController extends Controller
         }
         return response()->json([
             'the authenticated user' => auth()->user(),
-        ]);
+        ]); */
     }
 
 }

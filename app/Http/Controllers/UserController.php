@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use SheetDB\SheetDB;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -45,8 +44,9 @@ class UserController extends Controller
             'role' => 'required'
         ]);
 
-        $user = User::create(array('email' => $request->email,
-            'password'=>Hash::make($request->password)));
+       
+        $user = User::create(['email' => $request->email,
+            'password' => Hash::make($request->password),]);
         $user->attachRole($request->role);
         return response()->json([
             'user' =>$user, 
@@ -68,7 +68,7 @@ class UserController extends Controller
                 'id'=>$user->id,
                 'email'=>$user->email,
                 'roleId' =>$user->roles[0]->id,
-                'role'=>Str::replace('_',' ',$user->roles[0]->name),
+                'role'=> $user->roles[0]->name,
             ];
         return response()->json([
             'user' => $user,
@@ -95,8 +95,8 @@ class UserController extends Controller
         $user->update(array('email' => $request->email,'password'=>Hash::make($request->password)));
 
         return response()->json([
-            'user' =>User::with('roles')->find($user->id),
-            'message' => 'Utilisateur edité',
+            'user' => User::with('roles')->find($user->id),
+            'message' => 'Utilisateur édité',
         ]);
     }
 
@@ -131,7 +131,7 @@ class UserController extends Controller
                 $users[] = [
                     'id'=>$user->id,
                     'email'=>$user->email,
-                    'role'=>Str::replace('_',' ',$user->roles[0]->name),
+                    'role'=> $user->roles[0]->name,
                 ];;
             }
         }    
@@ -152,9 +152,9 @@ class UserController extends Controller
         $listUsers=[] ;
         foreach (User::where('email','like','%'.$email.'%')->get() as $user){
             $user=[
-                'id'=>$user->id,
-                'email'=>$user->email,
-                'role'=>Str::replace('_',' ',$user->roles[0]->name),
+                'id'=> $user->id,
+                'email'=> $user->email,
+                'role'=> $user->roles[0]->name,
             ];
             array_push($listUsers,$user);
         }
