@@ -14,8 +14,9 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import PersonIcon from '@material-ui/icons/Person';
 import Profil from '../Users/Profil';
 import FormsPage from '../formulaires/FormsPage';
-import AllDiplomes from '../Diplomes/AllDiplomes'
-import TimeLine from '../Diplomes/TimeLine'
+import AllDiplomes from '../Diplomes/AllDiplomes';
+import TimeLine from '../Diplomes/TimeLine';
+import Dashboard from '../Dashboard/Dashboard';
 import LinkIcon from '@material-ui/icons/Link';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import SchoolIcon from '@material-ui/icons/School';
@@ -173,7 +174,7 @@ const styles = {
 
 function AdminAcceuil(props) {
 
-  const { classes, openUser , openForms , openProfil , openDiplomes, title } = props;
+  const { classes, openUser , openForms , openProfil , openDiplomes, title, openDashboard } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [navItems, setNavItems] = useState([]);
@@ -238,6 +239,7 @@ function AdminAcceuil(props) {
             {openForms && <FormsPage />}
             {openDiplomes && <AllDiplomes />}
             {openProfil && <Profil />}
+            {openDashboard && <Dashboard />}
 
 
           </main>

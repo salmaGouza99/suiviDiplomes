@@ -130,6 +130,8 @@ export default function UserForm(props) {
       props.closeCallback(false,"edit");
   }else if(props.formType  === "add"){
     props.closeCallback(false,"add");
+  }else{
+    props.closeCallback(false,"editProfil");
   }
     
   }
@@ -323,7 +325,10 @@ export default function UserForm(props) {
                     helperText={errors?.passwordConfirm}
                   />
 {/* //////////////////////////////////////////////////////////////// */}
-                  {props.title === "Editer utilisateur" ? 
+
+
+                    
+                  {props.title === "Editer utilisateur" || props.title === "Ajouter utilisateur" ? 
                   <TextField
                     id="standard-select-currency"
                     select

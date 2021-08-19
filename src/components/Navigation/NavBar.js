@@ -13,6 +13,12 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import authService from "../../Services/authService";
 import Divider from '@material-ui/core/Divider';
 import { Link } from "react-router-dom";
+import {
+    Avatar,
+    Box,
+    Typography
+} from '@material-ui/core';
+import { indigo,grey } from '@material-ui/core/colors';
 
 
 
@@ -27,22 +33,22 @@ const styles = (theme) => ({
     item: {
         paddingTop: 1,
         paddingBottom: 1,
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: '#6b778c',
         '&:hover,&:focus': {
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            backgroundColor:  indigo[50],
         },
     },
     logout: {
         paddingTop: 1,
-        paddingBottom: 1,
+        marginBottom: 100,
         marginTop: theme.spacing(2),
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: '6b778c',
         '&:hover,&:focus': {
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            backgroundColor: indigo[50],
         },
     },
     itemCategory: {
-        backgroundColor: '#232f3e',
+        backgroundColor: '#fff',
         boxShadow: '0 -1px 0 #404854 inset',
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
@@ -56,21 +62,41 @@ const styles = (theme) => ({
     },
     itemPrimary: {
         fontSize: 'inherit',
+        color: '#6b778c',
+
     },
     itemIcon: {
         minWidth: 'auto',
         marginRight: theme.spacing(2),
+        color: '#6b778c',
+        
     },
     divider: {
         marginTop: theme.spacing(2),
     },
+    menu: {
+        backgroundColor: '#fff',
+    },
+    infos: {
+        backgroundColor: indigo[50],
+        padding: "30px"
+    },
+    large: {
+        width: theme.spacing(7),
+        height: theme.spacing(7),
+        color: '#fff',
+    },
+    acceuil :{
+        '&:hover,&:focus': {
+            backgroundColor: grey[100],
+        },
+    }
 });
 
 function NavBar(props) {
-    const { classes, ...other } = props;
+    const { classes, navItems, ...other } = props;
     const [email, setEmail] = useState(initialState);
     const [role, setRole] = useState(initialState);
-    const [navItems, setNavItems] = useState([]);
 
     const history = useHistory();
 
@@ -81,7 +107,6 @@ function NavBar(props) {
             setRole(loggedInUser?.user?.roles[0]?.name);
 
         }
-        setNavItems(props.navItems);
     });
 
     const handleLogout = () => {
@@ -90,59 +115,83 @@ function NavBar(props) {
     };
 
     return (
-        <Drawer variant="permanent" {...other}>
-            <List disablePadding>
-                <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>
+        <Drawer variant="permanent" {...other}  >
+            <Box
+                sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 2
+                }}
+                className={classes.infos}
+            >
+                <Avatar
+                    className={classes.large}
+                    sx={{
+                        cursor: 'pointer',
+                        width: 64,
+                        height: 64
+                    }}
+                />
+                <Typography
+                    color="textPrimary"
+                    variant="h6"
+                >
                     {email}
-                </ListItem>
-                <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>
+                </Typography>
+                <Typography
+                    color="textSecondary"
+                    variant="body1"
+                >
                     {role}
-                </ListItem>
-
-
-                <ListItem className={clsx(classes.item, classes.itemCategory)}>
-                    <ListItemIcon className={classes.itemIcon}>
-                        <HomeIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                        classes={{
-                            primary: classes.itemPrimary,
-                        }}
-                    >
-                        Acceuil
-                    </ListItemText>
-                </ListItem>
+                </Typography>
+            </Box>
+            <Divider light={true} />
+            <List disablePadding className={classes.menu} >
+                <Link to="/Acceuil"
+                 style={{ textDecoration: 'none' }}>
+                    <ListItem className={classes.acceuil}>
+                        <ListItemIcon className={classes.itemIcon}>
+                            <HomeIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                            classes={{
+                                primary: classes.itemPrimary,
+                            }}
+                        >
+                            Acceuil
+                        </ListItemText>
+                    </ListItem>
+                </Link>
+                <Divider light={true} />
 
                 {navItems.map(({ id, children }) => (
-                    <React.Fragment key={id}>
-                        <ListItem className={classes.categoryHeader}>
-                            <ListItemText
-                                classes={{
-                                    primary: classes.categoryHeaderPrimary,
-                                }}
-                            >
+                    <React.Fragment key={id} >
+                        <ListItem className={classes.categoryHeader} key={id}>
+                            <ListItemText>
                                 {id}
                             </ListItemText>
                         </ListItem>
-                        {children.map(({ id: childId, icon, active,link }) => (
-                             <Link to={link}>
-                            <ListItem
-                                key={childId}
-                                button
-                                className={clsx(classes.item, active && classes.itemActiveItem)}
-                            >
-                                <ListItemIcon className={classes.itemIcon}>{icon}</ListItemIcon>
-                                <ListItemText
-                                    classes={{
-                                        primary: classes.itemPrimary,
-                                    }}
+                        {children.map(({ id: childId, icon, active, link }) => (
+                            <Link to={link}
+                                style={{ textDecoration: 'none' }}>
+                                <ListItem
+                                    key={childId}
+                                    button
+                                    className={clsx(classes.item, active && classes.itemActiveItem)}
                                 >
-                                    {childId}
-                                </ListItemText>
-                            </ListItem>
+                                    <ListItemIcon className={classes.itemIcon}>{icon}</ListItemIcon>
+                                    <ListItemText
+                                        classes={{
+                                            primary: classes.itemPrimary,
+                                        }}
+                                    >
+                                        {childId}
+                                    </ListItemText>
+                                </ListItem>
                             </Link>
                         ))}
-                        <Divider className={classes.divider} />
+                        <Divider className={classes.divider} light={true} />
                     </React.Fragment>
                 ))}
 

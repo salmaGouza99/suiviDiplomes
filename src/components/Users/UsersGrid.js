@@ -118,6 +118,7 @@ function UsersGrid(props) {
     const classes = useStyles();
     const [id, setId] = useState('');
     const [users, setUsers] = useState([]);
+    const [filtredUsers, setFiltredUsers] = useState([]);
     const [disableButton, setDisableButton] = useState(true);
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
@@ -127,13 +128,12 @@ function UsersGrid(props) {
     const [roles, setRoles] = useState([]);
     const [roleFilter, setRoleFilter] = useState(0);
     const [deleteUser, setDeleteUser] = useState(false);
-    const [chargement, setChargement] = useState("");
     const history = useHistory();
 
     //////////////////////////////////////////////////////////////
     useEffect(() => {
         //liste utilisateur avec posibilite de recherche
-        userService.searchUser(searchItem).then((response) => {
+        userService.getAllUsers().then((response) => {
             console.log(response.data.users);
             setUsers(response.data.users);
         }).catch(err => {
@@ -149,18 +149,28 @@ function UsersGrid(props) {
             console.log(err)
         })
 
+    }, [roleFilter, searchItem, deleteUser,disableButton]);
+    /////////////////////////////////////////////////////////
+
+    useEffect(() => {
+        
         //liste filtre selon role
         if (roleFilter !== 0) {
-            userService.filterUser(roleFilter).then((response) => {
-                setUsers(response.data.users);
-                setChargement(false);
-            }).catch(err => {
-                setMessage("Erreur de chargement , veuillez reessayer !");
-
-            })
+            setFiltredUsers(
+                users?.filter((user) =>
+                    user.email.toLowerCase().includes(searchItem.toLowerCase())  &&
+                    user.roleId === roleFilter
+                )
+        );
+        }else{
+            setFiltredUsers(
+                users?.filter((user) =>
+                    user.email.toLowerCase().includes(searchItem.toLowerCase()) 
+                )
+            );
         }
-    }, [roleFilter, searchItem, deleteUser]);
-    /////////////////////////////////////////////////////////
+
+    },[users,roleFilter, searchItem, deleteUser])
     ///Callback function to close forms
 
     const handleCloseCallback = (open, type) => {
@@ -238,7 +248,7 @@ function UsersGrid(props) {
 
     return (
         <Paper className={classes.paper}>
-            {/* ///////Search by dates////// */}
+            {/* ///////Filter by role////// */}
             <AppBar style={{ paddingTop: "0px", paddingRight: "20px" }}
                 position="static" color="#fff" elevation={0}>
                 <Grid container justifyContent="flex-end"
@@ -327,7 +337,7 @@ function UsersGrid(props) {
                     {/* {chargement && <LinearProgress color="primary" />} */}
                     <DataGrid
                         localeText={frFR.props.MuiDataGrid.localeText}
-                        rows={users}
+                        rows={filtredUsers}
                         columns={columns}
                         pageSize={10}
                         checkboxSelection={false}

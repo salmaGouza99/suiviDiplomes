@@ -93,8 +93,8 @@ export default function Profil(props) {
             </Card>
             {
                 open && <UserForm handleOpen={open} user={user}
-                    closeCallback={handleCloseCallback} title="Editer Profil" formType="edit"
-                    closeCallback={handleCloseCallback}
+                    closeCallback={handleCloseCallback} title="Editer Profil" formType="editProfil"
+                    
                 />
             }
         </Container>

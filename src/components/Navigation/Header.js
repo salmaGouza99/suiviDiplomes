@@ -61,7 +61,7 @@ function Header(props) {
 
     return (
         <React.Fragment>
-            <AppBar style={{ background: "#0268B5" }} position="sticky" elevation={0}>
+            <AppBar style={{ background: "#5664d2" }} position="sticky" elevation={0}>
                 <Toolbar>
                     <Grid container spacing={1} alignItems="center">
                         <Hidden smUp>
@@ -96,7 +96,7 @@ function Header(props) {
             <AppBar
                 component="div"
                 className={classes.secondaryBar}
-                style={{ background: "#0268B5" }}
+                style={{ background: "#5664d2" }}
                 position="static"
                 elevation={0}
             >
@@ -115,7 +115,7 @@ function Header(props) {
             <AppBar
                 component="div"
                 className={classes.secondaryBar}
-                style={{ background: "#0268B5" }}
+                style={{ background: "#5664d2" }}
                 position="static"
                 elevation={0}
             >

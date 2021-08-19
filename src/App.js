@@ -42,6 +42,8 @@ function App() {
                               (<AdminAcceuil openForms={true} title="Formulaires" role={role}/>)}/>
               <Route exact path="/Diplomes" component={() => 
                               (<AdminAcceuil openDiplomes={true} title="Diplomes" role={role}/>)}/>
+              <Route exact path="/Statistiques" component={() => 
+                              (<AdminAcceuil openDashboard={true} title="Statistiques" role={role}/>)}/>
               <Route exact path="/Profil" component={() => 
                               (<AdminAcceuil openProfil={true} title="Profil Personnel" role={role}/>)}/>
               {/* Routes for guichets: arabe, francais et economie */}

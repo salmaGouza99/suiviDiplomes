@@ -7,8 +7,8 @@ const API_URL = "http://127.0.0.1:8000/api/";
 const addNewUser = (email, password, role) => {
     return axios.post( API_URL + "users", {email, password, role}, authHeaders() );
 };
-const searchUser = (searchItem) => {
-    return axios.get( API_URL + `users/search/${searchItem}`, authHeaders() );
+const getAllUsers = () => {
+    return axios.get( API_URL + `users`, authHeaders() );
 };
 const filterUser = (roleFilter) => {
     return axios.get( API_URL + `users/role/${roleFilter}`, authHeaders() );
@@ -49,21 +49,36 @@ const updateForm = (formId, type_formulaire, lien, api_id) => {
 
 
 //Diplomes
-const getAllDiplomes = (searchItem) => {
-  return axios.get( API_URL + `diplomes/search/${searchItem}`, authHeaders() )
+const getAllDiplomes = () => {
+  return axios.get( API_URL + `diplomes`, authHeaders() )
 };
 
 const showDiplome = (id) => {
   return axios.get( API_URL + `diplomes/${id}`, authHeaders() )
 }
 
-const diplomesByDates= (dateDebut,dateFin) => {
-  return axios.get( API_URL + `diplomes/dates/${dateDebut}/${dateFin}`, authHeaders() )
+const statutsDiplomes = () => {
+  return axios.get( API_URL + `statuts`, authHeaders() )
 }
 
-const diplomesByType = (type) => {
-  return axios.get( API_URL + `diplomes/type/${type}`, authHeaders() )
+const dashboardByType = (type) => {
+  return axios.get( API_URL + `dashboard/type/${type}`, authHeaders() )
 }
+
+const filtredDashboard = (dateDebut ,dateFin ,type) => {
+  return axios.get( API_URL + `dashboard/${dateDebut}/${dateFin}/${type}`, authHeaders() )
+}
+
+const dashboardCurrents = () => {
+  return axios.get( API_URL + `dashboard/currents`, authHeaders() )
+}
+
+const dashboardCurrentYear = () => {
+  return axios.get( API_URL + `dashboard/currentYear`, authHeaders() )
+}
+
+
+
 
 const userService = {
     getAllDemandes,
@@ -72,7 +87,7 @@ const userService = {
     getAllForms,
     updateForm,
     addNewUser,
-    searchUser,
+    getAllUsers,
     filterUser,
     showUser,
     updateUser,
@@ -80,8 +95,13 @@ const userService = {
     getAllRoles,
     getAllDiplomes,
     showDiplome,
-    diplomesByDates,
-    diplomesByType,
+    statutsDiplomes,
+    filtredDashboard,
+    dashboardCurrents,
+    dashboardByType,
+    dashboardCurrentYear,
+
+    
 };
 export default userService;
   

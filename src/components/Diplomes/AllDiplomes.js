@@ -3,11 +3,7 @@ import { DataGrid } from '@material-ui/data-grid';
 import Button from '@material-ui/core/Button';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddBoxRoundedIcon from '@material-ui/icons/AddBoxRounded';
 import Grid from '@material-ui/core/Grid';
-import swal from 'sweetalert';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
@@ -23,7 +19,10 @@ import { frFR } from '@material-ui/data-grid';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import DetailsDiplome from './DetailsDiplome';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import CheckIcon from '@material-ui/icons/Check';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
 
 
 
@@ -129,15 +128,19 @@ function AllDiplomes(props) {
     const classes = useStyles();
     const [id, setId] = useState('');
     const [diplomes, setDiplomes] = useState([]);
+    const [filtredDiplomes, setFiltredDiplomes] = useState([]);
     const [diplome, setDiplome] = useState('');
     const [disableButton, setDisableButton] = useState(true);
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
     let [searchItem, setSearchItem] = useState('');
     const history = useHistory();
-    const [type, setType] = useState('');
-    const [dateDebut, setDateDebut] = React.useState('');
-    const [dateFin, setDateFin] = React.useState('');
+    const [type, setType] = useState(0);
+    const [dateDebut, setDateDebut] = useState('');
+    const [dateFin, setDateFin] = useState('');
+    const [statuts, setStatuts] = useState([]);
+    const [currentStatut, setCurrenStatut] = useState(0);
+    const [filiere, setFiliere] = useState('');
 
     const handleDateDebut = (e) => {
         console.log('dateDebut');
@@ -150,28 +153,218 @@ function AllDiplomes(props) {
         setDateFin(e.target.value);
     };
 
+    useEffect(() => {
+        userService.getAllDiplomes().then((response) => {
+            setDiplomes(response.data.diplomes)
+        }).catch(err => {
+            console.log(err);
+            setMessage("Erreur de chargement , veuillez reessayer !");
+        })
 
+        userService.statutsDiplomes().then((response) => {
+            setStatuts(response.data.statuts)
+        }).catch(err => {
+            console.log(err);
+            setMessage("Erreur de chargement , veuillez reessayer !");
+        })
+
+    }, [])
     //////////////////////////////////////////////////////////////
     useEffect(() => {
-        if(type === ''){
-            userService.getAllDiplomes(searchItem).then((response) => {
-                setDiplomes(response.data.diplomes)
-            }).catch(err => {
-                console.log(err);
-                setMessage("Erreur de chargement , veuillez reessayer !");
-            })
+        
+        //default
+        setFiltredDiplomes(
+            diplomes?.filter((diplome) =>
+                diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                diplome.cne.toLowerCase().includes(searchItem.toLowerCase())
+            )
+        );
+        //Type seulement
+        if (type !== 0 && currentStatut === 0 && dateDebut === '' && dateFin === '' && filiere === '') {
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                    diplome.type_demande === type
+                )
+            );
+        } 
+        ////Statut seulement
+        else if (type === 0 && currentStatut !== 0 && dateDebut === '' && dateFin === '' && filiere === '') {
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                    diplome.statut_id === currentStatut
+                )
+            );
         }
-        else{
-            userService.diplomesByType(type).then((response) => {
-                setDiplomes(response.data.diplomes)
-            }).catch(err => {
-                console.log(err);
-                setMessage("Erreur de chargement , veuillez reessayer !");
-            })
+        ////date debut seulement
+        else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin === '' && filiere === '') {
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                    diplome.date_demande >= dateDebut
+                )
+            );
         }
-    }, [searchItem, dateDebut, dateFin ,type]);
+        // date debut et fin seulement
+        else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin !== '' && filiere === '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                    diplome.date_demande >= dateDebut &&
+                    diplome.dateFin <= dateFin
+                )
+            );
+        } 
+        ///Filiere seulemet
+        else if (type === 0 && currentStatut === 0 && dateDebut === '' && dateFin === '' && filiere !== '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
+                )
+            );
+        }
+////////////////////////////////////////Combinaisons///////////////////////////////////////////////////////
+        ///type && statut
+        else if (type !== 0 && currentStatut !== 0 && dateDebut === '' && dateFin === ''   && filiere === '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                    diplome.type_demande === type &&
+                    diplome.statut_id === currentStatut
+                )
+            );
+        } 
+        ///type && date debut
+        else if (type !== 0 && currentStatut === 0 && dateDebut !== '' && dateFin === ''  && filiere === '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.type_demande === type &&
+                        diplome.date_demande >= dateDebut
+                )
+            );
+        } 
+        //type && date debut && date fin
+        else if (type !== 0 && currentStatut === 0 && dateDebut !== '' && dateFin !== ''  && filiere === '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                    diplome.type_demande === type &&
+                    diplome.date_demande >= dateDebut &&
+                    diplome.dateFin <= dateFin
+                )
+            );
+        } 
+        //type & filiere
+        else if (type !== 0 && currentStatut === 0 && dateDebut === '' && dateFin === ''  && filiere !== '') {
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.type_demande === type &&
+                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
+                )
+            );
+        }
+        ///statut && date debut
+        else if (type === 0 && currentStatut !== 0 && dateDebut !== '' && dateFin === ''  && filiere === '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.statut_id === currentStatut &&
+                        diplome.date_demande >= dateDebut
+                )
+            );
+        }
+         ///statut && date debut && date fin
+        else if (type === 0 && currentStatut !== 0 && dateDebut !== '' && dateFin !== ''  && filiere === '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.statut_id === currentStatut &&
+                        diplome.date_demande >= dateDebut &&
+                        diplome.date_demande <= dateFin
+                )
+            );
+        }
+        //statut && filiere
+        else if (type === 0 && currentStatut !== 0 && dateDebut === '' && dateFin === ''  && filiere !== '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.statut_id === currentStatut &&
+                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
+                   
+                )
+            );
+        }
+         //filiere && date debut
+         else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin === ''  && filiere !== '') {
+            console.log('type')
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.date_demande >= dateDebut &&
+                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
+                   
+                )
+            );
+        }
+         //filiere && date debut && date fin
+         else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin !== ''  && filiere !== '') {
+            setFiltredDiplomes(
+                diplomes?.filter((diplome) =>
+                    (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
+                        diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
+                        diplome.date_demande >= dateDebut &&
+                        diplome.date_demande <= dateFin &&
+                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
+                   
+                )
+            );
+        }
+        
+    }, [diplomes, searchItem, type, dateDebut, dateFin, currentStatut, filiere]);
 
     /////////////////////////////////////////////////////////
+
 
     ///Callback function to close forms
     const handleCloseCallback = (open) => {
@@ -188,7 +381,9 @@ function AllDiplomes(props) {
         setId('');
         setDateDebut('');
         setDateFin('');
-        setType('');
+        setFiliere('');
+        setType(0);
+        setCurrenStatut(0);
         setDisableButton(true);
     };
 
@@ -210,37 +405,34 @@ function AllDiplomes(props) {
         })
     }
 
-    const handleDatesSelection = () => {
-        setDisableButton(true)
-        userService.diplomesByDates(dateDebut, dateFin).then((response) => {
-            setDiplomes(response.data.diplomes)
-        }).catch(err => {
-            console.log(err);
-            setMessage("Erreur de chargement , veuillez reessayer !");
-        })
-    }
-
     const handleDeug = () => {
-       setType("DEUG");
+        setType("DEUG");
     }
     const handleLicence = () => {
         setType("licence")
-        
+
+    }
+
+    const filterByStatut = (e) => {
+        setCurrenStatut(e.target.value)
+    }
+
+    const filterByFiliere = (e) => {
+        setFiliere(e.target.value);
     }
     ////////////////////////////////////////////////////////////
 
 
     return (
         <Paper className={classes.paper}>
-
             {/* ///////Search by dates////// */}
-            <AppBar style={{ paddingBottom: "5px", paddingTop: "15px" }}
+            <AppBar
                 position="static" color="default" elevation={0}>
-                <Grid container justifyContent="flex-end"
+                <Grid container justifyContent="flex-start"
                     alignItems="flex-start"
                 >
                     <TextField
-                        style={{ paddingRight: "8px" }}
+                        style={{ paddingRight: "5px" }}
                         id="date"
                         label="Date début"
                         type="date"
@@ -266,14 +458,71 @@ function AllDiplomes(props) {
                         size="small"
                         variant="outlined"
                     />
-                    <Tooltip title="Appliquer">
-                        <IconButton onClick={handleDatesSelection}>
-                            <CheckIcon className={classes.block} color="primary" />
-                        </IconButton>
-                    </Tooltip>
                 </Grid>
             </AppBar>
+            {/* ///////Filter by statut////// */}
+            <AppBar style={{ paddingTop: "0px", paddingRight: "20px" }}
+                position="static" color="#fff" elevation={0}>
+                <Grid container justifyContent="flex-end"
+                    alignItems="flex-start"
+                >
+                    <TextField
+                        style={{ paddingLeft: "15px", paddingBottom: "2px" }}
+                        id="standard-select-currency"
+                        select
 
+                        onChange={filterByStatut}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <AssessmentOutlinedIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                        helperText="Filter selon statut du diplome"
+                        variant="outlined"
+                        margin="normal"
+                        size="small"
+                        value={currentStatut === 0 ? "" : currentStatut}
+                    >
+                        {statuts.map((statut) => (
+                            <MenuItem key={statut.id} value={statut.id}>
+                                {statut.statut}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    {/* ///////Filter by filiere////// */}
+                    <TextField
+                        style={{ paddingLeft: "15px", paddingBottom: "2px" }}
+                        id="standard-select-currency"
+                        select
+
+                        onChange={filterByFiliere}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <ListAltIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                        helperText="Filter selon les filières"
+                        variant="outlined"
+                        margin="normal"
+                        size="small"
+                        value={filiere}
+                    >
+                        <MenuItem key={1} value="Droit Arabe">
+                            Droit Arabe
+                        </MenuItem>
+                        <MenuItem key={2} value="Droit Français">
+                            Droit Français
+                        </MenuItem>
+                        <MenuItem key={3} value="Economie et gestion">
+                            Economie et gestion
+                        </MenuItem>
+                    </TextField>
+                </Grid>
+            </AppBar>
             {/* ////////////////DEUG/LICENCE////////////////// */}
             <AppBar
                 component="div"
@@ -282,7 +531,8 @@ function AllDiplomes(props) {
                 position="static"
                 elevation={0}
             >
-                <ButtonGroup variant="text" size="large" 
+
+                <ButtonGroup variant="text" size="large"
                     color="inherit" aria-label="text primary button group">
                     <Button onClick={handleDeug}>DEUG</Button>
                     <Button onClick={handleLicence}>Licence</Button>
@@ -334,7 +584,7 @@ function AllDiplomes(props) {
                     {/* {chargement && <LinearProgress color="primary" />} */}
                     <DataGrid
                         localeText={frFR.props.MuiDataGrid.localeText}
-                        rows={diplomes}
+                        rows={filtredDiplomes}
                         columns={columns}
                         pageSize={10}
                         checkboxSelection={false}
