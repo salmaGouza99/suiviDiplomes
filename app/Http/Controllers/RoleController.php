@@ -12,13 +12,13 @@ class RoleController extends Controller
         $roles=[];
         foreach(Role::all() as $role){
             $role=[
-                'id' =>$role->id,
-                'name'=> Str::replace('_', ' ', $role->name)  
+                'id' => $role->id,
+                'name'=> $role->name 
             ];
             array_push($roles,$role);
         }
         return response()->json([
-            'roles' =>$roles
+            'roles' => $roles
         ]);
         
     }

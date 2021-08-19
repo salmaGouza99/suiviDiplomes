@@ -35,25 +35,25 @@ class DemandeController extends Controller
      */
     public function show($id)
     {
-        $demande = Demande::with('etudiant')->where('traite','=',0)->find($id);
+        $demande = Demande::with('etudiant')->find($id);
         $res = null;
 
         // show demande for each role
         if ($demande)
         {
-            if(Auth::user()->hasRole('admin')) {
+            if(Auth::user()->hasRole('Admin')) {
                 $res = $demande;
-            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
+            } else if(Auth::user()->hasRole('Guichet Droit Arabe')) {
                 if ($demande->etudiant->filiere == 'القانون باللغة العربية')
                 {
                     $res = $demande;
                 }
-            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
+            } else if(Auth::user()->hasRole('Guichet Droit Francais')) {
                 if ($demande->etudiant->filiere == 'Droit en français')
                 {
                     $res = $demande;
                 }
-            } else if(Auth::user()->hasRole('guichet_economie')) {
+            } else if(Auth::user()->hasRole('Guichet Economie')) {
                 if ($demande->etudiant->filiere == 'Sciences Economiques et Gestion')
                 {
                     $res = $demande;
@@ -101,42 +101,22 @@ class DemandeController extends Controller
                     ->get()->sortByDesc('date_demande');
         }
 
-        // show results for each role
-        $res = array();
-        foreach ($demandes as $demande)
-        {
-            if(Auth::user()->hasRole('admin')) {
-                $res[] = $demande;
-            } else if(Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($demande->filiere == 'القانون باللغة العربية')
-                {
-                    $res[] = $demande;
-                }
-            } else if(Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($demande->filiere == 'Droit en français')
-                {
-                    $res[] = $demande;
-                }
-            } else if(Auth::user()->hasRole('guichet_economie')) {
-                if ($demande->filiere == 'Sciences Economiques et Gestion')
-                {
-                    $res[] = $demande;
-                }
-            }
-        }
         
         return response()->json([
-            'demandes' => $res
+            'demandes' => $demandes
          ]);
     }
 
     /**
      * get demandes from googlesheet
      *
-     * @return void
+     * @param string $filiere
+     * @return \Illuminate\Http\Response
      */
-    public function sheet() 
+    public function sheet($filiere) 
     {
+        $countDemandesDeug = 0;
+        $countDemandesLicence = 0;
         foreach(Formulaire::all() as $form)
         {
             $sheetdb = new SheetDB($form->api_id);
@@ -149,7 +129,7 @@ class DemandeController extends Controller
                         'apogee' => $row->{'Code APOGEE رقم الطالب'},
                         'cne' => $row->{'CNE ou MASSAR الرقم الوطني للطالب او مسار'},
                         'nom' => Str::upper($row->{'Nom en français الاسم العائلي بالفرنسية'}),
-                        'prenom' => Str::ucfirst($row->{'Prénom en français الاسم الشخصي بالفرنسية'}),
+                        'prenom' => Str::ucfirst(Str::lower($row->{'Prénom en français الاسم الشخصي بالفرنسية'})),
                         'nom_arabe' => $row->{'Nom en arabe الاسم العائلي بالعربية'},
                         'prenom_arabe' => $row->{'Prénom en arabe الاسم الشخصي بالعربية'},
                         'filiere' => $row->{'Filière المسلك'}, 
@@ -172,12 +152,27 @@ class DemandeController extends Controller
                     {
                         Etudiant::where('cin',$row->{'CIN رقم بطاقة التعريف الوطنية'})->update(['option' => $row->{'Option الاختيار'}]);
                     }
+                    if($row->{'Filière المسلك'} === $filiere) 
+                    {
+                        if($form->type_formulaire == 'DEUG')
+                        {
+                            $countDemandesDeug += 1;
+                        } 
+                        else {
+                            $countDemandesLicence +=1;
+                        }
+                    }
                     //echo ' and his demand of  '.$form->type_formulaire.' done! ';
                 }
                    
             } 
 
         }
+
+        return response()->json([
+            'Deug' => $countDemandesDeug,
+            'Licence' => $countDemandesLicence,
+         ]);
     }
             
 }

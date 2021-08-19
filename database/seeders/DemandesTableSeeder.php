@@ -30,12 +30,12 @@ class DemandesTableSeeder extends Seeder
         ]);
         Demande::create([
             'etudiant_cin' => 'AB222222',
-            'type_demande' => 'licence',
+            'type_demande' => 'Licence',
             'date_demande' => '2021-06-01',     
         ]);
         Demande::create([
             'etudiant_cin' => 'AB345668',
-            'type_demande' => 'licence',
+            'type_demande' => 'Licence',
             'date_demande' => '2021-06-01',     
         ]);
         Demande::create([
@@ -45,7 +45,7 @@ class DemandesTableSeeder extends Seeder
         ]);
         Demande::create([
             'etudiant_cin' => 'WA11111111',
-            'type_demande' => 'licence',
+            'type_demande' => 'Licence',
             'date_demande' => '2021-06-01',     
         ]);
 

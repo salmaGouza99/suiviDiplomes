@@ -27,7 +27,7 @@ class DiplomeController extends Controller
             $diplome = [
                 'id' => $diplome->id,
                 'cin' => $diplome->etudiant->cin,
-                'apogee' => $diplome->etudiant->apogee,
+                'apogee' => $diplome->etudiant->apogee, 
                 'cne' => $diplome->etudiant->cne,
                 'nom' => $diplome->etudiant->nom,
                 'prenom' => $diplome->etudiant->prenom,
@@ -36,7 +36,6 @@ class DiplomeController extends Controller
                 'date_demande' => $diplome->demande->date_demande,
                 'type_demande' => $diplome->demande->type_demande,
                 'statut_id' => $diplome->statut_id,
-
             ];
             array_push($diplomes, $diplome);
         }
@@ -54,14 +53,13 @@ class DiplomeController extends Controller
      */
     function search($mc = '')
     {
-        $diplomes = DB::table('diplomes as d')
-            ->join('etudiants as e', 'd.etudiant_cin', '=', 'e.cin')
-            ->join('demandes', 'd.demande_id', '=', 'demandes.id')
-            ->where('e.cin', 'like', '%' . $mc . '%')
-            ->orWhere('e.cne', 'like', '%' . $mc . '%')
-            ->orWhere('e.apogee', 'like', '%' . $mc . '%')
-            ->get();
-
+        $diplomes = DB::table('demandes as dm')
+                ->join('etudiants as e', 'dm.etudiant_cin','=','e.cin')
+                ->join('diplomes as d', 'dm.id','=','d.demande_id')
+                ->where('e.cin','like','%'.$mc.'%')
+                ->orWhere('e.cne','like','%'.$mc.'%')
+                ->orWhere('e.apogee','like','%'.$mc.'%')
+                ->get()->sortByDesc('date_creationDossier_envoiAuServiceDiplome');
         return response()->json([
 
             'diplomes' => $diplomes
@@ -101,41 +99,41 @@ class DiplomeController extends Controller
 
         // store diplome according to a role
         $diplome = null;
-        if ($demande) {
-            if (Auth::user()->hasRole('guichet_droit_arabe')) {
-                if ($demande->etudiant->filiere == 'القانون باللغة العربية') {
-                    $demande->traite = 1;
-                    $demande->save();
+        if ($demande)
+        {
+            if(Auth::user()->hasRole('Guichet Droit Arabe')) {
+                if ($demande->etudiant->filiere == 'القانون باللغة العربية')
+                {
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
-                        'statut_id' => 1,
                         'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
-                }
-            } else if (Auth::user()->hasRole('guichet_droit_francais')) {
-                if ($demande->etudiant->filiere == 'Droit en français') {
                     $demande->traite = 1;
                     $demande->save();
+                }
+            } else if(Auth::user()->hasRole('Guichet Droit Francais')) {
+                if ($demande->etudiant->filiere == 'Droit en français')
+                {
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
-                        'statut_id' => 1,
                         'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
-                }
-            } else if (Auth::user()->hasRole('guichet_economie')) {
-                if ($demande->etudiant->filiere == 'Sciences Economiques et Gestion') {
                     $demande->traite = 1;
                     $demande->save();
+                }
+            } else if(Auth::user()->hasRole('Guichet Economie')) {
+                if ($demande->etudiant->filiere == 'Sciences Economiques et Gestion')
+                {
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
-                        'statut_id' => 1,
                         'date_creationDossier_envoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
                     ));
+                    $demande->traite = 1;
+                    $demande->save();
                 }
-            } else {
             }
         }
 
