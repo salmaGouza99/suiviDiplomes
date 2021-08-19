@@ -27,6 +27,7 @@ use App\Http\Controllers\FormulaireController;
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
 Route::get('/roles',[RoleController::class,'index']);
+Route::get('/statuts',[DiplomeController::class,'statuts']);
 
 
 
@@ -36,8 +37,8 @@ Route::get('/etudiants',[EtudiantController::class,'index']);
 // Protected routes for admin
 Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   // Users
-  Route::get('/users/search/{email?}',[UserController::class,'search']);
-  Route::resource('/users',UserController::class,['except' => 'index']);
+  // Route::get('/users/search/{email?}',[UserController::class,'search']);
+  Route::resource('/users',UserController::class);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
   // Forms
@@ -58,11 +59,13 @@ Route::group(['middleware' => ['auth:sanctum','role:admin']], function(){
   Route::get('/diplomes',[DiplomeController::class,'index']);
   Route::get('/diplomes/dates/{dateDebut?}/{dateFin?}',[DiplomeController::class,'searchByDates']);
   Route::get('/diplomes/type/{type}',[DiplomeController::class,'filterByType']);
+  Route::get('/diplomes/statut/{statut}',[DiplomeController::class,'filterByStatut']);
 
   //dashboard 
-  Route::get('/dashboard/{date_debut}/{date_fin}',[DashboardController::class,'dashboard']);
-Route::get('/dashboard',[DashboardController::class,'currentYear']);
-Route::get('/currents',[DashboardController::class,'index']);
+  Route::get('/dashboard/type/{type}',[DashboardController::class,'dashboardByType']);
+  Route::get('/dashboard/currents',[DashboardController::class,'currents']);
+  Route::get('/dashboard/currentYear',[DashboardController::class,'currentYear']);
+  Route::get('/dashboard/{date_debut?}/{date_fin?}/{type?}',[DashboardController::class,'filtredDashboard']);
 });
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
