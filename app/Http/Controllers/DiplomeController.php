@@ -54,9 +54,9 @@ class DiplomeController extends Controller
      */
     function search($mc='')
     {
-        $diplomes = DB::table('demandes as dm')
-                ->join('etudiants as e', 'dm.etudiant_cin','=','e.cin')
-                ->join('diplomes as d', 'dm.id','=','d.demande_id')
+        $diplomes = DB::table('diplomes as d')
+                ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
+                ->join('demandes as dm', 'dm.id','=','d.demande_id')
                 ->where('e.cin','like','%'.$mc.'%')
                 ->orWhere('e.cne','like','%'.$mc.'%')
                 ->orWhere('e.apogee','like','%'.$mc.'%')

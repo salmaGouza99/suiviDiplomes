@@ -101,9 +101,14 @@ class DemandeController extends Controller
                     ->get()->sortByDesc('date_demande');
         }
 
+        $res = array();
+        foreach ($demandes as $demande)
+        {
+            $res[] = $demande;
+        }
         
         return response()->json([
-            'demandes' => $demandes
+            'demandes' => $res
          ]);
     }
 

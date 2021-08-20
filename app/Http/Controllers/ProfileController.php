@@ -37,15 +37,13 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = User::with('roles')->find(auth()->user()->id);
-        $user->update(array('email' => $request->email,'password'=>Hash::make($request->password)));
-
-        $updaterUser = User::with('roles')->find(auth()->user()->id);
+        $user->update(['email' => $request->email]);
+        if($request->password != null) {
+            $user->update(['password'=>Hash::make($request->password)]);
+        }
 
         return response()->json([
-            'user' => [
-                'email'=>$updaterUser->email,
-                'role'=> $updaterUser->roles[0]->name,
-                ],
+            'user' => User::with('roles')->find(auth()->user()->id),
             'message' => 'Profil édité',
         ]);
 
