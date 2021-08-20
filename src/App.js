@@ -1,13 +1,13 @@
 import React, { useState, useEffect, initialState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./components/Login/Login";
-import Acceuil from "./components/Interfaces/Acceuil";
-import DemandesGrid from "./components/Demandes/DemandesGrid";
-import UsersGrid from "./components/Users/UsersGrid";
-import FormsPage from "./components/formulaires/FormsPage";
-import Profil from "./components/Users/Profil";
 import authService from "./Services/authService";
 import AdminAcceuil from './components/Interfaces/AdminAcceuil';
+import GuichetScolarite from './components/Interfaces/GuichetScolarite';
+import ServiceDiplomes from './components/Interfaces/ServiceDiplomes';
+import Decanat from './components/Interfaces/Decanat';
+import BureauOrdre from './components/Interfaces/BureauOrdre';
+import GuichetRetrait from './components/Interfaces/GuichetRetrait';
 
 function App() {
   const [user, setUser] = useState(initialState);
@@ -19,21 +19,17 @@ function App() {
       setUser(loggedInUser?.user);
       setRole(loggedInUser.user?.roles[0]?.id);
     }
-    //console.log(loggedInUser);
   }, []); // an empty array to check if there's a logged in user the first time the app loads.
   
   return (
     <Router>
     <div className="App">
         <Switch>
-          <Route exact path="/" component={() => (<Login user={user} />)}/>
+          <Route exact path="/" component={() => (<Login user={user} role={role}/>)}/>
           { !user ? 
-          (<> <Route component={() => (<Login user={user} />)}/> </>) 
+          (<> <Route component={() => (<Login user={user} role={role}/>)}/> </>) 
           : 
-          (<> {/* Routes for all users */}
-              <Route exact path="/Acceuil" component={() => (<Acceuil/>)}/> 
-              {/* <Route exact path="/Profil" component={() => (<Profil user={user} />)}/> */}
-              {/* Routes for admin */}
+          (<> {/* Routes for admin */}
               <Route exact path="/Admin" component={() => 
                               (<AdminAcceuil title="Acceuil" role={role} />)}/>
               <Route exact path="/Users" component={() => 
@@ -46,9 +42,30 @@ function App() {
                               (<AdminAcceuil openDashboard={true} title="Statistiques" role={role}/>)}/>
               <Route exact path="/Profil" component={() => 
                               (<AdminAcceuil openProfil={true} title="Profil Personnel" role={role}/>)}/>
-              {/* Routes for guichets: arabe, francais et economie */}
-              <Route exact path="/Demandes" component={() => 
-                                (<DemandesGrid user={user} role={role} />)}/>
+
+
+              {/* The route of admin */}
+              {/* <Route exact path="/Admin" component={() => (<Admin role={role}/>)}/> */}
+              {/* The route of guichets: arabe, francais et economie */}
+              <Route exact path="/GuichetScolarite" component={() => (<GuichetScolarite role={role}/>)}/>
+
+
+              {/* The route of service de diplomes */}
+              <Route exact path="/ServiceDiplomes" component={() => (<ServiceDiplomes role={role}/>)}/>
+
+              
+              {/* The route of decanat  */}
+              <Route exact path="/Decanat" component={() => (<Decanat role={role}/>)}/>
+
+              
+              {/* The route of bureau d'ordre */}
+              <Route exact path="/BureauOrdre" component={() => (<BureauOrdre role={role}/>)}/>
+
+              
+              {/* The route of guichet de retrait*/}
+              <Route exact path="/GuichetRetrait" component={() => (<GuichetRetrait role={role}/>)}/>
+
+              
           </>)}
         </Switch>
       </div>

@@ -180,11 +180,10 @@ function AdminAcceuil(props) {
   const [navItems, setNavItems] = useState([]);
   const history = useHistory();
 
-  //console.log(props);
   useEffect(() => {
     if (props?.role !== 1) {
-      history.push("/Acceuil");
-      window.location.reload();  // reload here obligatory
+      history.push("/");
+      window.location.reload();
     }
     else {
       setNavItems(
@@ -240,8 +239,6 @@ function AdminAcceuil(props) {
             {openDiplomes && <AllDiplomes />}
             {openProfil && <Profil />}
             {openDashboard && <Dashboard />}
-
-
           </main>
           <footer className={classes.footer}>
             <Copyright />

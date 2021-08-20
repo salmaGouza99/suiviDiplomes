@@ -20,7 +20,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import authService from "../../Services/authService";
-import useStyles from "./LoginStyle"
+import { makeStyles } from '@material-ui/core/styles';
+import img from "../../FSJES_Agdal.png";
 
 function Copyright() {
   return (
@@ -31,6 +32,56 @@ function Copyright() {
     </Typography>
   );
 }
+
+const useStyles = makeStyles((theme) => ({
+  image: {
+    backgroundImage: `url(${img})`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundAttachment: "fixed",
+    //filter: "brightness(50%)",
+  },
+  root: {
+    maxWidth: 400,
+    marginTop: theme.spacing(8),
+    marginBottom: theme.spacing(8),
+    backgroundColor: 'rgba(255,255,255,0.95)',
+  },
+  loading: {
+    marginBottom: -theme.spacing(3),
+    marginTop: theme.spacing(2),
+    color: '#0268B5',
+  },
+  alert: {
+    marginBottom: -theme.spacing(7),
+    marginTop: theme.spacing(3),
+    textAlign: 'center'
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  img: {
+    width: 70,
+    height: 70,
+    margin: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0),
+    background: '#0268B5',
+    '&:hover': {
+      background: "#3A7BAF",
+    },
+    color: '#FFFFFF'
+  },
+}));
 
 export default function Login(props) {
 
@@ -46,7 +97,11 @@ export default function Login(props) {
   
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("logedOut")) === false && props?.user) {
-      history.push("/Acceuil");
+      history.push(props?.role === 1 ? "/Admin" :
+                   props?.role === 2 || props?.role === 3 || props?.role === 4 ? "/GuichetScolarite" :
+                   props?.role === 5 ? "/ServiceDiplomes" :
+                   props?.role === 6 ? "/Decanat" : 
+                   props?.role === 7 ? "BureauOrdre" : "/GuichetRetrait");
       window.location.reload();
     }
   });
@@ -82,7 +137,12 @@ export default function Login(props) {
       authService.login(email, password).then(
         (response) => {
           if (!response.msgError) {
-            history.push("/Acceuil");
+            history.push(response?.user?.roles[0]?.id === 1 ? "/Admin" :
+                         response?.user?.roles[0]?.id === 2 || response?.user?.roles[0]?.id === 3 || 
+                         response?.user?.roles[0]?.id === 4 ? "/GuichetScolarite" :
+                         response?.user?.roles[0]?.id === 5 ? "/ServiceDiplomes" :
+                         response?.user?.roles[0]?.id === 6 ? "/Decanat" : 
+                         response?.user?.roles[0]?.id === 7 ? "BureauOrdre" : "/GuichetRetrait");
             window.location.reload();
           } else {
             setLoading(false);

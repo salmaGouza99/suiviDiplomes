@@ -369,12 +369,12 @@ function AllDiplomes(props) {
     ///Callback function to close forms
     const handleCloseCallback = (open) => {
         setOpen(open);
-    }
+    };
     /////////////////////////////////////////////////////////
     const handleRowSelection = (e) => {
         setId(e[0]);
         setDisableButton(false);
-    }
+    };
 
     const handleLoad = () => {
         setSearchItem('');
@@ -389,21 +389,11 @@ function AllDiplomes(props) {
 
     const handleSearch = (e) => {
         setSearchItem(e.target.value);
-
-
-    }
+    };
 
     const showDetails = () => {
-        userService.showDiplome(id).then(response => {
-            setDiplome(response.data.diplome);
-            setOpen(true)
-
-        }).catch(err => {
-            console.log(err);
-            setMessage("Erreur de chargement , veuillez reessayer !");
-
-        })
-    }
+        setOpen(true);
+    };
 
     const handleDeug = () => {
         setType("DEUG");
@@ -599,8 +589,8 @@ function AllDiplomes(props) {
                 </div>
             </div>
             {open &&
-                <DetailsDiplome handleOpen={open} diplome={diplome} title="Détails"
-                    closeCallback={handleCloseCallback} />
+                <DetailsDiplome handleOpen={open} diplomeId={id} title="Détails"
+                    closeCallback={handleCloseCallback} button="Imprimer"/>
             }
         </Paper>
 

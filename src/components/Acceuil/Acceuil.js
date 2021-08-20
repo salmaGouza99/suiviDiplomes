@@ -19,7 +19,6 @@ import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import userService from "../../Services/userService";
-import InfoGrid from "./InfoGrid";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -111,7 +110,7 @@ const styles = (theme) => ({
 });
 
 
-function DemandesGrid(props) {
+function Acceuil(props) {
   const { classes } = props;
   const [open, setOpen] = useState(false);
   const [demandeId, setDemandeId] = useState(null);
@@ -127,9 +126,7 @@ function DemandesGrid(props) {
   const [error, setError] = useState();
   const [number, setNumber] = useState();
   const [selectionModel, setSelectionModel] = useState([]);
-  const type = props?.currentIndex === 0 ? "DEUG" : "Licence";
-  const filiere = props?.role === 2 ? "القانون باللغة العربية" : 
-                  props?.role === 3 ? "Droit en français" : "Sciences Economiques et Gestion";
+  const index = props?.currentIndex;
 
   const columns = [
     {
@@ -206,7 +203,7 @@ function DemandesGrid(props) {
 
   function filterDemandes() {
     setLoad(true);
-    userService.filterDemandes(type, filiere)
+    userService.filterDemandes(index === 0 ? "DEUG" : "Licence", "القانون باللغة العربية")
       .then((response) => {
         setLoad(false);
         setError(null);
@@ -230,7 +227,7 @@ function DemandesGrid(props) {
     // console.log(index);
     filterDemandes();
     setMessage(number != null ? message : null);
-  }, [type]);
+  }, [index]);
 
   useEffect(() => {
     setfiltredDemandes(
@@ -253,7 +250,7 @@ function DemandesGrid(props) {
   const handleNewDemands = () => {
     setLoad(true);
     setDisable(true);
-    userService.nouvellesDemandes(filiere).then((response) => {
+    userService.nouvellesDemandes('القانون باللغة العربية').then((response) => {
       setDisable(false);
       setError(null);
       filterDemandes();
@@ -337,7 +334,7 @@ function DemandesGrid(props) {
             <Grid item xs>
               <TextField
                 fullWidth
-                placeholder="Chercher par Apogée, CIN ou CNE ..."
+                placeholder="Chercher étudiant par Apogée, CIN ou CNE ..."
                 fontWeight="fontWeightBold"
                 InputProps={{
                   disableUnderline: true,
@@ -348,10 +345,10 @@ function DemandesGrid(props) {
             </Grid>
             <Grid item>
               <Button variant="contained"
-                disabled={disable}
+                disabled={true}
                 className={classes.newDemands}
                 onClick={handleNewDemands}>
-                <Box fontWeight="fontWeightBold">Nouvelles demandes</Box>
+                <Box fontWeight="fontWeightBold">Exporter fiche étudiant</Box>
               </Button>
               <Tooltip title="Recharger">
                 <IconButton onClick={handleReload}>
@@ -362,7 +359,7 @@ function DemandesGrid(props) {
           </Grid>
         </Toolbar>
       </AppBar>
-      <div className={classes.contentWrapper}>
+      {/* <div className={classes.contentWrapper}>
         {(message || error) && (
           <Alert className={classes.alert}
             icon={number === 0 ? false : null}
@@ -378,47 +375,15 @@ function DemandesGrid(props) {
           </Alert>
         )}
 
-        <div style={{ height: 375, width: '100%' }} className={classes.MuiDataGrid}>
-          <DataGrid
-            localeText={frFR.props.MuiDataGrid.localeText}
-            rows={data ? data : []}
-            columns={columns}
-            getCellClassName={(params) => {
-              return (params.value === 'Traitée' ? 'traitee' : params.value === 'Non traitée' ? 'nonTraitee' : '')
-            }}
-            /* sortModel={[
-              { field: 'date', sort: 'desc' },
-            ]} */
-            checkboxSelection
-            disableSelectionOnClick
-            disableColumnMenu
-            pageSize={pageSize}
-            onSelectionModelChange={handleSelection}
-            selectionModel={selectionModel}
-            //onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            //rowsPerPageOptions={[5, 7, 10]}
-            components={{
-              Pagination: CustomPagination,
-              LoadingOverlay: CustomLoadingOverlay,
-            }}
-            pagination
-            loading={load}
-          />
-          <Button variant="contained" disabled={selectionModel?.length === 0 || disable1 ? true : false}
-            className={classes.footer} onClick={handleCreateFolders}>
-            <Box fontWeight="fontWeightBold">Créer dossier</Box>
-          </Button>
-        </div>
-      </div>
-      {open?
-        <InfoGrid handleOpen={open} demandeId={demandeId} closeCallback={handleCloseCallback} />
-        : <div></div>}
+        
+      </div> */}
+     
     </Paper>
   );
 }
 
-DemandesGrid.propTypes = {
+Acceuil.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DemandesGrid);
+export default withStyles(styles)(Acceuil);

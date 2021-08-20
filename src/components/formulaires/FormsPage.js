@@ -81,7 +81,7 @@ export default function FormsPage(props) {
           }else if(form.type_formulaire === "Licence"){
             setFormLicence(form);
           }
-          setValue(0);
+          setValue(1);
         });
       }).catch(err => {
         setMessage("Erreur de chargement , veuillez reessayer !");

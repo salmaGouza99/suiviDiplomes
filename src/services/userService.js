@@ -3,7 +3,17 @@ import authHeaders from "./authHeaders";
 
 const API_URL = "http://127.0.0.1:8000/api/";
 
-// User/
+
+// Profil 
+const showProfil = () => {
+  return axios.get( API_URL + "profil", authHeaders() );
+};
+const updateProfil = (email, password, role) => {
+  return axios.put( API_URL + "profil", {email, password, role}, authHeaders() );
+};
+
+
+// Users
 const addNewUser = (email, password, role) => {
     return axios.post( API_URL + "users", {email, password, role}, authHeaders() );
 };
@@ -26,17 +36,6 @@ const getAllRoles = () => {
     return axios.get( API_URL + "roles", authHeaders() );
 };
 
-// Demandes
-const getAllDemandes = () => {
-  return axios.get( API_URL + "demandes", authHeaders() )
-};
-const getNewDemandes = () => {
-  console.log(authHeaders());
-  return axios.post( API_URL + "demandes/nouvellesDemandes", authHeaders() )
-};
-const filterDemandes = (type, filiere) => {
-  return axios.get( API_URL + `demandes/filter/${type},${filiere}`, authHeaders() )
-};
 
 // Forms
 const getAllForms = () => {
@@ -51,8 +50,28 @@ const updateForm = (formId, type_formulaire, lien, api_id) => {
 //Diplomes
 const getAllDiplomes = () => {
   return axios.get( API_URL + `diplomes`, authHeaders() )
+// Demandes
+const getAllDemandes = () => {
+  return axios.get( API_URL + "demandes", authHeaders() )
+};
+const nouvellesDemandes = (filiere) => {
+  return axios.post( API_URL + `demandes/nouvellesDemandes/${filiere}`, {}, authHeaders() )
+};
+const filterDemandes = (type, filiere) => {
+  return axios.get( API_URL + `demandes/filter/${type},${filiere}`, authHeaders() )
+};
+const showDemande = (id) => {
+  return axios.get( API_URL + `demandes/${id}`, authHeaders() )
 };
 
+
+// Diplomes
+const CreerDossiers = (demandeId) => {
+  return axios.post( API_URL + `diplomes/${demandeId}`, {}, authHeaders() )
+};
+const getAllDiplomes = () => {
+  return axios.get( API_URL + "diplomes", authHeaders() )
+};
 const showDiplome = (id) => {
   return axios.get( API_URL + `diplomes/${id}`, authHeaders() )
 }
@@ -64,6 +83,8 @@ const statutsDiplomes = () => {
 const dashboardByType = (type) => {
   return axios.get( API_URL + `dashboard/type/${type}`, authHeaders() )
 }
+};
+
 
 const filtredDashboard = (dateDebut ,dateFin ,type) => {
   return axios.get( API_URL + `dashboard/${dateDebut}/${dateFin}/${type}`, authHeaders() )
@@ -81,11 +102,8 @@ const dashboardCurrentYear = () => {
 
 
 const userService = {
-    getAllDemandes,
-    getNewDemandes,
-    filterDemandes,
-    getAllForms,
-    updateForm,
+    showProfil,
+    updateProfil,
     addNewUser,
     getAllUsers,
     filterUser,
@@ -93,6 +111,13 @@ const userService = {
     updateUser,
     delateUser,
     getAllRoles,
+    getAllForms,
+    updateForm,
+    getAllDemandes,
+    nouvellesDemandes,
+    filterDemandes,
+    showDemande,
+    CreerDossiers,
     getAllDiplomes,
     showDiplome,
     statutsDiplomes,

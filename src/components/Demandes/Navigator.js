@@ -4,42 +4,26 @@ import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import Divider from '@material-ui/core/Divider';
+import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import FolderIcon from '@material-ui/icons/Folder';
-import EditIcon from '@material-ui/icons/Edit';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import authService from "../../Services/authService";
-import { Link } from "react-router-dom";
-
-
-const categories = [
-  {
-    id: 'Menu',
-    children: [
-      { id: 'Demandes', icon: <AssignmentIndIcon />, active: true,link :'/Acceuil' },
-      { id: 'Dossiers créés', icon: <FolderIcon />,link :'/Profil' },
-    ],
-  },
-  {
-    id: 'Profil',
-    children: [
-      { id: 'Afficher', icon: <VisibilityIcon /> , link :'/Acceuil'},
-      { id: 'Modifier', icon: <EditIcon /> , link :'/Profil'},
-    ],
-  },
-];
+import Link from '@material-ui/core/Link';
 
 const styles = (theme) => ({
   categoryHeader: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
+  },
+  email: {
+    color: theme.palette.common.white,
+    fontSize: 23,
+    textAlign: 'center',
   },
   categoryHeaderPrimary: {
     color: theme.palette.common.white,
@@ -51,6 +35,12 @@ const styles = (theme) => ({
     '&:hover,&:focus': {
       backgroundColor: 'rgba(255, 255, 255, 0.08)',
     },
+  },
+  role: {
+    paddingTop: 1,
+    paddingBottom: 1,
+    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: 'center',
   },
   logout: {
     paddingTop: 1,
@@ -89,15 +79,23 @@ const styles = (theme) => ({
 function Navigator(props) {
   const { classes, ...other } = props;
   const [email, setEmail] = useState(initialState);
+  const [role, setRole] = useState(initialState);
+  const [selectedItem, setSelectedItem] = useState('0');
   const history = useHistory();
 
   useEffect(() => {
     const loggedInUser = authService.getCurrentUser();
     if (loggedInUser) {
       setEmail(loggedInUser?.user?.email);
+      setRole(loggedInUser?.user?.roles[0]?.name);
     }
     //console.log(loggedInUser);
   }, []);
+
+  const handleListItemClick = (event, index) => {
+    setSelectedItem(index);
+    props.parentCallback(index);
+  };
 
   const handleLogout = () => {
     authService.logout();
@@ -107,10 +105,34 @@ function Navigator(props) {
   return (
     <Drawer variant="permanent" {...other}>
       <List disablePadding>
-        <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>
-          {email}
-        </ListItem>
-        <ListItem className={clsx(classes.item, classes.itemCategory)}>
+        <React.Fragment key={'info pers'}>
+          <div className={classes.itemCategory}>
+            <ListItem align='center'>
+              <ListItemText
+                classes={{
+                  primary: classes.email,
+                }}>
+                {email}
+              </ListItemText>
+            </ListItem>
+            <ListItem
+              key={"role"}
+              className={clsx(classes.role)}
+            >
+              <ListItemText >
+                {role}
+              </ListItemText>
+            </ListItem>
+
+          </div>
+        </React.Fragment>
+
+        <ListItem 
+          key="Acceuil"
+          button
+          onClick={(event) => handleListItemClick(event, '0')}
+          className={clsx(classes.item, classes.itemCategory, selectedItem === '0' && classes.itemActiveItem)}
+        >
           <ListItemIcon className={classes.itemIcon}>
             <HomeIcon />
           </ListItemIcon>
@@ -122,7 +144,7 @@ function Navigator(props) {
             Acceuil
           </ListItemText>
         </ListItem>
-        {categories.map(({ id, children }) => (
+        {props?.navItems.map(({ id, children }) => (
           <React.Fragment key={id}>
             <ListItem className={classes.categoryHeader}>
               <ListItemText
@@ -133,23 +155,23 @@ function Navigator(props) {
                 {id}
               </ListItemText>
             </ListItem>
-            {children.map(({ id: childId, icon, active }) => (
-            
-              <ListItem
-                key={childId}
-                button
-                className={clsx(classes.item, active && classes.itemActiveItem)}
-              >
-                <ListItemIcon className={classes.itemIcon}>{icon}</ListItemIcon>
-                <ListItemText
-                  classes={{
-                    primary: classes.itemPrimary,
-                  }}
+            {children.map(({ id: childId, icon, index }) => (
+                <ListItem
+                  key={childId}
+                  button
+                  onClick={(event) => handleListItemClick(event, index)}
+                  className={clsx(classes.item, selectedItem === index && classes.itemActiveItem)}
                 >
-                  {childId}
-                </ListItemText>
-              </ListItem>
-            
+                  <ListItemIcon className={classes.itemIcon}>{icon}</ListItemIcon>
+                  <ListItemText
+                    classes={{
+                      primary: classes.itemPrimary,
+                    }}
+                  >
+                    {childId}
+                  </ListItemText>
+
+                </ListItem>
             ))}
             <Divider className={classes.divider} />
           </React.Fragment>

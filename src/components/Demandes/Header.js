@@ -40,14 +40,18 @@ const styles = (theme) => ({
 });
 
 function Header(props) {
-    const { classes, onDrawerToggle } = props;
+    const { classes, onDrawerToggle, title } = props;
     const [currentIndex,setCurrentIndex] = useState(0);
-
     const history = useHistory();
+
+    useEffect(() => {
+        setCurrentIndex(0);
+        props.parentCallback(0);
+    },[title]);
 
     const handleChange = (event, currentSelectedIndex) => {
         setCurrentIndex(currentSelectedIndex);
-        props.parentCallback(currentIndex);
+        props.parentCallback(currentSelectedIndex);
     };
 
     const handleLogout = () => {
@@ -100,7 +104,7 @@ function Header(props) {
                     <Grid container alignItems="center" spacing={1}>
                         <Grid item xs>
                             <Typography color="inherit" variant="h5" component="h1">
-                               Liste
+                                {title}
                             </Typography>
                         </Grid>
                         <Grid item>
@@ -121,8 +125,8 @@ function Header(props) {
                 elevation={0}
             >
                 <Tabs textColor="inherit" value={currentIndex} onChange={handleChange}>
-                    <Tab textColor="inherit" label="DEUG" />
-                    <Tab textColor="inherit" label="Licence" />
+                    {props?.tabs && <Tab textColor="inherit" label="DEUG" />}
+                    {props?.tabs && <Tab textColor="inherit" label="Licence" />}
                 </Tabs>
             </AppBar>
         </React.Fragment>

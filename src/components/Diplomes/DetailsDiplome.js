@@ -12,9 +12,9 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import AddBoxRoundedIcon from '@material-ui/icons/AddBoxRounded';
 import userService from "../../Services/userService";
-import DetailsRow from './DetailsRow';
+import Alert from '@material-ui/lab/Alert';
+import LinearProgress from '@material-ui/core/LinearProgress';import DetailsRow from './DetailsRow';
 import TimeLine from './TimeLine'
 
 const useStyles = makeStyles((theme) => ({
@@ -55,22 +55,27 @@ export default function DetailsDiplome(props) {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [diplome, setDiplome] = useState('');
-    const [message, setMessage] = useState('');
-
-
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
+        setLoading(true);
         setOpen(props.handleOpen);
-        props.diplome ? setDiplome(props.diplome) : setDiplome('');
-
-
+        userService.showDiplome(props?.diplomeId).then((response) => {
+            setLoading(false);
+            setDiplome(response?.data?.diplome);
+        }).catch(err => {
+            setLoading(false);
+            console.log(err);
+            setError("Erreur de chargement, veuillez reessayer.");
+        })
     }, []);
 
 
     ///////////////////////////////////////////
     const handleClose = (e) => {
         props.closeCallback(false);
-    }
+    };
 
     return (
         <div className={classes.root}>
@@ -80,11 +85,27 @@ export default function DetailsDiplome(props) {
                     component="span" size="small" className={classes.closeIcon}>
                     <CloseIcon onClick={handleClose} />
                 </IconButton>
-                <Button variant="outlined" color="primary" size="small">
-                    Imprimer
-                </Button>
+                {props?.button !== null && (
+                    <Button variant="outlined" color="primary" size="small">
+                        {props?.button}
+                    </Button>
+                )}
                 <DialogContent>
-
+                {loading && (
+                    <div align='center' >
+                        <LinearProgress />
+                    </div>
+                )}
+                {error && (
+                    <Alert
+                        severity="error"
+                        onClose={() => {
+                            setError(null);
+                        }}
+                    >
+                        {error}
+                    </Alert>
+                )}
                     <Card className={classes.card}>
                         <CardContent>
                             <Grid
@@ -98,27 +119,33 @@ export default function DetailsDiplome(props) {
                                     <Typography variant="body" component="h3" >
                                         Informations Personnelles
                                     </Typography><br />
-
+                                    <DetailsRow title="Apogée" data={diplome.apogee} />
                                     <DetailsRow title="CIN" data={diplome.cin} />
                                     <DetailsRow title="CNE" data={diplome.cne} />
-                                    <DetailsRow title="Appoge" data={diplome.apogee} />
                                     <DetailsRow title="Nom" data={diplome.nom} />
-                                    <DetailsRow title="Prenom" data={diplome.prenom} />
+                                    <DetailsRow title="Prénom" data={diplome.prenom} />
                                     <DetailsRow title="Nom arabe" data={diplome.nom_arabe} />
-                                    <DetailsRow title="Prenom arabe" data={diplome.prenom_arabe} />
-                                    <DetailsRow title="Filiere" data={diplome.filiere} />
-                                    <DetailsRow title="Option" data={diplome.option} />
+                                    <DetailsRow title="Prénom arabe" data={diplome.prenom_arabe} />
+                                    <DetailsRow title="Filière" data={diplome.filiere} />
+                                    {diplome.option !== null ?
+                                        <DetailsRow title="Option" data={diplome.option} /> : <div></div>
+                                    }
                                     <DetailsRow title="Nationalité" data={diplome.nationalite} />
                                     <DetailsRow title="Date de naissance" data={diplome.date_naiss} />
                                     <DetailsRow title="Lieu de naissance" data={diplome.lieu_naiss} />
-                                    <DetailsRow title="Type Demande" data={diplome.type_demande} />
+                                    <DetailsRow title="E-mail institutionnel" data={diplome.email_inst} />
+                                    <DetailsRow title="Type de demande" data={diplome.type_demande} />
+                                    {diplome.date_reedition !== null && diplome.type_erreur !== null ?
+                                        <DetailsRow title="Type d'erreur" data={diplome.type_erreur} color='red' />
+                                        : <div></div>
+                                    }
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Typography variant="body" component="h3" >
                                         Parcours du diplôme
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        <div><TimeLine diplome={diplome}/></div>
+                                        <div><TimeLine diplome={diplome} /></div>
                                     </Typography>
                                 </Grid>
 

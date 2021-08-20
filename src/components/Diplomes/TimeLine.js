@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import Button from '@material-ui/core/Button';
+import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
@@ -36,25 +36,23 @@ function getSteps() {
 
 export default function TimeLine(props) {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(-1);
+  const [activeStep, setActiveStep] = React.useState("");
   const [steps, setSteps] = React.useState([]);
-
+  const diplome = props?.diplome;
 
   useEffect(() => {
-    // props.diplome ? setDiplome(props.diplome) : setDiplome('');
-
-    const {diplome} = props;
-    
     setSteps(
       [
-        {label :'Reception de la demande', date : `${diplome.date_demande}`,},
-        {label :'Creation du dossier',date : `${diplome.date_creationDossier_envoiAuServiceDiplome}`,},
-        {label :'Impression et envoi au decanat',date : `${diplome.date_impression_envoiAuDecanat}`,},
-        {label :'Signature et Renvoi au service de diplomes',date : `${diplome.date_singature_renvoiAuServiceDiplome}`,},
-        {label :'Evnoi a la presidence',date : `${diplome.date_generationBorodeaux_envoiApresidence}`,},
-        {label :'Reception aupres du bureau d\'ordre',date : `${diplome.date_receptionParBureauOrdre_envoiAuGuichetRetrait}`,},
-        {label :'Reception chez guichet de retrait et Notification de l\'etudiant',date : `${diplome.date_notificationEtudiant}`,},
-        {label :'Retrait du diplome et archive du dossier',date : `${diplome.date_retraitDiplome_archiveDossier}`,},
+        {label :'Réception de la demande', date : `${diplome.date_demande}`,},
+        {label :'Création du dossier',date : `${diplome.date_creationDossier_envoiAuServiceDiplome}`,},
+        diplome.date_reedition !== null ? 
+        {label :'Réédition par service de diplômes',date : `${diplome.date_reedition}`,} : {label: null,date: null},
+        {label :'Impression et envoi au décanat',date : `${diplome.date_impression_envoiAuDecanat}`,},
+        {label :'Signature et renvoi au service de diplômes',date : `${diplome.date_singature_renvoiAuServiceDiplome}`,},
+        {label :'Evnoi à la présidence',date : `${diplome.date_generationBorodeaux_envoiApresidence}`,},
+        {label :'Réception auprès du bureau d\'ordre',date : `${diplome.date_receptionParBureauOrdre_envoiAuGuichetRetrait}`,},
+        {label :'Réception chez guichet de retrait et Notification de l\'étudiant',date : `${diplome.date_notificationEtudiant}`,},
+        {label :'Retrait du diplôme et archive du dossier',date : `${diplome.date_retraitDiplome_archiveDossier}`,},
       ]
     );
 
@@ -62,19 +60,21 @@ export default function TimeLine(props) {
     if(`${diplome.date_creationDossier_envoiAuServiceDiplome}` === 'null'){
       setActiveStep(0)
     }else if(`${diplome.date_impression_envoiAuDecanat}` === 'null'){
-      setActiveStep(1)
+      setActiveStep(`${diplome.date_reedition}` === 'null' ? 1 : 2)
     }else if(`${diplome.date_singature_renvoiAuServiceDiplome}` === 'null'){
-      setActiveStep(2)
+      setActiveStep(`${diplome.date_reedition}` === 'null' ? 2 : 3)
     }else if(`${diplome.date_generationBorodeaux_envoiApresidence}` === 'null'){
-      setActiveStep(3)
+      setActiveStep(`${diplome.date_reedition}` === 'null' ? 3 : 4)
     }else if(`${diplome.date_receptionParBureauOrdre_envoiAuGuichetRetrait}` === 'null'){
-      setActiveStep(4)
+      setActiveStep(`${diplome.date_reedition}` === 'null' ? 4 : 5)
     }else if(`${diplome.date_notificationEtudiant}` === 'null'){
-      setActiveStep(5)
+      setActiveStep(`${diplome.date_reedition}` === 'null' ? 5 : 6)
     }else if(`${diplome.date_retraitDiplome_archiveDossier}` === 'null'){
-      setActiveStep(6)
+      setActiveStep(`${diplome.date_reedition}` === 'null' ? 6 : 7)
+    }else {
+      setActiveStep(-1)
     }
-},[]);
+  },[diplome]);
 
 
   const handleBack = () => {
@@ -89,23 +89,26 @@ export default function TimeLine(props) {
     <div className={classes.root}>
       <Stepper activeStep={activeStep}  orientation="vertical">
         {steps.map(({label,date}) => (
-          <Step key={label}>
+          (label !== null && date !== null && 
+            <Step key={label}>
             <StepLabel>
                 <div className={classes.date}>
                   <Typography variant="body" component="h3" >
-                     {date === 'null' ? 'aaaa-mm-jj' : date} 
+                    {date === 'null' ? 'aaaa-mm-jj' : date} 
                   </Typography>
                 </div>
-                  
                 <div>{label}</div>
             </StepLabel>
-          </Step>
+          </Step>)
         ))}
       </Stepper>
       <div>
-        {activeStep === steps.length ? (
+        {activeStep === -1 ? (
           <div>
-            <Typography className={classes.instructions}>Toutes les étapes sont terminées</Typography>
+            {/* <Typography className={classes.instructions}>Toutes les étapes sont terminées.</Typography> */}
+            <Alert severity="success" color="info" >
+              Toutes les étapes sont terminées.
+            </Alert>
           </div>
         ) : (
           <div>

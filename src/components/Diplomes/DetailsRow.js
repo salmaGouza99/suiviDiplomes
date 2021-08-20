@@ -19,7 +19,7 @@ export default function DetailsRow(props) {
                 </Typography>
             </Grid>
             <Grid item xs={6}>
-                <Typography variant="body2" component="p">
+                <Typography variant="body2" component="p" style={{color: props.color ? props?.color : ''}}>
                     {props.data}
                 </Typography>
             </Grid>
