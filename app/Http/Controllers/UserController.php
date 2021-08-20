@@ -14,21 +14,22 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // public function index()
-    // {
-    //     $listUsers=[] ;
-    //     foreach (User::with('roles')->get() as $user){
-    //         $user=[
-    //             'id'=>$user->id,
-    //             'email'=>$user->email,
-    //             'role'=>Str::replace('_',' ',$user->roles[0]->name),
-    //         ];
-    //         array_push($listUsers,$user);
-    //     }
-    //     return response()->json([
-    //        'users'=> $listUsers
-    //     ]);
-    // }
+    public function index()
+    {
+        $listUsers=[] ;
+        foreach (User::with('roles')->get() as $user){
+            $user=[
+                'id'=>$user->id,
+                'email'=>$user->email,
+                'roleId' =>$user->roles[0]->id,
+                'role'=>Str::replace('_',' ',$user->roles[0]->name),
+            ];
+            array_push($listUsers,$user);
+        }
+        return response()->json([
+           'users'=> $listUsers
+        ]);
+    }
 
     /**
      * Store a newly created user in storage.

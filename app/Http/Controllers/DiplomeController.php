@@ -22,11 +22,9 @@ class DiplomeController extends Controller
      */
     public function index()
     {
-        $diplomes=[];
-        foreach(Diplome::with('demande','etudiant')->get()
-                ->sortByDesc('date_creationDossier_envoiAuServiceDiplome') as $diplome)
-        {
-            $diplome=[
+        $diplomes = [];
+        foreach (Diplome::with('demande', 'etudiant')->get() as $diplome) {
+            $diplome = [
                 'id' => $diplome->id,
                 'cin' => $diplome->etudiant->cin,
                 'apogee' => $diplome->etudiant->apogee, 
@@ -35,24 +33,25 @@ class DiplomeController extends Controller
                 'prenom' => $diplome->etudiant->prenom,
                 'filiere' => $diplome->etudiant->filiere,
                 'option' => $diplome->etudiant->option,
+                'date_demande' => $diplome->demande->date_demande,
                 'type_demande' => $diplome->demande->type_demande,
                 'statut_id' => $diplome->statut_id,
-                'date_creation' => $diplome->date_creationDossier_envoiAuServiceDiplome,
             ];
-            array_push($diplomes,$diplome);
+            array_push($diplomes, $diplome);
         }
         return response()->json([
-            'diplomes' => $diplomes
-        ]); 
-    }
 
+            'diplomes' => $diplomes
+
+        ]);
+    }
     /**
      * search diplome by CNE,CIN or APPOGE
      *
      * @param string $mc
      * @return \Illuminate\Http\Response 
      */
-    function search($mc='')
+    function search($mc = '')
     {
         $diplomes = DB::table('diplomes as d')
                 ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
@@ -62,31 +61,29 @@ class DiplomeController extends Controller
                 ->orWhere('e.apogee','like','%'.$mc.'%')
                 ->get()->sortByDesc('date_creationDossier_envoiAuServiceDiplome');
         return response()->json([
- 
-            'diplomes' =>$diplomes
 
-        ]); 
+            'diplomes' => $diplomes
 
+        ]);
     }
-     /**
+    /**
      * search diplome by CNE,CIN or APPOGE
      *
      * @param string $mc
      * @return \Illuminate\Http\Response 
      */
-    function searchByDates($dateDebut='',$dateFin='')
+    function searchByDates($dateDebut = '', $dateFin = '')
     {
         $diplomes = DB::table('diplomes as d')
-                ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
-                ->join('demandes as dm', 'd.demande_id','=','dm.id')
-                ->whereBetween('date_demande', [$dateDebut, $dateFin])
-                ->get();
+            ->join('etudiants as e', 'd.etudiant_cin', '=', 'e.cin')
+            ->join('demandes as dm', 'd.demande_id', '=', 'dm.id')
+            ->whereBetween('date_demande', [$dateDebut, $dateFin])
+            ->get();
         return response()->json([
- 
-            'diplomes' =>$diplomes
 
-        ]); 
+            'diplomes' => $diplomes
 
+        ]);
     }
 
     /**
@@ -98,7 +95,7 @@ class DiplomeController extends Controller
      */
     public function store($demande_id)
     {
-        $demande = Demande::with('etudiant')->where('traite','=',0)->find($demande_id);
+        $demande = Demande::with('etudiant')->where('traite', '=', 0)->find($demande_id);
 
         // store diplome according to a role
         $diplome = null;
@@ -139,7 +136,7 @@ class DiplomeController extends Controller
                 }
             }
         }
-        
+
         return response()->json([
             'diplomeCree' => $diplome,
         ]);
@@ -153,8 +150,8 @@ class DiplomeController extends Controller
      */
     public function show($id)
     {
-        $diplome = Diplome::with('demande','etudiant')->find($id);
-        $diplome=[
+        $diplome = Diplome::with('demande', 'etudiant')->find($id);
+        $diplome = [
             'id' => $diplome->id,
             'cin' => $diplome->etudiant->cin,
             'apogee' => $diplome->etudiant->apogee,
@@ -181,10 +178,10 @@ class DiplomeController extends Controller
             'date_reedition' => $diplome->date_reedition,
             'type_erreur' => $diplome->type_erreur,
         ];
-        
+
         return response()->json([
             'diplome' => $diplome
-         ]);
+        ]);
     }
 
     /**
@@ -200,8 +197,7 @@ class DiplomeController extends Controller
         ]);
 
         // test if the specified date is null 
-        if( ! $diplome->date_reedition )
-        {
+        if (!$diplome->date_reedition) {
             $diplome->update([
                 'statut_id' => 2,
                 'type_erreur' => $request->type_erreur,
@@ -209,7 +205,7 @@ class DiplomeController extends Controller
             ]);
         }
         return response()->json([
-            'diplome'=> $diplome,
+            'diplome' => $diplome,
         ]);
     }
 
@@ -221,16 +217,15 @@ class DiplomeController extends Controller
      */
     public function updateDateImpression(Diplome $diplome)
     {
-       // test if the specified date is null 
-       if( ! $diplome->date_impression_envoiAuDecanat)
-        {
+        // test if the specified date is null 
+        if (!$diplome->date_impression_envoiAuDecanat) {
             $diplome->update([
                 'statut_id' => 3,
                 'date_impression_envoiAuDecanat' => Carbon::today()->format('Y-m-d'),
             ]);
         }
         return response()->json([
-            'diplome'=> $diplome
+            'diplome' => $diplome
         ]);
     }
 
@@ -243,20 +238,21 @@ class DiplomeController extends Controller
     public function updateDateSignature(Diplome $diplome)
     {
         // test if the specified date is null and the previous date not null
-        if( ! $diplome->date_singature_renvoiAuServiceDiplome 
-            and $diplome->date_impression_envoiAuDecanat)
-        {
+        if (
+            !$diplome->date_singature_renvoiAuServiceDiplome
+            and $diplome->date_impression_envoiAuDecanat
+        ) {
             $diplome->update([
                 'statut_id' => 4,
                 'date_singature_renvoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
             ]);
         }
         return response()->json([
-            'diplome'=> $diplome,
+            'diplome' => $diplome,
         ]);
     }
 
-     /**
+    /**
      * Update DateEnvoi du diplome a la presidence par service de diplomes.
      *
      * @param  \App\Models\Diplome $diplome
@@ -265,21 +261,22 @@ class DiplomeController extends Controller
     public function updateDateEnvoiApresidence(Diplome $diplome)
     {
         // test if the specified date is null and the previous dates not null
-        if( ! $diplome->date_generationBorodeaux_envoiApresidence 
-            and $diplome->date_singature_renvoiAuServiceDiplome 
-            and $diplome->date_impression_envoiAuDecanat)
-        {
+        if (
+            !$diplome->date_generationBorodeaux_envoiApresidence
+            and $diplome->date_singature_renvoiAuServiceDiplome
+            and $diplome->date_impression_envoiAuDecanat
+        ) {
             $diplome->update([
                 'statut_id' => 5,
                 'date_generationBorodeaux_envoiApresidence' => Carbon::today()->format('Y-m-d'),
             ]);
         }
         return response()->json([
-            'diplome'=> $diplome,
+            'diplome' => $diplome,
         ]);
     }
 
-     /**
+    /**
      * Update DateReception du diplome par bureau d'ordre.
      *
      * @param  \App\Models\Diplome $diplome
@@ -288,22 +285,23 @@ class DiplomeController extends Controller
     public function updateDateReceptionParBureauOrdre(Diplome $diplome)
     {
         // test if the specified date is null and the previous dates not null
-        if( ! $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait 
-            and $diplome->date_generationBorodeaux_envoiApresidence 
-            and $diplome->date_singature_renvoiAuServiceDiplome 
-            and $diplome->date_impression_envoiAuDecanat)
-        {
+        if (
+            !$diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait
+            and $diplome->date_generationBorodeaux_envoiApresidence
+            and $diplome->date_singature_renvoiAuServiceDiplome
+            and $diplome->date_impression_envoiAuDecanat
+        ) {
             $diplome->update([
                 'statut_id' => 6,
                 'date_receptionParBureauOrdre_envoiAuGuichetRetrait' => Carbon::today()->format('Y-m-d'),
             ]);
         }
         return response()->json([
-            'diplome'=> $diplome,
+            'diplome' => $diplome,
         ]);
     }
 
-     /**
+    /**
      * Update DateRetrait du diplome et envoi du dossier au arhives par guichet de retrait.
      *
      * @param  \App\Models\Diplome $diplome
@@ -312,24 +310,25 @@ class DiplomeController extends Controller
     public function updateDateRetraitDiplomeArchiveDossier(Diplome $diplome)
     {
         // test if the specified date is null and the previous dates not null
-        if( ! $diplome->date_retraitDiplome_archiveDossier 
+        if (
+            !$diplome->date_retraitDiplome_archiveDossier
             and $diplome->date_notificationEtudiant
-            and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait 
-            and $diplome->date_generationBorodeaux_envoiApresidence 
-            and $diplome->date_singature_renvoiAuServiceDiplome 
-            and $diplome->date_impression_envoiAuDecanat)
-        {
+            and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait
+            and $diplome->date_generationBorodeaux_envoiApresidence
+            and $diplome->date_singature_renvoiAuServiceDiplome
+            and $diplome->date_impression_envoiAuDecanat
+        ) {
             $diplome->update([
                 'statut_id' => 7,
                 'date_retraitDiplome_archiveDossier' => Carbon::today()->format('Y-m-d'),
             ]);
         }
         return response()->json([
-            'diplome'=> $diplome,
+            'diplome' => $diplome,
         ]);
     }
-    
- /**
+
+    /**
      * filter diplomes by Type (DEUG /Licence)
      *
      * @param string $type
@@ -338,16 +337,15 @@ class DiplomeController extends Controller
     function filterByType($type)
     {
         $diplomes = DB::table('diplomes as d')
-                ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
-                ->join('demandes as dm', 'd.demande_id','=','dm.id')
-                ->where('type_demande', $type)
-                ->get();
+            ->join('etudiants as e', 'd.etudiant_cin', '=', 'e.cin')
+            ->join('demandes as dm', 'd.demande_id', '=', 'dm.id')
+            ->where('type_demande', $type)
+            ->get();
         return response()->json([
- 
-            'diplomes' =>$diplomes
 
-        ]); 
+            'diplomes' => $diplomes
 
+        ]);
     }
 
 
@@ -361,66 +359,64 @@ class DiplomeController extends Controller
      */
     public function filter($statut, $type, $filiere)
     {
-        if ($statut and $type and $filiere)
-        {
+        if ($statut and $type and $filiere) {
             $diplomes =  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut_id',$statut)
-                    ->where('d.type_demande', $type)
-                    ->where('e.filiere',$filiere)
-                    ->get();
+                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+                ->where('dip.statut_id', $statut)
+                ->where('d.type_demande', $type)
+                ->where('e.filiere', $filiere)
+                ->get();
         }
-        if ($statut and $type and !$filiere)
-        {
+        if ($statut and $type and !$filiere) {
             $diplomes =  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut_id',$statut)
-                    ->where('d.type_demande', $type)
-                    ->get();
+                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+                ->where('dip.statut_id', $statut)
+                ->where('d.type_demande', $type)
+                ->get();
         }
-        if ($statut and $filiere and !$type)
-        {
+        if ($statut and $filiere and !$type) {
             $diplomes =  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut_id',$statut)
-                    ->where('e.filiere',$filiere)
-                    ->get();
+                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+                ->where('dip.statut_id', $statut)
+                ->where('e.filiere', $filiere)
+                ->get();
         }
-        if ($type and $filiere and !$statut)
-        {
+        if ($type and $filiere and !$statut) {
             $diplomes =  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('d.type_demande', $type)
-                    ->where('e.filiere',$filiere)
-                    ->get();
+                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+                ->where('d.type_demande', $type)
+                ->where('e.filiere', $filiere)
+                ->get();
         }
-        if ($statut and !$type and !$filiere)
-        {
+        if ($statut and !$type and !$filiere) {
             $diplomes =  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('dip.statut_id',$statut)
-                    ->get();
+                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+                ->where('dip.statut_id', $statut)
+                ->get();
         }
-        if ($type and !$statut and !$filiere)
-        {
+        if ($type and !$statut and !$filiere) {
             $diplomes =  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('d.type_demande', $type)
-                    ->get();
+                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+                ->where('d.type_demande', $type)
+                ->get();
         }
-        if ($filiere and !$statut and !$type)
-        {
+        if ($filiere and !$statut and !$type) {
             $diplomes =  DB::table('diplomes as dip')
-                    ->join('etudiants as e', 'dip.etudiant_cin','=','e.cin')
-                    ->join('demandes as d', 'dip.demande_id','=','d.id')
-                    ->where('e.filiere',$filiere)
-                    ->get();
+                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+                ->where('e.filiere', $filiere)
+                ->get();
+        }else{
+            $diplomes =  DB::table('diplomes as dip')
+            ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+            ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+            ->get();
         }
 
         // show results for each role
@@ -470,7 +466,7 @@ class DiplomeController extends Controller
         //         }
         //     }
         // }
-        
+
         return response()->json([
             'diplomes' => $diplomes
         ]);
@@ -494,6 +490,26 @@ class DiplomeController extends Controller
         ]);
     } */
 
+    public function filterByStatut($statut)
+    {
+        $diplomes =  DB::table('diplomes as dip')
+            ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
+            ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
+            ->where('dip.statut_id', $statut)
+            ->get();
+        return response()->json([
+            'diplomes' => $diplomes
+        ]);
+    }
+
+    public function statuts()
+    {
+        return response()->json([
+            'statuts' => DB::table('statut_diplome')->get()
+        ]);
+    }
+
+
     /**
      * Notify etudent by sending notif to his email with update date_notificationEtudiant
      *
@@ -502,43 +518,40 @@ class DiplomeController extends Controller
      */
     public function sendMAil($id_diplome)
     {
-        $diplome = Diplome::with('etudiant','demande')->find($id_diplome);
-        $mail=[
+        $diplome = Diplome::with('etudiant', 'demande')->find($id_diplome);
+        $mail = [
             'object' => 'Notification de diplôme',
             'body' => 'Bonjour '
-                        .$diplome->etudiant->nom.' '.$diplome->etudiant->prenom.
-                        ', votre ' .$diplome->demande->type_demande. ' est prêt, 
+                . $diplome->etudiant->nom . ' ' . $diplome->etudiant->prenom .
+                ', votre ' . $diplome->demande->type_demande . ' est prêt, 
                        vous pouvez venir pour le récupérer auprès du guichet 
                        de retrait des diplômes dans un délai de 3 jours au maximum!',
         ];
 
         // test if the specified date is null and the previous dates not null
-        if ($diplome)
-        {
-            if( ! $diplome->date_notificationEtudiant
-            and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait 
-            and $diplome->date_generationBorodeaux_envoiApresidence 
-            and $diplome->date_singature_renvoiAuServiceDiplome 
-            and $diplome->date_impression_envoiAuDecanat)
-        {
-            $diplome->update([
-                'date_notificationEtudiant' => Carbon::today()->format('Y-m-d'),
-            ]);
-            // notify etudiant
-            //Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
-            Mail::to('gouzasalma@gmail.com')->send(new NotificationDiplome($mail));
+        if ($diplome) {
+            if (
+                !$diplome->date_notificationEtudiant
+                and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait
+                and $diplome->date_generationBorodeaux_envoiApresidence
+                and $diplome->date_singature_renvoiAuServiceDiplome
+                and $diplome->date_impression_envoiAuDecanat
+            ) {
+                $diplome->update([
+                    'date_notificationEtudiant' => Carbon::today()->format('Y-m-d'),
+                ]);
+                // notify etudiant
+                //Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
+                Mail::to('gouzasalma@gmail.com')->send(new NotificationDiplome($mail));
 
                 return response()->json([
-                    'response' => 'email sent to '.$diplome->etudiant->email_inst,
+                    'response' => 'email sent to ' . $diplome->etudiant->email_inst,
                 ]);
             }
         }
-        
+
         return response()->json([
             'response' => 'cannot send email!',
         ]);
-
-        
     }
-
 }
