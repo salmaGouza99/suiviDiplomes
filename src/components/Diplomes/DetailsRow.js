@@ -14,7 +14,7 @@ export default function DetailsRow(props) {
             alignItems="center"
             spacing={3}>
             <Grid item xs={6}>
-                <Typography variant="body" component="h4" color="primary">
+                <Typography variant="body" component="h6" color="primary">
                     {props.title}
                 </Typography>
             </Grid>

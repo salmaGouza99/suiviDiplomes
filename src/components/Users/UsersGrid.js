@@ -24,7 +24,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { withStyles } from '@material-ui/core/styles';
 import { frFR } from '@material-ui/data-grid';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Alert from '@material-ui/lab/Alert';
 
 
 
@@ -146,10 +146,10 @@ function UsersGrid(props) {
         userService.getAllRoles().then((response) => {
             setRoles(response.data.roles);
         }).catch(err => {
-            console.log(err)
+            setMessage("Erreur de chargement , veuillez reessayer !");
         })
 
-    }, [roleFilter, searchItem, deleteUser,disableButton]);
+    }, [roleFilter, searchItem, deleteUser,disableButton,openEdit,openAdd]);
     /////////////////////////////////////////////////////////
 
     useEffect(() => {
@@ -248,6 +248,17 @@ function UsersGrid(props) {
 
     return (
         <Paper className={classes.paper}>
+        {message && (
+                <Alert 
+                  severity="error"
+                  onClose={() => {
+                    setMessage(null);
+                  }}
+                >
+                  {message}
+                </Alert>
+                )}
+                <br></br>
             {/* ///////Filter by role////// */}
             <AppBar style={{ paddingTop: "0px", paddingRight: "20px" }}
                 position="static" color="#fff" elevation={0}>

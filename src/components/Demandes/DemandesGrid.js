@@ -389,8 +389,8 @@ function DemandesGrid(props) {
             /* sortModel={[
               { field: 'date', sort: 'desc' },
             ]} */
+            disableSelectionOnClick={false}
             checkboxSelection
-            disableSelectionOnClick
             disableColumnMenu
             pageSize={pageSize}
             onSelectionModelChange={handleSelection}

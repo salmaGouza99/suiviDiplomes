@@ -116,7 +116,7 @@ export default function DetailsDiplome(props) {
                                 spacing={6}>
                                 <Grid item xs={6}>
 
-                                    <Typography variant="body" component="h3" >
+                                    <Typography variant="body" component="h5" >
                                         Informations Personnelles
                                     </Typography><br />
                                     <DetailsRow title="Apogée" data={diplome.apogee} />
@@ -140,15 +140,16 @@ export default function DetailsDiplome(props) {
                                         : <div></div>
                                     }
                                 </Grid>
+                                
                                 <Grid item xs={6}>
-                                    <Typography variant="body" component="h3" >
+                                    <Typography variant="body" component="h5" >
                                         Parcours du diplôme
                                     </Typography>
                                     <Typography variant="body2" component="p">
                                         <div><TimeLine diplome={diplome} /></div>
                                     </Typography>
                                 </Grid>
-
+                            
                             </Grid>
 
                         </CardContent>

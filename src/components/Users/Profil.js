@@ -14,6 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
 import { Container } from '@material-ui/core';
+import UserForm from './UserForm';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -52,7 +53,7 @@ export default function Profil(props) {
         setOpen(true);
     }
 
-    const closeCallback = (open) => {
+    const handleCloseCallback = (open) => {
         setOpen(open);
         setChanged(true);
     }

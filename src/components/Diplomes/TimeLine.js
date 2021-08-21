@@ -93,7 +93,7 @@ export default function TimeLine(props) {
             <Step key={label}>
             <StepLabel>
                 <div className={classes.date}>
-                  <Typography variant="body" component="h3" >
+                  <Typography variant="body" component="h6" >
                     {date === 'null' ? 'aaaa-mm-jj' : date} 
                   </Typography>
                 </div>

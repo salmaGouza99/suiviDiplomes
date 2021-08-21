@@ -46,10 +46,6 @@ const updateForm = (formId, type_formulaire, lien, api_id) => {
 };
 
 
-
-//Diplomes
-const getAllDiplomes = () => {
-  return axios.get( API_URL + `diplomes`, authHeaders() )
 // Demandes
 const getAllDemandes = () => {
   return axios.get( API_URL + "demandes", authHeaders() )
@@ -74,29 +70,50 @@ const getAllDiplomes = () => {
 };
 const showDiplome = (id) => {
   return axios.get( API_URL + `diplomes/${id}`, authHeaders() )
-}
+};
 
 const statutsDiplomes = () => {
   return axios.get( API_URL + `statuts`, authHeaders() )
+};
+
+const getDiplomesByFilter = (statut,type,filiere) => {
+  return axios.get( API_URL + `diplomes/filter/${statut},${type},${filiere}`, authHeaders() );
+};
+
+const impressionDiplome = (id) => {
+  return axios.put( API_URL + `diplomes/impression/${id}` ,{}, authHeaders() );
 }
 
+const envoiPresidence = (id) => {
+  return axios.put( API_URL + `diplomes/envoiPresidence/${id}` ,{}, authHeaders() );
+}
+
+const notifEtudiant = (id) => {
+  return axios.put( API_URL + `diplomes/notif/${id}` ,{}, authHeaders() );
+}
+
+
+const retraitDiplome = (id) => {
+  return axios.put( API_URL + `diplomes/retrait/${id}` ,{}, authHeaders() );
+}
+
+///Dashboard
 const dashboardByType = (type) => {
   return axios.get( API_URL + `dashboard/type/${type}`, authHeaders() )
-}
 };
 
 
 const filtredDashboard = (dateDebut ,dateFin ,type) => {
   return axios.get( API_URL + `dashboard/${dateDebut}/${dateFin}/${type}`, authHeaders() )
-}
+};
 
 const dashboardCurrents = () => {
   return axios.get( API_URL + `dashboard/currents`, authHeaders() )
-}
+};
 
 const dashboardCurrentYear = () => {
   return axios.get( API_URL + `dashboard/currentYear`, authHeaders() )
-}
+};
 
 
 
@@ -125,6 +142,11 @@ const userService = {
     dashboardCurrents,
     dashboardByType,
     dashboardCurrentYear,
+    getDiplomesByFilter,
+    impressionDiplome,
+    envoiPresidence,
+    notifEtudiant,
+    retraitDiplome,
 
     
 };

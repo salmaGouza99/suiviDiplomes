@@ -16,7 +16,7 @@ export default function Message(props) {
     });
 
   const handleClose = () => {
-    setOpen(false);
+    props.closeCallback(false);
   };
 
   return (

@@ -68,7 +68,7 @@ const styles = (theme) => ({
     itemIcon: {
         minWidth: 'auto',
         marginRight: theme.spacing(2),
-        color: '#6b778c',
+        color: '#5664d2',
         
     },
     divider: {

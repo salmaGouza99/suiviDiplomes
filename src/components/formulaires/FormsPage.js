@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Form from "./Form";
-import Message from './Message';
+import Alert from '@material-ui/lab/Alert';
 import userService from "../../Services/userService";
 import Paper from '@material-ui/core/Paper';
 
@@ -65,15 +65,9 @@ export default function FormsPage(props) {
   const [formDeug, setFormDeug] = useState('');
   const [formLicence, setFormLicence] = useState('');
   const [message, setMessage] = useState('');
-  const [error, setError] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
-    // if (props?.role !== 1) {
-    //   history.push("/Acceuil");
-    //   window.location.reload();  
-    // }
-
     userService.getAllForms().then((response) => {
         response.data.forms.forEach(form => {
           if(form.type_formulaire === "DEUG"){
@@ -81,11 +75,12 @@ export default function FormsPage(props) {
           }else if(form.type_formulaire === "Licence"){
             setFormLicence(form);
           }
-          setValue(1);
+          setValue(0);
         });
       }).catch(err => {
         setMessage("Erreur de chargement , veuillez reessayer !");
-        setError(true);
+        
+        
     })
   }, []);
 
@@ -93,9 +88,19 @@ export default function FormsPage(props) {
     setValue(newValue);
   };
 
+
   return (
     <Paper className={classes.paper}>
-     {error && <Message message={message} success="error"/>}
+    {message && (
+                <Alert 
+                  severity="error"
+                  onClose={() => {
+                    setMessage(null);
+                  }}
+                >
+                  {message}
+                </Alert>
+                )}
       <AppBar position="static" color="default">
         <Tabs
           value={value}

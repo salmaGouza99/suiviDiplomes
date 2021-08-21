@@ -40,7 +40,7 @@ function App() {
                               (<AdminAcceuil openDiplomes={true} title="Diplomes" role={role}/>)}/>
               <Route exact path="/Statistiques" component={() => 
                               (<AdminAcceuil openDashboard={true} title="Statistiques" role={role}/>)}/>
-              <Route exact path="/Profil" component={() => 
+              <Route exact path="/Admin/Profil" component={() => 
                               (<AdminAcceuil openProfil={true} title="Profil Personnel" role={role}/>)}/>
 
 
@@ -51,8 +51,19 @@ function App() {
 
 
               {/* The route of service de diplomes */}
-              <Route exact path="/ServiceDiplomes" component={() => (<ServiceDiplomes role={role}/>)}/>
-
+              {/* <Route exact path="/ServiceDiplomes" component={() => (<ServiceDiplomes role={role}/>)}/> */}
+              <Route exact path="/ServiceDiplomes" component={() => 
+                              (<ServiceDiplomes title="Acceuil" role={role} />)}/>
+              <Route exact path="/DiplomesAImprimer" component={() => 
+                              (<ServiceDiplomes openPrint={true} title="Diplômes à imprimer" role={role}/>)}/>
+              <Route exact path="/DiplomesEnvoyeDecanat" component={() => 
+                              (<ServiceDiplomes openDecanat={true} title="Diplômes envoyés au décanat" role={role}/>)}/>
+              <Route exact path="/DiplomesSignes" component={() => 
+                              (<ServiceDiplomes openSign={true} title="Diplômes signés" role={role}/>)}/>
+              <Route exact path="/DiplomesPresidence" component={() => 
+                              (<ServiceDiplomes openPresidence={true} title="Diplômes envoyés a la présidence" role={role}/>)}/>
+              <Route exact path="/ServiceDiplomes/Profil" component={() => 
+                              (<ServiceDiplomes openProfil={true} title="Profil Personnel" role={role}/>)}/>
               
               {/* The route of decanat  */}
               <Route exact path="/Decanat" component={() => (<Decanat role={role}/>)}/>
@@ -63,7 +74,17 @@ function App() {
 
               
               {/* The route of guichet de retrait*/}
-              <Route exact path="/GuichetRetrait" component={() => (<GuichetRetrait role={role}/>)}/>
+              {/* <Route exact path="/GuichetRetrait" component={() => (<GuichetRetrait role={role}/>)}/> */}
+              <Route exact path="/GuichetRetrait" component={() => 
+                              (<GuichetRetrait title="Acceuil" role={role} />)}/>
+              <Route exact path="/DiplomesRecusDuBureauDordre" component={() => 
+                              (<GuichetRetrait openRecu={true} title="Diplômes reçus du bureau d'ordre" role={role}/>)}/>
+              <Route exact path="/DiplomesPrets" component={() => 
+                              (<GuichetRetrait openNotif={true} title="Diplômes Prêts En attente de retrait" role={role}/>)}/>
+              <Route exact path="/DiplomesRetires" component={() => 
+                              (<GuichetRetrait openRetire={true} title="Diplômes Retirés" role={role}/>)}/>
+              <Route exact path="/GuichetRetrait/Profil" component={() => 
+                              (<GuichetRetrait openProfil={true} title="Profil Personnel" role={role}/>)}/>
 
               
           </>)}

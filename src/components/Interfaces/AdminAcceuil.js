@@ -197,16 +197,17 @@ function AdminAcceuil(props) {
               { id: 'Diplômes', icon: <SchoolIcon />, link: '/Diplomes' },
             ],
           },
-          {
-            id: 'Profil',
-            children: [
-              { id: 'Afficher', icon: <VisibilityIcon />, link: '/Profil' },
-            ],
-          },
+          
           {
             id: 'Tableau de bord',
             children: [
               { id: 'Statistiques', icon: <TimelineIcon />, active: true, link: '/Statistiques' },
+            ],
+          },
+          {
+            id: 'Profil',
+            children: [
+              { id: 'Afficher', icon: <VisibilityIcon />, link: '/Admin/Profil' },
             ],
           },
         ]

@@ -21,11 +21,22 @@ import DetailsDiplome from './DetailsDiplome';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import MenuItem from '@material-ui/core/MenuItem';
+import Alert from '@material-ui/lab/Alert';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
+import {
+    GridToolbarContainer,
+    GridToolbarExport,
+} from '@material-ui/data-grid';
 
 
-
+function CustomToolbar() {
+    return (
+        <GridToolbarContainer>
+            <GridToolbarExport />
+        </GridToolbarContainer>
+    );
+}
 const useStyles = makeStyles((theme) => ({
     root: {
         maxWidth: "90%",
@@ -171,7 +182,7 @@ function AllDiplomes(props) {
     }, [])
     //////////////////////////////////////////////////////////////
     useEffect(() => {
-        
+
         //default
         setFiltredDiplomes(
             diplomes?.filter((diplome) =>
@@ -187,10 +198,10 @@ function AllDiplomes(props) {
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                    diplome.type_demande === type
+                        diplome.type_demande === type
                 )
             );
-        } 
+        }
         ////Statut seulement
         else if (type === 0 && currentStatut !== 0 && dateDebut === '' && dateFin === '' && filiere === '') {
             setFiltredDiplomes(
@@ -225,7 +236,7 @@ function AllDiplomes(props) {
                     diplome.dateFin <= dateFin
                 )
             );
-        } 
+        }
         ///Filiere seulemet
         else if (type === 0 && currentStatut === 0 && dateDebut === '' && dateFin === '' && filiere !== '') {
             console.log('type')
@@ -234,13 +245,13 @@ function AllDiplomes(props) {
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
+                    diplome.filiere.toLowerCase().includes(filiere.toLowerCase())
                 )
             );
         }
-////////////////////////////////////////Combinaisons///////////////////////////////////////////////////////
+        ////////////////////////////////////////Combinaisons///////////////////////////////////////////////////////
         ///type && statut
-        else if (type !== 0 && currentStatut !== 0 && dateDebut === '' && dateFin === ''   && filiere === '') {
+        else if (type !== 0 && currentStatut !== 0 && dateDebut === '' && dateFin === '' && filiere === '') {
             console.log('type')
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
@@ -251,23 +262,21 @@ function AllDiplomes(props) {
                     diplome.statut_id === currentStatut
                 )
             );
-        } 
+        }
         ///type && date debut
-        else if (type !== 0 && currentStatut === 0 && dateDebut !== '' && dateFin === ''  && filiere === '') {
-            console.log('type')
+        else if (type !== 0 && currentStatut === 0 && dateDebut !== '' && dateFin === '' && filiere === '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.type_demande === type &&
-                        diplome.date_demande >= dateDebut
+                    diplome.type_demande === type &&
+                    diplome.date_demande >= dateDebut
                 )
             );
-        } 
+        }
         //type && date debut && date fin
-        else if (type !== 0 && currentStatut === 0 && dateDebut !== '' && dateFin !== ''  && filiere === '') {
-            console.log('type')
+        else if (type !== 0 && currentStatut === 0 && dateDebut !== '' && dateFin !== '' && filiere === '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
@@ -278,89 +287,85 @@ function AllDiplomes(props) {
                     diplome.dateFin <= dateFin
                 )
             );
-        } 
+        }
         //type & filiere
-        else if (type !== 0 && currentStatut === 0 && dateDebut === '' && dateFin === ''  && filiere !== '') {
+        else if (type !== 0 && currentStatut === 0 && dateDebut === '' && dateFin === '' && filiere !== '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.type_demande === type &&
-                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
+                    diplome.type_demande === type &&
+                    diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
                 )
             );
         }
         ///statut && date debut
-        else if (type === 0 && currentStatut !== 0 && dateDebut !== '' && dateFin === ''  && filiere === '') {
-            console.log('type')
+        else if (type === 0 && currentStatut !== 0 && dateDebut !== '' && dateFin === '' && filiere === '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.statut_id === currentStatut &&
-                        diplome.date_demande >= dateDebut
+                    diplome.statut_id === currentStatut &&
+                    diplome.date_demande >= dateDebut
                 )
             );
         }
-         ///statut && date debut && date fin
-        else if (type === 0 && currentStatut !== 0 && dateDebut !== '' && dateFin !== ''  && filiere === '') {
-            console.log('type')
+        ///statut && date debut && date fin
+        else if (type === 0 && currentStatut !== 0 && dateDebut !== '' && dateFin !== '' && filiere === '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.statut_id === currentStatut &&
-                        diplome.date_demande >= dateDebut &&
-                        diplome.date_demande <= dateFin
+                    diplome.statut_id === currentStatut &&
+                    diplome.date_demande >= dateDebut &&
+                    diplome.date_demande <= dateFin
                 )
             );
         }
         //statut && filiere
-        else if (type === 0 && currentStatut !== 0 && dateDebut === '' && dateFin === ''  && filiere !== '') {
-            console.log('type')
+        else if (type === 0 && currentStatut !== 0 && dateDebut === '' && dateFin === '' && filiere !== '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.statut_id === currentStatut &&
-                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
-                   
+                    diplome.statut_id === currentStatut &&
+                    diplome.filiere.toLowerCase().includes(filiere.toLowerCase())
+
                 )
             );
         }
-         //filiere && date debut
-         else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin === ''  && filiere !== '') {
-            console.log('type')
+        //filiere && date debut
+        else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin === '' && filiere !== '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.date_demande >= dateDebut &&
-                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
-                   
+                    diplome.date_demande >= dateDebut &&
+                    diplome.filiere.toLowerCase().includes(filiere.toLowerCase())
+
                 )
             );
         }
-         //filiere && date debut && date fin
-         else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin !== ''  && filiere !== '') {
+        //filiere && date debut && date fin
+        else if (type === 0 && currentStatut === 0 && dateDebut !== '' && dateFin !== '' && filiere !== '') {
             setFiltredDiplomes(
                 diplomes?.filter((diplome) =>
                     (diplome.cin.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.apogee.toLowerCase().includes(searchItem.toLowerCase()) ||
                         diplome.cne.toLowerCase().includes(searchItem.toLowerCase())) &&
-                        diplome.date_demande >= dateDebut &&
-                        diplome.date_demande <= dateFin &&
-                        diplome.filiere.toLowerCase().includes(filiere.toLocaleLowerCase())
-                   
+                    diplome.date_demande >= dateDebut &&
+                    diplome.date_demande <= dateFin &&
+                    diplome.filiere.toLowerCase().includes(filiere.toLowerCase())
+
                 )
             );
         }
-        
+
     }, [diplomes, searchItem, type, dateDebut, dateFin, currentStatut, filiere]);
 
     /////////////////////////////////////////////////////////
@@ -415,6 +420,17 @@ function AllDiplomes(props) {
 
     return (
         <Paper className={classes.paper}>
+            {message && (
+                <Alert
+                    severity="error"
+                    onClose={() => {
+                        setMessage(null);
+                    }}
+                >
+                    {message}
+                </Alert>
+            )}
+            <br></br>
             {/* ///////Search by dates////// */}
             <AppBar
                 position="static" color="default" elevation={0}>
@@ -501,14 +517,14 @@ function AllDiplomes(props) {
                         size="small"
                         value={filiere}
                     >
-                        <MenuItem key={1} value="Droit Arabe">
-                            Droit Arabe
+                        <MenuItem key={1} value="القانون باللغة العربية">
+                            Droit en Arabe القانون باللغة العربية
                         </MenuItem>
-                        <MenuItem key={2} value="Droit Français">
-                            Droit Français
+                        <MenuItem key={2} value="Droit en Français">
+                            Droit en Français القانون باللغة الفرنسية
                         </MenuItem>
                         <MenuItem key={3} value="Economie et gestion">
-                            Economie et gestion
+                            Economie et gestion الاقتصاد والتسيير
                         </MenuItem>
                     </TextField>
                 </Grid>
@@ -584,13 +600,17 @@ function AllDiplomes(props) {
                         onSelectionModelChange={handleRowSelection}
                         disableMultipleSelection={true}
                         disableColumnMenu={true}
+                        components={{
+                            Toolbar: CustomToolbar,
+                        }}
+
 
                     />
                 </div>
             </div>
             {open &&
                 <DetailsDiplome handleOpen={open} diplomeId={id} title="Détails"
-                    closeCallback={handleCloseCallback} button="Imprimer"/>
+                    closeCallback={handleCloseCallback} button="Imprimer" />
             }
         </Paper>
 

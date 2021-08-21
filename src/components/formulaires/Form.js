@@ -12,6 +12,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import userService from "../../Services/userService";
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Link from '@material-ui/core/Link';
+import Tutoriel from './Tutoriel';
 
 
 function Alert(props) {
@@ -48,6 +49,7 @@ export default function Form(props) {
     const [errors, setErrors] = useState(false);
     const [message, setMessage] = useState('');
     const [disableButton, setDisableButton] = useState(true);
+    const [openTutoriel, setOpenTutoriel] = useState(false);
 
     useEffect(() => {
         setFormId(props.form.id);
@@ -79,11 +81,20 @@ export default function Form(props) {
         })
     }
 
+    const handleCloseCallback = (value) => {
+        setOpenTutoriel(value);
+        setSuccess(false);
+        setErrors(false);
+    }
+
+ const handleTutoriel = () => {
+    setOpenTutoriel(true);
+ }
 
     return (
         <div>
-            {success && <Message message={message} success="success" />}
-            {errors && <Message message={message} success="error" />}
+            {success && <Message message={message} success="success"  closeCallback={handleCloseCallback}/>}
+            {errors && <Message message={message} success="error"  closeCallback={handleCloseCallback}/>}
 
             <form className={classes.root} onSubmit={handleSubmit}>
                 <Typography gutterBottom variant="h5" component="h2" color="primary">
@@ -128,7 +139,7 @@ export default function Form(props) {
                         startIcon={<AddBoxRoundedIcon />} disabled={disableButton}
                     >Modifier</Button>
 
-                    <Button variant="contained" color="secondary" className={classes.help}
+                    <Button variant="contained" color="secondary" className={classes.help} onClick={handleTutoriel}
                         startIcon={<HelpOutlineIcon />} size="small"
                     >Comment Obtenir API ID du formulaire</Button>
                 </div>
@@ -136,6 +147,9 @@ export default function Form(props) {
                         Obtenir API ID
                     </Link>
             </form>
+            {
+                openTutoriel && <Tutoriel open={openTutoriel} closeCallback={handleCloseCallback}/>
+            }
         </div>
 
     );
