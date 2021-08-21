@@ -32,16 +32,16 @@ Route::get('/statuts',[DiplomeController::class,'statuts']);
 Route::get('/etudiants',[EtudiantController::class,'index']);
 
 
-// Protected routes for admin
+// Protected routes for Admin
 Route::group(['middleware' => ['auth:sanctum','role:Admin']], function(){
   // Users
   // Route::get('/users/search/{email?}',[UserController::class,'search']);
-  Route::resource('/users',UserController::class);
+  Route::resource('/users', UserController::class);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
 
   // Forms
   Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
-  // Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
+  Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
 
   // Etudiants
   // Route::get('/etudiants',[EtudiantController::class,'index']);
@@ -53,11 +53,11 @@ Route::group(['middleware' => ['auth:sanctum','role:Admin']], function(){
   Route::get('/demandes',[DemandeController::class,'index']);
 
   // Diplomes
-  Route::get('/diplomes/search/{mc?}',[DiplomeController::class,'search']);
-  // Route::get('/diplomes',[DiplomeController::class,'index']);
-  Route::get('/diplomes/dates/{dateDebut?}/{dateFin?}',[DiplomeController::class,'searchByDates']);
-  Route::get('/diplomes/type/{type}',[DiplomeController::class,'filterByType']);
-  Route::get('/diplomes/statut/{statut}',[DiplomeController::class,'filterByStatut']);
+  // Route::get('/diplomes/search/{mc?}',[DiplomeController::class,'search']);
+  Route::get('/diplomes',[DiplomeController::class,'index']);
+  // Route::get('/diplomes/dates/{dateDebut?}/{dateFin?}',[DiplomeController::class,'searchByDates']);
+  // Route::get('/diplomes/type/{type}',[DiplomeController::class,'filterByType']);
+  // Route::get('/diplomes/statut/{statut}',[DiplomeController::class,'filterByStatut']);
 
   //dashboard 
   Route::get('/dashboard/type/{type}',[DashboardController::class,'dashboardByType']);
@@ -82,14 +82,14 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::get('/diplomes/filter/{statut},{type},{filiere}',[DiplomeController::class,'filter']);
 });
 
-// Protected routes for admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
+// Protected routes for Admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
 Route::group(['middleware' => ['auth:sanctum','role:Admin|Guichet Droit Arabe|Guichet Droit Francais|Guichet Economie']], function(){
   Route::get('/demandes/{id}',[DemandeController::class,'show']);
   Route::get('/demandes/filter/{type},{filiere}',[DemandeController::class,'filter']);
   Route::post('/demandes/nouvellesDemandes/{filiere}',[DemandeController::class,'sheet']);
 });
 
-// Protected routes for admin and service_diplomes
+// Protected routes for Admin and service_diplomes
 Route::group(['middleware' => ['auth:sanctum','role:Admin|Service de Diplômes']], function(){
   Route::put('/etudiants/{cin}',[EtudiantController::class,'update']);
 });
@@ -101,6 +101,7 @@ Route::group(['middleware' => ['auth:sanctum','role:Guichet Droit Arabe|Guichet 
 
 // Protected routes only for service_diplomes
 Route::group(['middleware' => ['auth:sanctum','role:Service de Diplômes']], function(){
+// Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::put('/diplomes/reedition/{diplome}',[DiplomeController::class,'updateDateReedition']);
   Route::put('/diplomes/impression/{diplome}',[DiplomeController::class,'updateDateImpression']);
   Route::put('/diplomes/envoiPresidence/{diplome}',[DiplomeController::class,'updateDateEnvoiApresidence']);
@@ -119,5 +120,5 @@ Route::group(['middleware' => ['auth:sanctum','role:Bureau d\'Ordre']], function
 // Protected routes only for guichet_retrait
 Route::group(['middleware' => ['auth:sanctum','role:Guichet de Retrait']], function(){
   Route::put('/diplomes/retrait/{diplome}',[DiplomeController::class,'updateDateRetraitDiplomeArchiveDossier']);
-  Route::get('/diplomes/notif/{id}',[DiplomeController::class,'sendMail']);
+  Route::put('/diplomes/notif/{id}',[DiplomeController::class,'sendMail']);
 });

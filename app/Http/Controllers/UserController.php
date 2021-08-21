@@ -22,7 +22,7 @@ class UserController extends Controller
                 'id'=>$user->id,
                 'email'=>$user->email,
                 'roleId' =>$user->roles[0]->id,
-                'role'=>Str::replace('_',' ',$user->roles[0]->name),
+                'role'=> $user->roles[0]->name,
             ];
             array_push($listUsers,$user);
         }

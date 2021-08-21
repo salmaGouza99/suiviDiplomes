@@ -27,7 +27,7 @@ class DiplomeController extends Controller
             $diplome = [
                 'id' => $diplome->id,
                 'cin' => $diplome->etudiant->cin,
-                'apogee' => $diplome->etudiant->apogee, 
+                'apogee' => $diplome->etudiant->apogee,
                 'cne' => $diplome->etudiant->cne,
                 'nom' => $diplome->etudiant->nom,
                 'prenom' => $diplome->etudiant->prenom,
@@ -54,12 +54,12 @@ class DiplomeController extends Controller
     function search($mc = '')
     {
         $diplomes = DB::table('demandes as dm')
-                ->join('etudiants as e', 'dm.etudiant_cin','=','e.cin')
-                ->join('diplomes as d', 'dm.id','=','d.demande_id')
-                ->where('e.cin','like','%'.$mc.'%')
-                ->orWhere('e.cne','like','%'.$mc.'%')
-                ->orWhere('e.apogee','like','%'.$mc.'%')
-                ->get()->sortByDesc('date_creationDossier_envoiAuServiceDiplome');
+            ->join('etudiants as e', 'dm.etudiant_cin', '=', 'e.cin')
+            ->join('diplomes as d', 'dm.id', '=', 'd.demande_id')
+            ->where('e.cin', 'like', '%' . $mc . '%')
+            ->orWhere('e.cne', 'like', '%' . $mc . '%')
+            ->orWhere('e.apogee', 'like', '%' . $mc . '%')
+            ->get()->sortByDesc('date_creationDossier_envoiAuServiceDiplome');
         return response()->json([
 
             'diplomes' => $diplomes
@@ -99,11 +99,9 @@ class DiplomeController extends Controller
 
         // store diplome according to a role
         $diplome = null;
-        if ($demande)
-        {
-            if(Auth::user()->hasRole('Guichet Droit Arabe')) {
-                if ($demande->etudiant->filiere == 'القانون باللغة العربية')
-                {
+        if ($demande) {
+            if (Auth::user()->hasRole('Guichet Droit Arabe')) {
+                if ($demande->etudiant->filiere == 'القانون باللغة العربية') {
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
@@ -112,9 +110,8 @@ class DiplomeController extends Controller
                     $demande->traite = 1;
                     $demande->save();
                 }
-            } else if(Auth::user()->hasRole('Guichet Droit Francais')) {
-                if ($demande->etudiant->filiere == 'Droit en français')
-                {
+            } else if (Auth::user()->hasRole('Guichet Droit Francais')) {
+                if ($demande->etudiant->filiere == 'Droit en français') {
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
@@ -123,9 +120,8 @@ class DiplomeController extends Controller
                     $demande->traite = 1;
                     $demande->save();
                 }
-            } else if(Auth::user()->hasRole('Guichet Economie')) {
-                if ($demande->etudiant->filiere == 'Sciences Economiques et Gestion')
-                {
+            } else if (Auth::user()->hasRole('Guichet Economie')) {
+                if ($demande->etudiant->filiere == 'Sciences Economiques et Gestion') {
                     $diplome = Diplome::create(array(
                         'demande_id' => $demande_id,
                         'etudiant_cin' => $demande->etudiant_cin,
@@ -301,6 +297,52 @@ class DiplomeController extends Controller
         ]);
     }
 
+
+    /**
+     * Notify etudent by sending notif to his email with update date_notificationEtudiant
+     *
+     * @param  int $id_diplome
+     * @return \Illuminate\Http\Response
+     */
+    public function sendMAil($id_diplome)
+    {
+        $diplome = Diplome::with('etudiant', 'demande')->find($id_diplome);
+        $mail = [
+            'object' => 'Notification de diplôme',
+            'body' => 'Bonjour '
+                . $diplome->etudiant->nom . ' ' . $diplome->etudiant->prenom .
+                ', votre ' . $diplome->demande->type_demande . ' est prêt, 
+                       vous pouvez venir pour le récupérer auprès du guichet 
+                       de retrait des diplômes dans un délai de 3 jours au maximum!',
+        ];
+
+        // test if the specified date is null and the previous dates not null
+        if ($diplome) {
+            if (
+                !$diplome->date_notificationEtudiant
+                and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait
+                and $diplome->date_generationBorodeaux_envoiApresidence
+                and $diplome->date_singature_renvoiAuServiceDiplome
+                and $diplome->date_impression_envoiAuDecanat
+            ) {
+                $diplome->update([
+                    'statut_id' => '7',
+                    'date_notificationEtudiant' => Carbon::today()->format('Y-m-d'),
+                ]);
+                // notify etudiant
+                //Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
+                Mail::to('gouzasalma@gmail.com')->send(new NotificationDiplome($mail));
+
+                return response()->json([
+                    'message' => 'Email de notification envoyé à ' . $diplome->etudiant->email_inst,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Une erreur est survenue ! Veuillez réessayer',
+        ]);
+    }
     /**
      * Update DateRetrait du diplome et envoi du dossier au arhives par guichet de retrait.
      *
@@ -319,7 +361,7 @@ class DiplomeController extends Controller
             and $diplome->date_impression_envoiAuDecanat
         ) {
             $diplome->update([
-                'statut_id' => 7,
+                'statut_id' => 8,
                 'date_retraitDiplome_archiveDossier' => Carbon::today()->format('Y-m-d'),
             ]);
         }
@@ -359,116 +401,85 @@ class DiplomeController extends Controller
      */
     public function filter($statut, $type, $filiere)
     {
+        $diplomesList = [];
         if ($statut and $type and $filiere) {
-            $diplomes =  DB::table('diplomes as dip')
-                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-                ->where('dip.statut_id', $statut)
-                ->where('d.type_demande', $type)
-                ->where('e.filiere', $filiere)
+            $diplomes =  Diplome::with('demande', 'etudiant')->where('statut_id', $statut)
+                ->whereHas('demande', function ($query) use ($type) {
+                    $query->where('type_demande', $type);
+                })->whereHas('etudiant', function ($query) use ($filiere) {
+                    $query->where('filiere', $filiere);
+                })
                 ->get();
         }
         if ($statut and $type and !$filiere) {
-            $diplomes =  DB::table('diplomes as dip')
-                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-                ->where('dip.statut_id', $statut)
-                ->where('d.type_demande', $type)
+            $diplomes =  Diplome::with('demande', 'etudiant')->where('statut_id', $statut)
+                ->whereHas('demande', function ($query) use ($type) {
+                    $query->where('type_demande', $type);
+                })
                 ->get();
         }
         if ($statut and $filiere and !$type) {
-            $diplomes =  DB::table('diplomes as dip')
-                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-                ->where('dip.statut_id', $statut)
-                ->where('e.filiere', $filiere)
+            $diplomes =  Diplome::with('demande', 'etudiant')->where('statut_id', $statut)
+                ->whereHas('etudiant', function ($query) use ($filiere) {
+                    $query->where('filiere', $filiere);
+                })
                 ->get();
         }
         if ($type and $filiere and !$statut) {
-            $diplomes =  DB::table('diplomes as dip')
-                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-                ->where('d.type_demande', $type)
-                ->where('e.filiere', $filiere)
+            $diplomes =  Diplome::with('demande', 'etudiant')
+                ->whereHas('demande', function ($query) use ($type) {
+                    $query->where('type_demande', $type);
+                })->whereHas('etudiant', function ($query) use ($filiere) {
+                    $query->where('filiere', $filiere);
+                })
                 ->get();
         }
         if ($statut and !$type and !$filiere) {
-            $diplomes =  DB::table('diplomes as dip')
-                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-                ->where('dip.statut_id', $statut)
+            $diplomes =  Diplome::with('demande', 'etudiant')->where('statut_id', $statut)
                 ->get();
         }
         if ($type and !$statut and !$filiere) {
-            $diplomes =  DB::table('diplomes as dip')
-                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-                ->where('d.type_demande', $type)
+            $diplomes =  Diplome::with('demande', 'etudiant')
+                ->whereHas('demande', function ($query) use ($type) {
+                    $query->where('type_demande', $type);
+                })
                 ->get();
         }
         if ($filiere and !$statut and !$type) {
-            $diplomes =  DB::table('diplomes as dip')
-                ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-                ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-                ->where('e.filiere', $filiere)
+            $diplomes =  Diplome::with('demande', 'etudiant')
+                ->whereHas('etudiant', function ($query) use ($filiere) {
+                    $query->where('filiere', $filiere);
+                })
                 ->get();
-        }else{
-            $diplomes =  DB::table('diplomes as dip')
-            ->join('etudiants as e', 'dip.etudiant_cin', '=', 'e.cin')
-            ->join('demandes as d', 'dip.demande_id', '=', 'd.id')
-            ->get();
         }
 
-        // show results for each role
-        // $res = array();
-        // foreach ($diplomes as $diplome)
-        // {
-        //     if(Auth::user()->hasRole('admin')) {
-        //         $res[] = $diplome;
-        //     } elseif(Auth::user()->hasRole('guichet_droit_arabe')) {
-        //         if($diplome->statut_id == 1 and
-        //             $diplome->filiere == 'القانون باللغة العربية') 
-        //         {
-        //             $res[] = $diplome;
-        //         }  
-        //     } elseif(Auth::user()->hasRole('guichet_droit_francais')) {
-        //         if($diplome->statut_id == 1 and
-        //             $diplome->filiere == 'Droit en français') 
-        //         {
-        //             $res[] = $diplome;
-        //         }  
-        //     } elseif(Auth::user()->hasRole('guichet_economie')) {
-        //         if($diplome->statut_id == 1 and
-        //             $diplome->filiere == 'Sciences Economiques et Gestion') 
-        //         {
-        //             $res[] = $diplome;
-        //         }  
-        //     } elseif(Auth::user()->hasRole('service_diplomes')) {
-        //         if($diplome->statut_id == 1 or $diplome->statut_id == 2 or $diplome->statut_id == 3 or 
-        //             $diplome->statut_id == 4 or $diplome->statut_id == 5) 
-        //         {
-        //             $res[] = $diplome;
-        //         }    
-        //     } elseif(Auth::user()->hasRole('decanat')) {
-        //         if($diplome->statut_id == 3 or $diplome->statut_id == 4) 
-        //         {
-        //             $res[] = $diplome;
-        //         }    
-        //     } elseif(Auth::user()->hasRole('bureau_ordre')) {
-        //         if($diplome->statut_id == 5 or $diplome->statut_id == 6) 
-        //         {
-        //             $res[] = $diplome;
-        //         }  
-        //     } elseif(Auth::user()->hasRole('guichet_retrait')) {
-        //         if($diplome->statut_id == 6 or $diplome->statut_id == 7) 
-        //         {
-        //             $res[] = $diplome;
-        //         }
-        //     }
-        // }
+        foreach ($diplomes as $diplome) {
+            $diplome = [
+                'id' => $diplome->id,
+                'cin' => $diplome->etudiant->cin,
+                'apogee' => $diplome->etudiant->apogee,
+                'cne' => $diplome->etudiant->cne,
+                'nom' => $diplome->etudiant->nom,
+                'prenom' => $diplome->etudiant->prenom,
+                'filiere' => $diplome->etudiant->filiere,
+                'option' => $diplome->etudiant->option,
+                'date_demande' => $diplome->demande->date_demande,
+                'type_demande' => $diplome->demande->type_demande,
+                'statut_id' => $diplome->statut_id,
+                'date_creationDossier_envoiAuServiceDiplome' => $diplome->date_creationDossier_envoiAuServiceDiplome,
+                'date_impression_envoiAuDecanat' => $diplome->date_impression_envoiAuDecanat,
+                'date_singature_renvoiAuServiceDiplome' => $diplome->date_singature_renvoiAuServiceDiplome,
+                'date_generationBorodeaux_envoiApresidence' => $diplome->date_generationBorodeaux_envoiApresidence,
+                'date_receptionParBureauOrdre_envoiAuGuichetRetrait' => $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait,
+                'date_notificationEtudiant' => $diplome->date_notificationEtudiant,
+                'date_retraitDiplome_archiveDossier' => $diplome->date_retraitDiplome_archiveDossier,
+                'date_reedition' => $diplome->date_reedition,
+            ];
+            array_push($diplomesList, $diplome);
+        }
 
         return response()->json([
-            'diplomes' => $diplomes
+            'diplomes' => $diplomesList
         ]);
     }
 
@@ -506,52 +517,6 @@ class DiplomeController extends Controller
     {
         return response()->json([
             'statuts' => DB::table('statut_diplome')->get()
-        ]);
-    }
-
-
-    /**
-     * Notify etudent by sending notif to his email with update date_notificationEtudiant
-     *
-     * @param  int $id_diplome
-     * @return \Illuminate\Http\Response
-     */
-    public function sendMAil($id_diplome)
-    {
-        $diplome = Diplome::with('etudiant', 'demande')->find($id_diplome);
-        $mail = [
-            'object' => 'Notification de diplôme',
-            'body' => 'Bonjour '
-                . $diplome->etudiant->nom . ' ' . $diplome->etudiant->prenom .
-                ', votre ' . $diplome->demande->type_demande . ' est prêt, 
-                       vous pouvez venir pour le récupérer auprès du guichet 
-                       de retrait des diplômes dans un délai de 3 jours au maximum!',
-        ];
-
-        // test if the specified date is null and the previous dates not null
-        if ($diplome) {
-            if (
-                !$diplome->date_notificationEtudiant
-                and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait
-                and $diplome->date_generationBorodeaux_envoiApresidence
-                and $diplome->date_singature_renvoiAuServiceDiplome
-                and $diplome->date_impression_envoiAuDecanat
-            ) {
-                $diplome->update([
-                    'date_notificationEtudiant' => Carbon::today()->format('Y-m-d'),
-                ]);
-                // notify etudiant
-                //Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
-                Mail::to('gouzasalma@gmail.com')->send(new NotificationDiplome($mail));
-
-                return response()->json([
-                    'response' => 'email sent to ' . $diplome->etudiant->email_inst,
-                ]);
-            }
-        }
-
-        return response()->json([
-            'response' => 'cannot send email!',
         ]);
     }
 }
