@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from "react-router-dom";
 import AppBar from '@material-ui/core/AppBar';
@@ -12,11 +12,14 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import authService from "../../Services/authService";
-import { useEffect } from 'react';
+import ProfilCard from "../Profil/ProfilCard";
+import Aide from "../Aide/Aide";
+import TodayDate from "../Date/DatePicker";
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -37,11 +40,32 @@ const styles = (theme) => ({
             background: "#3A7BAF",
         },
     },
+    profilRoot: {
+        position: 'relative',
+    },
+    profil: {
+        position: 'absolute',
+        top: theme.spacing(5),
+        right: 0,
+        left: -theme.spacing(24),
+    },
+    aideRoot: {
+        position: 'relative',
+        marginTop: -theme.spacing(1.5),
+    },
+    aide: {
+        position: 'absolute',
+        top: theme.spacing(13),
+        right: 0,
+        left: -theme.spacing(41.9),
+    },
 });
 
 function Header(props) {
-    const { classes, onDrawerToggle, title } = props;
+    const { classes, onDrawerToggle, emailUpdate, title, role, tabs } = props;
     const [currentIndex,setCurrentIndex] = useState(0);
+    const [open, setOpen] = useState(false);
+    const [open1, setOpen1] = useState(false);
     const history = useHistory();
 
     useEffect(() => {
@@ -57,6 +81,27 @@ function Header(props) {
     const handleLogout = () => {
         authService.logout();
         history.push("/");
+    };
+
+    const handleClick = () => {
+        setOpen((prev) => !prev);
+    };
+    
+      const handleClickAway = () => {
+        setOpen(false);
+    };
+
+    const handleClick1 = () => {
+        setOpen1((prev) => !prev);
+    };
+    
+      const handleClickAway1 = () => {
+        setOpen1(false);
+    };
+
+    const handleCallBackEditProfil = (edit) => {
+        props?.callBackEditProfil(edit);
+        setOpen(false);
     };
 
     return (
@@ -84,19 +129,35 @@ function Header(props) {
                             </Button>
                         </Grid>
                         <Grid item>
-                            <Tooltip title="Profil">
-                                <IconButton color="inherit" className={classes.iconButtonAvatar}>
-                                    <Avatar src="" alt="My Avatar" />
-                                </IconButton>
-                            </Tooltip>
+                            <ClickAwayListener onClickAway={handleClickAway}>
+                                <div className={classes.profilRoot}>
+                                    <Tooltip title={open ? '' : "Profil"}>
+                                        <IconButton color="inherit" className={classes.iconButtonAvatar} 
+                                            onClick={handleClick}>
+                                            <Avatar src="" alt="My Avatar" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    {open ? (
+                                    <div className={classes.profil}>
+                                    <ProfilCard callBackEditProfil={handleCallBackEditProfil} 
+                                            emailUpdate={emailUpdate} />
+                                    </div>
+                                    ) : null}
+                                    {open1 ? (
+                                    <div className={classes.aide}>
+                                    <Aide title={title} role={role}/>
+                                    </div>
+                                    ) : null}
+                                </div>
+                            </ClickAwayListener>
                         </Grid>
                     </Grid>
                 </Toolbar>
             </AppBar>
             <AppBar
-                component="div"
+                component="div" 
                 className={classes.secondaryBar}
-                style={{ background: "#0268B5" }}
+                style={{ background: "#0268B5", marginTop: -12}}
                 position="static"
                 elevation={0}
             >
@@ -107,27 +168,41 @@ function Header(props) {
                                 {title}
                             </Typography>
                         </Grid>
-                        <Grid item>
-                            <Tooltip title="Aide">
-                                <IconButton color="inherit" >
-                                    <HelpIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </Grid>
+                        
                     </Grid>
                 </Toolbar>
             </AppBar>
             <AppBar
                 component="div"
                 className={classes.secondaryBar}
-                style={{ background: "#0268B5" }}
+                style={{ background: "#0268B5", marginTop: -8}}
                 position="static"
                 elevation={0}
             >
-                <Tabs textColor="inherit" value={currentIndex} onChange={handleChange}>
-                    {props?.tabs && <Tab textColor="inherit" label="DEUG" />}
-                    {props?.tabs && <Tab textColor="inherit" label="Licence" />}
-                </Tabs>
+                <Toolbar>
+                    <Grid container alignItems="center" spacing={1}>
+                        <Grid item xs>
+                            <Tabs textColor="inherit" value={currentIndex} onChange={handleChange}>
+                                {tabs && <Tab textColor="inherit" label="DEUG" />}
+                                {tabs && <Tab textColor="inherit" label="Licence" />}
+                            </Tabs>      
+                        </Grid>
+                        <Grid item >
+                            <TodayDate/>     
+                        </Grid>
+                        <Grid item>
+                            <ClickAwayListener onClickAway={handleClickAway1}>
+                                <div className={classes.aideRoot}>
+                                    <Tooltip title={open1 ? '' : "Obtenir de l'aide"}>
+                                        <IconButton color="inherit" onClick={handleClick1}>
+                                            <HelpIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </div>
+                            </ClickAwayListener>
+                        </Grid>
+                    </Grid>
+                </Toolbar>
             </AppBar>
         </React.Fragment>
     );

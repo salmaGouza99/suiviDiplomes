@@ -469,7 +469,7 @@ function AllDiplomes(props) {
                                 </InputAdornment>
                             ),
                         }}
-                        helperText="Filter selon statut du diplome"
+                        helperText="Filtrer selon statut du diplôme"
                         variant="outlined"
                         margin="normal"
                         size="small"
@@ -495,20 +495,20 @@ function AllDiplomes(props) {
                                 </InputAdornment>
                             ),
                         }}
-                        helperText="Filter selon les filières"
+                        helperText="Filtrer selon les filières"
                         variant="outlined"
                         margin="normal"
                         size="small"
                         value={filiere}
                     >
-                        <MenuItem key={1} value="Droit Arabe">
-                            Droit Arabe
+                        <MenuItem key={1} value="القانون باللغة العربية">
+                            القانون باللغة العربية    
                         </MenuItem>
-                        <MenuItem key={2} value="Droit Français">
-                            Droit Français
+                        <MenuItem key={2} value="Droit en français">
+                            Droit en français
                         </MenuItem>
-                        <MenuItem key={3} value="Economie et gestion">
-                            Economie et gestion
+                        <MenuItem key={3} value="Sciences Economiques et Gestion">
+                            Sciences Economiques et Gestion
                         </MenuItem>
                     </TextField>
                 </Grid>
@@ -560,7 +560,7 @@ function AllDiplomes(props) {
                             >Voir parcours
                             </Button>
 
-                            <Tooltip title="Recharger">
+                            <Tooltip title="Rafraîchir">
                                 <IconButton onClick={handleLoad}>
                                     <RefreshIcon className={classes.block} color="inherit" />
                                 </IconButton>

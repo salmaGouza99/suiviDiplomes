@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import Divider from '@material-ui/core/Divider';
-import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -12,8 +11,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import authService from "../../Services/authService";
-import Link from '@material-ui/core/Link';
+import { Avatar, Box, Typography } from '@material-ui/core';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';import authService from "../../Services/authService";
 
 const styles = (theme) => ({
   categoryHeader: {
@@ -22,8 +23,9 @@ const styles = (theme) => ({
   },
   email: {
     color: theme.palette.common.white,
-    fontSize: 23,
+    // fontSize: 23,
     textAlign: 'center',
+    marginTop: theme.spacing(1),
   },
   categoryHeaderPrimary: {
     color: theme.palette.common.white,
@@ -36,9 +38,18 @@ const styles = (theme) => ({
       backgroundColor: 'rgba(255, 255, 255, 0.08)',
     },
   },
+  nested: {
+    paddingLeft: theme.spacing(6),
+    paddingTop: 2,
+    paddingBottom: 2,
+    color: 'rgba(255, 255, 255, 0.7)',
+    '&:hover,&:focus': {
+      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    },
+  },
   role: {
     paddingTop: 1,
-    paddingBottom: 1,
+    // paddingBottom: 1,
     color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
   },
@@ -71,8 +82,21 @@ const styles = (theme) => ({
     minWidth: 'auto',
     marginRight: theme.spacing(2),
   },
+  itemIcon2: {
+    minWidth: 'auto',
+    marginRight: theme.spacing(1.1),
+  },
   divider: {
     marginTop: theme.spacing(2),
+  },
+  large: {
+    width: theme.spacing(7),
+    height: theme.spacing(7),
+    color: '#fff',
+  },
+  infos: {
+    backgroundColor: "#232f3e",
+    padding: "25px",
   },
 });
 
@@ -80,20 +104,30 @@ function Navigator(props) {
   const { classes, ...other } = props;
   const [email, setEmail] = useState(initialState);
   const [role, setRole] = useState(initialState);
-  const [selectedItem, setSelectedItem] = useState('0');
+  // const [selectedItem, setSelectedItem] = useState('0');
+  const [open, setOpen] = useState(false);
+  const emailUpdate = props?.emailUpdate;
+  const indexEdit = props?.indexEdit;
   const history = useHistory();
+  const selectedItem = localStorage.getItem("index");
 
   useEffect(() => {
     const loggedInUser = authService.getCurrentUser();
-    if (loggedInUser) {
-      setEmail(loggedInUser?.user?.email);
-      setRole(loggedInUser?.user?.roles[0]?.name);
+    setRole(loggedInUser?.user?.roles[0]?.name);
+    setEmail(emailUpdate !== null ? props?.emailUpdate : loggedInUser?.user?.email);
+  }, [emailUpdate]);
+
+  useEffect(() => {
+    if(indexEdit) {
+      // setSelectedItem(indexEdit);
+      localStorage.setItem("index", indexEdit);
+      props.parentCallback(indexEdit);
     }
-    //console.log(loggedInUser);
-  }, []);
+  }, [indexEdit]);
 
   const handleListItemClick = (event, index) => {
-    setSelectedItem(index);
+    // setSelectedItem(index);
+    localStorage.setItem("index", index);
     props.parentCallback(index);
   };
 
@@ -102,10 +136,45 @@ function Navigator(props) {
     history.push("/");
   };
 
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
   return (
     <Drawer variant="permanent" {...other}>
+            <Box
+                sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 2
+                }}
+                className={classes.infos}
+            >
+                <Avatar
+                    className={classes.large}
+                    sx={{
+                        cursor: 'pointer',
+                        width: 64,
+                        height: 64
+                    }}
+                />
+                <Typography
+                  className={classes.email}
+                    variant="h6"
+                >
+                    {email}
+                </Typography>
+                <Typography
+                    className={classes.role}
+                    variant="body1"
+                >
+                    {role}
+                </Typography>
+            </Box>
+            <Divider light={true} />
       <List disablePadding>
-        <React.Fragment key={'info pers'}>
+        {/* <React.Fragment key={'info pers'}>
           <div className={classes.itemCategory}>
             <ListItem align='center'>
               <ListItemText
@@ -125,7 +194,7 @@ function Navigator(props) {
             </ListItem>
 
           </div>
-        </React.Fragment>
+        </React.Fragment> */}
 
         <ListItem 
           key="Acceuil"
@@ -155,7 +224,43 @@ function Navigator(props) {
                 {id}
               </ListItemText>
             </ListItem>
-            {children.map(({ id: childId, icon, index }) => (
+            {children.map(({ id: childId, icon, children, index }) => (
+                children ?
+                <><ListItem button onClick={handleClick} className={classes.item}>
+                    <ListItemIcon className={classes.itemIcon}>
+                        {icon}
+                    </ListItemIcon>
+                    <ListItemText
+                        classes={{
+                            primary: classes.itemPrimary,
+                        }}
+                    >
+                        {childId}
+                    </ListItemText>
+                    {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItem>
+                {children.map(({ id: childId2, icon: icon2, index: index2 }) => (
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItem key={childId2}
+                                  button
+                                  onClick={(event) => handleListItemClick(event, index2)}
+                                  className={clsx(classes.nested, selectedItem === index2 && classes.itemActiveItem)}>
+                                <ListItemIcon className={classes.itemIcon2}>
+                                    {icon2}
+                                </ListItemIcon>
+                                <ListItemText
+                                  classes={{
+                                      primary: classes.itemPrimary,
+                                  }}
+                                >
+                                    {childId2}
+                                </ListItemText>
+                            </ListItem>
+                        </List>
+                    </Collapse>))}</> :
+
+                <>   
                 <ListItem
                   key={childId}
                   button
@@ -170,8 +275,8 @@ function Navigator(props) {
                   >
                     {childId}
                   </ListItemText>
-
                 </ListItem>
+              </>
             ))}
             <Divider className={classes.divider} />
           </React.Fragment>

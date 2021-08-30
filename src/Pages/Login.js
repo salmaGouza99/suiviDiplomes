@@ -1,5 +1,6 @@
 import React, { useState, useEffect, initialState } from 'react';
 import { useHistory } from "react-router-dom";
+import { Route } from "react-router-dom";
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,11 +18,12 @@ import PersonIcon from '@material-ui/icons/Person';
 import VpnKeyIcon from '@material-ui/icons/VpnKeyRounded';
 import Alert from "@material-ui/lab/Alert";
 import IconButton from "@material-ui/core/IconButton";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import authService from "../../Services/authService";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import authService from "../Services/authService";
 import { makeStyles } from '@material-ui/core/styles';
-import img from "../../FSJES_Agdal.png";
+import imgBackground from "../Images/FSJES_Agdal.png";
+import imageLogo from "../Images/logo.png";
 
 function Copyright() {
   return (
@@ -35,7 +37,7 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   image: {
-    backgroundImage: `url(${img})`,
+    backgroundImage: `url(${imgBackground})`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
@@ -94,9 +96,13 @@ export default function Login(props) {
   const [disable, setDisable] = useState(false);
   const [loading, setLoading] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
+  const [checked, setChecked] = useState(false);
   
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem("logedOut")) === false && props?.user) {
+    const loggedOut = authService.getLoggedOutValue();
+    if(loggedOut === true) {
+      //console.log("logout");
+    } else if (props?.user) {
       history.push(props?.role === 1 ? "/Admin" :
                    props?.role === 2 || props?.role === 3 || props?.role === 4 ? "/GuichetScolarite" :
                    props?.role === 5 ? "/ServiceDiplomes" :
@@ -134,15 +140,9 @@ export default function Login(props) {
       setLoading(true);
       setDisable(true);
       setMessage("");
-      authService.login(email, password).then(
+      authService.login(email, password, checked).then(
         (response) => {
           if (!response.msgError) {
-            history.push(response?.user?.roles[0]?.id === 1 ? "/Admin" :
-                         response?.user?.roles[0]?.id === 2 || response?.user?.roles[0]?.id === 3 || 
-                         response?.user?.roles[0]?.id === 4 ? "/GuichetScolarite" :
-                         response?.user?.roles[0]?.id === 5 ? "/ServiceDiplomes" :
-                         response?.user?.roles[0]?.id === 6 ? "/Decanat" : 
-                         response?.user?.roles[0]?.id === 7 ? "BureauOrdre" : "/GuichetRetrait");
             window.location.reload();
           } else {
             setLoading(false);
@@ -163,6 +163,11 @@ export default function Login(props) {
         }
       );
     }
+  };
+
+  const handleRemember = (event) => {
+    setChecked(event.target.checked);
+    //console.log(event.target.checked)
   };
 
   return (
@@ -192,7 +197,7 @@ export default function Login(props) {
                 </Alert>
               )}
               <div className={classes.paper}>
-                <img alt="logo" src="../../logo.png" className={classes.img} />
+                <img alt="logo" src={imageLogo} className={classes.img} />
                 <Typography component="h1" variant="h5" >
                   Se connecter
                 </Typography>
@@ -231,7 +236,7 @@ export default function Login(props) {
                             onClick={handleClickShowPassword}
                             onMouseDown={handleMouseDownPassword}
                           >
-                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                           </IconButton>
                         </InputAdornment>
                       )
@@ -251,8 +256,11 @@ export default function Login(props) {
                   />
                   <div align='center' >
                     <FormControlLabel
-                      control={<Checkbox value="remember" style={{ color: "#0268B5" }} />}
-                      label="Se souvenir de moi"
+                      control={<Checkbox checked={checked}
+                                onChange={handleRemember} 
+                                style={{ color: "#0268B5" }} />}
+                      label="Rester connecté"
+                      onclick={handleRemember}
                     />
                   </div>
                   <Button

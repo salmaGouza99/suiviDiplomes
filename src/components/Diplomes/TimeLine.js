@@ -39,11 +39,13 @@ export default function TimeLine(props) {
   const [activeStep, setActiveStep] = React.useState("");
   const [steps, setSteps] = React.useState([]);
   const diplome = props?.diplome;
+  const dateDemande = props?.dateDemande;
 
   useEffect(() => {
     setSteps(
       [
-        {label :'Réception de la demande', date : `${diplome.date_demande}`,},
+        {label :'Réception de la demande', date : dateDemande ?
+            dateDemande : `${diplome.date_demande}`,},
         {label :'Création du dossier',date : `${diplome.date_creationDossier_envoiAuServiceDiplome}`,},
         diplome.date_reedition !== null ? 
         {label :'Réédition par service de diplômes',date : `${diplome.date_reedition}`,} : {label: null,date: null},

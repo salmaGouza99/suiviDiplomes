@@ -12,6 +12,9 @@ import HomeIcon from '@material-ui/icons/Home';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import authService from "../../Services/authService";
 import Divider from '@material-ui/core/Divider';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';
 import { Link } from "react-router-dom";
 import {
     Avatar,
@@ -71,6 +74,12 @@ const styles = (theme) => ({
         color: '#6b778c',
         
     },
+    itemIcon2: {
+        minWidth: 'auto',
+        marginRight: theme.spacing(1.1),
+        color: '#6b778c',
+        
+    },
     divider: {
         marginTop: theme.spacing(2),
     },
@@ -90,28 +99,47 @@ const styles = (theme) => ({
         '&:hover,&:focus': {
             backgroundColor: grey[100],
         },
-    }
+    },
+    nested: {
+        paddingLeft: theme.spacing(6),
+        paddingTop: 2,
+        paddingBottom: 2,
+        color: '#6b778c',
+        '&:hover,&:focus': {
+            backgroundColor:  indigo[50],
+        },
+    },
 });
 
 function NavBar(props) {
-    const { classes, navItems, ...other } = props;
+    const { classes, navItems, openList, ...other } = props;
     const [email, setEmail] = useState(initialState);
     const [role, setRole] = useState(initialState);
-
+    const emailUpdate = props?.emailUpdate;
+    const [open, setOpen] = useState(false);
     const history = useHistory();
 
     useEffect(() => {
+        setOpen(openList ? true : false);
+    }, []);
+
+    useEffect(() => {
         const loggedInUser = authService.getCurrentUser();
-        if (loggedInUser) {
+        if (emailUpdate !== null) {
+            setEmail(props?.emailUpdate);
+          } else if (loggedInUser) {
             setEmail(loggedInUser?.user?.email);
             setRole(loggedInUser?.user?.roles[0]?.name);
-
-        }
-    });
+          }
+    }, [emailUpdate]);
 
     const handleLogout = () => {
         authService.logout();
         history.push("/");
+    };
+
+    const handleClick = () => {
+        setOpen(!open);
     };
 
     return (
@@ -164,7 +192,6 @@ function NavBar(props) {
                     </ListItem>
                 </Link>
                 <Divider light={true} />
-
                 {navItems.map(({ id, children }) => (
                     <React.Fragment key={id} >
                         <ListItem className={classes.categoryHeader} key={id}>
@@ -172,7 +199,42 @@ function NavBar(props) {
                                 {id}
                             </ListItemText>
                         </ListItem>
-                        {children.map(({ id: childId, icon, active, link }) => (
+                        {children.map(({ id: childId, icon, active, children, link }) => (
+                            children ?
+                            <><ListItem button onClick={handleClick} className={classes.item}>
+                                <ListItemIcon className={classes.itemIcon}>
+                                    {icon}
+                                </ListItemIcon>
+                                <ListItemText
+                                    classes={{
+                                        primary: classes.itemPrimary,
+                                    }}
+                                >
+                                    {childId}
+                                </ListItemText>
+                                {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                            </ListItem>
+                            {children.map(({ id: childId2, icon: icon2, link: link2 }) => (
+                                <Collapse in={open} timeout="auto" unmountOnExit>
+                                    <List component="div" disablePadding>
+                                        <Link to={link2}
+                                            style={{ textDecoration: 'none' }}>
+                                            <ListItem button className={classes.nested}>
+                                                <ListItemIcon className={classes.itemIcon2}>
+                                                    {icon2}
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    classes={{
+                                                        primary: classes.itemPrimary,
+                                                    }}
+                                                >
+                                                    {childId2}
+                                                </ListItemText>
+                                            </ListItem>
+                                        </Link>
+                                    </List>
+                                </Collapse>))}</> :
+                            <>
                             <Link to={link}
                                 style={{ textDecoration: 'none' }}>
                                 <ListItem
@@ -190,6 +252,7 @@ function NavBar(props) {
                                     </ListItemText>
                                 </ListItem>
                             </Link>
+                            </>
                         ))}
                         <Divider className={classes.divider} light={true} />
                     </React.Fragment>

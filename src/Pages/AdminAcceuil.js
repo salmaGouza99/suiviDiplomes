@@ -4,24 +4,23 @@ import PropTypes from 'prop-types';
 import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
-import NavBar from '../Navigation/NavBar';
-import UsersGrid from '../Users/UsersGrid';
-import Header from '../Navigation/Header';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import FolderIcon from '@material-ui/icons/Folder';
-import EditIcon from '@material-ui/icons/Edit';
+import NavBar from '../components/Navigation/NavBar';
+import UsersGrid from '../components/Users/UsersGrid';
+import Header from '../components/Navigation/Header';
+import UnarchiveIcon from '@material-ui/icons/Unarchive';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import PersonIcon from '@material-ui/icons/Person';
-import Profil from '../Users/Profil';
-import FormsPage from '../formulaires/FormsPage';
-import AllDiplomes from '../Diplomes/AllDiplomes';
-import TimeLine from '../Diplomes/TimeLine';
-import Dashboard from '../Dashboard/Dashboard';
+import Profil from '../components/Profil/Profil';
+import FormsPage from '../components/Formulaires/FormsPage';
+import AllDiplomes from '../components/Diplomes/AllDiplomes';
+import Dashboard from '../components/Dashboard/Dashboard';
+import DemandesGrid from '../components/Demandes/DemandesGrid';
 import LinkIcon from '@material-ui/icons/Link';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import SchoolIcon from '@material-ui/icons/School';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import authService from "../Services/authService";
 
 function Copyright() {
   return (
@@ -174,18 +173,19 @@ const styles = {
 
 function AdminAcceuil(props) {
 
-  const { classes, openUser , openForms , openProfil , openDiplomes, title, openDashboard } = props;
+  const { classes, openUser , openForms , openProfil ,openDemandes, 
+          openDiplomesTraitement, openDiplomesArchives, openDashboard, title, role } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [navItems, setNavItems] = useState([]);
+  const [emailUpdate, setEmailUpdate] = useState(null);
   const history = useHistory();
 
   useEffect(() => {
-    if (props?.role !== 1) {
-      history.push("/");
-      window.location.reload();
-    }
-    else {
+    const loggedOut = authService.getLoggedOutValue();
+    if(loggedOut === true || props?.role !== 1) {
+        history.push("/");
+    } else {
       setNavItems(
         [
           {
@@ -194,7 +194,10 @@ function AdminAcceuil(props) {
               { id: 'Utilisateurs', icon: <PersonIcon />, active: true, link: '/Users' },
               { id: 'Formulaires', icon: <LinkIcon />, link: '/Forms' },
               { id: 'Demandes en attente', icon: <InsertDriveFileIcon />, link: '/DemandesEnAttente' },
-              { id: 'Diplômes', icon: <SchoolIcon />, link: '/Diplomes' },
+              { id: 'Diplômes', icon: <SchoolIcon />, childrens: [
+                    {id: "En cours de traitement", icon: <HourglassEmptyIcon/>, link: 'DiplomesEnCoursDeTraitement'},
+                    {id: "Retirés", icon: <UnarchiveIcon/>, link: 'DiplomesRetires'}
+              ]},
             ],
           },
           {
@@ -222,22 +225,28 @@ function AdminAcceuil(props) {
     setCurrentIndex(childData);
   };
 
+  const handleCallbackProfil = (childData) => {
+    setEmailUpdate(childData);
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
         <CssBaseline />
         <nav className={classes.drawer}>
-          <NavBar PaperProps={{ style: { width: drawerWidth } }}
-            navItems={navItems} />
+          <NavBar PaperProps={{ style: { width: drawerWidth } }} 
+            openList={openDiplomesTraitement || openDiplomesArchives ? true : false}
+            navItems={navItems} emailUpdate={emailUpdate}/>
         </nav>
         <div className={classes.app}>
-          <Header onDrawerToggle={handleDrawerToggle} parentCallback={handleCallback} title={title} />
+          <Header onDrawerToggle={handleDrawerToggle} parentCallback={handleCallback} title={title} role={role}/>
           <main className={classes.main}>
-            {openUser && <UsersGrid />}
+            {openUser && <UsersGrid user={props?.user}/>}
             {openForms && <FormsPage />}
-            {openDiplomes && <AllDiplomes />}
-            {openProfil && <Profil />}
+            {openDemandes && <DemandesGrid />}
+            {openDiplomesTraitement && <AllDiplomes/>}
+            {openDiplomesArchives && <AllDiplomes/>}
+            {openProfil && <Profil parentCallback={handleCallbackProfil}/>}
             {openDashboard && <Dashboard />}
           </main>
           <footer className={classes.footer}>

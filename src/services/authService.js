@@ -1,29 +1,46 @@
 import axios from "axios";
 const API_URL = "http://127.0.0.1:8000/api/";
 
-const login = (email, password) => {
+const login = (email, password, checked) => {
+  localStorage.setItem("remember", checked);
   return axios
     .post(API_URL + "login", { email, password })
     .then((response) => {
       if (response.data.accessToken) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-        localStorage.setItem("logedOut", false);
+          checked ? localStorage.setItem("user", JSON.stringify(response.data)) :
+                    sessionStorage.setItem("user", JSON.stringify(response.data));
+          localStorage.setItem("loggedOut", false);
+          localStorage.setItem("index", '0');
       }
       return response.data;
     });
 };
+
 const logout = () => {
   localStorage.removeItem("user");
-  localStorage.setItem("logedOut", true);
+  sessionStorage.removeItem("user");
+  localStorage.setItem("loggedOut", true);
+  localStorage.removeItem("remember");
+  localStorage.removeItem("index");
 };
+
 const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem("user"));
+  if(JSON.parse(localStorage.getItem("remember")) === true) {
+    return JSON.parse(localStorage.getItem("user"));
+  } else {
+    return JSON.parse(sessionStorage.getItem("user"));
+  }
+};
+
+const getLoggedOutValue = () => {
+  return JSON.parse(localStorage.getItem("loggedOut"));
 };
 
 const authService = {
   login,
   logout,
   getCurrentUser,
+  getLoggedOutValue
 };
 
 export default authService;

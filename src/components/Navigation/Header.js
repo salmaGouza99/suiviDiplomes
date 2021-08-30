@@ -14,9 +14,13 @@ import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { withStyles } from '@material-ui/core/styles';
 import authService from "../../Services/authService";
 import { useEffect } from 'react';
+import Aide from "../Aide/Aide";
+import ProfilCard from "../Profil/ProfilCard";
+
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -37,12 +41,32 @@ const styles = (theme) => ({
             background: "#3A7BAF",
         },
     },
+    profilRoot: {
+        position: 'relative',
+    },
+    profil: {
+        position: 'absolute',
+        top: theme.spacing(5),
+        right: 0,
+        left: -theme.spacing(24),
+    },
+    aideRoot: {
+        position: 'relative',
+    },
+    aide: {
+        position: 'absolute',
+        top: theme.spacing(10.5),
+        right: 0,
+        left: -theme.spacing(42.5),
+    },
 });
 
 function Header(props) {
     const { classes, onDrawerToggle } = props;
     const [currentIndex,setCurrentIndex] = useState(0);
     const [title,setTilte] = useState('');
+    const [open, setOpen] = useState(false);
+    const [open1, setOpen1] = useState(false);
 
     const history = useHistory();
 
@@ -57,6 +81,22 @@ function Header(props) {
     const handleLogout = () => {
         authService.logout();
         history.push("/");
+    };
+
+    const handleClick = () => {
+        setOpen((prev) => !prev);
+    };
+    
+      const handleClickAway = () => {
+        setOpen(false);
+    };
+
+    const handleClick1 = () => {
+        setOpen1((prev) => !prev);
+    };
+    
+      const handleClickAway1 = () => {
+        setOpen1(false);
     };
 
     return (
@@ -83,20 +123,37 @@ function Header(props) {
                                 Se déconnecter
                             </Button>
                         </Grid>
+                        
                         <Grid item>
-                            <Tooltip title="Profil">
-                                <IconButton color="inherit" className={classes.iconButtonAvatar}>
-                                    <Avatar src="" alt="My Avatar" />
-                                </IconButton>
-                            </Tooltip>
+                            <ClickAwayListener onClickAway={handleClickAway}>
+                                <div className={classes.profilRoot}>
+                                    <Tooltip title={open ? '' : "Profil"}>
+                                        <IconButton color="inherit" className={classes.iconButtonAvatar} 
+                                            onClick={handleClick}>
+                                            <Avatar src="" alt="My Avatar" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    {open ? (
+                                    <div className={classes.profil}>
+                                    <ProfilCard callBackEditProfil={null} 
+                                            emailUpdate={null} />
+                                    </div>
+                                    ) : null}
+                                    {open1 ? (
+                                    <div className={classes.aide}>
+                                    <Aide title={title} role={props?.role}/>
+                                    </div>
+                                    ) : null}
+                                </div>
+                            </ClickAwayListener>
                         </Grid>
                     </Grid>
                 </Toolbar>
             </AppBar>
             <AppBar
-                component="div"
+                component="div" 
                 className={classes.secondaryBar}
-                style={{ background: "#5664d2" }}
+                style={{ background: "#5664d2" }} 
                 position="static"
                 elevation={0}
             >
@@ -104,10 +161,19 @@ function Header(props) {
                     <Grid container alignItems="center" spacing={1}>
                         <Grid item xs>
                             <Typography color="inherit" variant="h5" component="h1">
-                               {title}
+                                {title}
                             </Typography>
                         </Grid>
                         <Grid item>
+                            <ClickAwayListener onClickAway={handleClickAway1}>
+                                <div className={classes.aideRoot}>
+                                    <Tooltip title={open1 ? '' : "Obtenir de l'aide"}>
+                                        <IconButton color="inherit" onClick={handleClick1}>
+                                            <HelpIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </div>
+                            </ClickAwayListener>
                         </Grid>
                     </Grid>
                 </Toolbar>

@@ -4,18 +4,21 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
-import Visibility from "@material-ui/icons/VisibilityRounded";
-import Box from '@material-ui/core/Box';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import Visibility from "@material-ui/icons/VisibilityRounded";
 import { makeStyles } from '@material-ui/styles';
 import { DataGrid, GridOverlay, useGridSlotComponentProps, frFR } from '@material-ui/data-grid';
 import Alert from '@material-ui/lab/Alert';
+import FilterListIcon from '@material-ui/icons/FilterListRounded';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import userService from "../../Services/userService";
@@ -63,24 +66,28 @@ const styles = (theme) => ({
   paper: {
     maxWidth: 950,
     margin: 'auto',
-    marginTop: -theme.spacing(1.5),
     overflow: 'hidden',
   },
   searchBar: {
     borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
   },
   searchInput: {
-    fontSize: theme.typography.fontSize,
+    fontSize: 15,
   },
   block: {
     display: 'block',
   },
-  newDemands: {
-    marginRight: theme.spacing(1),
-    padding: theme.spacing(0.5, 1.5),
+  newDemandsOld: {
     background: '#4fc3f7',
     '&:hover': {
       background: "#3A7BAF",
+    },
+    color: theme.palette.common.white,
+  },
+  newDemands: {
+    background: '#0a9ce6',
+    '&:hover': {
+      background: "#5ea2d7",
     },
     color: theme.palette.common.white,
   },
@@ -91,9 +98,7 @@ const styles = (theme) => ({
   contentWrapper: {
     margin: '20px 16px',
   },
-  footer: {
-    marginLeft: theme.spacing(49.5),
-    marginTop: -theme.spacing(10),
+  folder: {
     background: '#4fc3f7',
     '&:hover': {
       background: "#3A7BAF",
@@ -115,21 +120,24 @@ function DemandesGrid(props) {
   const { classes } = props;
   const [open, setOpen] = useState(false);
   const [demandeId, setDemandeId] = useState(null);
-  const [demandes, setDemandes] = useState();
+  const [demandes, setDemandes] = useState([]);
   const [demandesTraitees, setDemandesTraitees] = useState([]);
   const [search, setSearch] = useState("");
-  const [filtredDemandes, setfiltredDemandes] = useState([]);
-  const [pageSize, setPageSize] = useState(5);
+  const [filtredDemandes, setFiltredDemandes] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
   const [load, setLoad] = useState();
+  const [reload, setReload] = useState(false);
   const [disable, setDisable] = useState(false);
   const [disable1, setDisable1] = useState(true);
   const [message, setMessage] = useState();
   const [error, setError] = useState();
   const [number, setNumber] = useState();
   const [selectionModel, setSelectionModel] = useState([]);
+  const [selectedFiliere, setselectedFiliere] = useState('');
   const type = props?.currentIndex === 0 ? "DEUG" : "Licence";
   const filiere = props?.role === 2 ? "القانون باللغة العربية" : 
-                  props?.role === 3 ? "Droit en français" : "Sciences Economiques et Gestion";
+                  props?.role === 3 ? "Droit en français" : 
+                  props?.role === 4 ? "Sciences Economiques et Gestion" : null;
 
   const columns = [
     {
@@ -163,7 +171,14 @@ function DemandesGrid(props) {
       width: 120,
     },
     {
+      field: 'filiere',
+      hide: filiere !== null ? true : false,
+      headerName: 'Filière',
+      width: 140,
+    },
+    {
       field: 'statut',
+      hide: filiere !== null ? false : true,
       headerName: 'Statut',
       sortable: false,
       width: 100,
@@ -181,9 +196,8 @@ function DemandesGrid(props) {
           
         return (
           <Tooltip title='Voir détails'>
-            <IconButton style={{ marginLeft: 3 }}>
-              <Visibility onClick={showInfo}
-                style={{ color: 'gray' }} />
+            <IconButton onClick={showInfo} style={{ marginLeft: 3 }}>
+              <Visibility style={{ color: 'gray' }} />
             </IconButton>
           </Tooltip>
         );
@@ -194,83 +208,93 @@ function DemandesGrid(props) {
   const data = filtredDemandes?.map((demande) => (
     {
       id: demande.id, type: demande.type_demande, date: demande.date_demande,
-      fullName: demande.nom + ' ' + demande.prenom,
-      apogee: demande.apogee, cin: demande.etudiant_cin,
-      statut: getStatut(demande.id),
+      fullName: demande.etudiant.nom + ' ' + demande.etudiant.prenom,
+      apogee: demande.etudiant.apogee, cin: demande.etudiant_cin,
+      filiere: demande.etudiant.filiere, statut: getStatut(demande.id),
     }
   ));
 
   function getStatut(demandeId) {
     return (demandesTraitees.indexOf(demandeId) > -1 ? 'Traitée' : 'Non traitée')
-  }
+  };
 
-  function filterDemandes() {
+  useEffect(() => {
     setLoad(true);
-    userService.filterDemandes(type, filiere)
+    setReload(false);
+    userService.getAllDemandes()
       .then((response) => {
         setLoad(false);
         setError(null);
-        setDemandes(response?.data.demandes);
+        setDemandes(response?.data?.demandes);
       }).catch((error) => {
         console.log(error);
         setLoad(false);
         setMessage(null);
         setNumber(null);
-        setError("Erreur de chargement, veuillez réssayer.");
+        setError("Erreur de chargement, veuillez réessayer.");
       });
-  };
-
-  useEffect(() => {
-    /* async function getAllDemandes() {
-      await userService.getAllDemandes().then((response) => {
-        setDemandes(Object.entries(response?.data));
-      });
-    }
-    getAllDemandes(); */
-    // console.log(index);
-    filterDemandes();
     setMessage(number != null ? message : null);
-  }, [type]);
+  }, [reload]);
 
   useEffect(() => {
-    setfiltredDemandes(
+    setFiltredDemandes(
       demandes?.filter((demande) =>
-        demande.etudiant_cin.toLowerCase().includes(search.toLowerCase()) ||
-        demande.apogee.toLowerCase().includes(search.toLowerCase()) ||
-        demande.cne.toLowerCase().includes(search.toLowerCase())
+        demande.type_demande === type 
+        && 
+        (filiere !== null ? demande.etudiant.filiere === filiere : 
+         selectedFiliere !== '' ? demande.etudiant.filiere === selectedFiliere :
+         demande.etudiant.filiere !== null) 
+        &&
+        (demande.etudiant_cin.toLowerCase().includes(search.toLowerCase()) ||
+        demande.etudiant.apogee.toLowerCase().includes(search.toLowerCase()) ||
+        demande.etudiant.cne.toLowerCase().includes(search.toLowerCase()) )
       )
     );
-  }, [search, demandes]);
+    setError(null);
+    setMessage(number != null ? message : null);
+  }, [type, selectedFiliere, search, demandes]);
 
   const handleReload = () => {
     setMessage(null);
     setNumber(null);
     setError(null);
     setDemandes([]);
-    filterDemandes();
+    setSearch('');
+    setselectedFiliere('');
+    setReload(true);
   };
 
   const handleNewDemands = () => {
     setLoad(true);
     setDisable(true);
-    userService.nouvellesDemandes(filiere).then((response) => {
+    userService.nouvellesDemandes(filiere!==null?filiere:0).then((response) => {
       setDisable(false);
       setError(null);
-      filterDemandes();
-      let total = response?.data.Deug + response?.data.Licence;
-      setMessage(total === 0 ? "Aucune nouvelle demande." :
+      if (filiere!==null) {
+        let total = response?.data.Deug + response?.data.Licence;
+        setMessage(total === 0 ? "Aucune nouvelle demande." :
         response?.data.Deug === 1 && response?.data.Licence === 0 ? "Une seule damande de DEUG est ajoutée." :
         response?.data.Deug === 0 && response?.data.Licence === 1 ? "Une seule damande de Licence est ajoutée." :
         total + " demandes ajoutées: " +
         response?.data.Deug + " DEUG et " + response?.data.Licence + " Licence.");
-      setNumber(total);
+        setNumber(total);
+      } else {
+        let total = response?.data.DeugForAllFilieres + response?.data.LicenceForAllFilieres;
+        setMessage(total === 0 ? "Aucune nouvelle demande." :
+        response?.data.DeugForAllFilieres === 1 && response?.data.LicenceForAllFilieres === 0 ? "Une seule damande de DEUG est ajoutée." :
+        response?.data.DeugForAllFilieres === 0 && response?.data.LicenceForAllFilieres === 1 ? "Une seule damande de Licence est ajoutée." :
+        total + " demandes ajoutées: " +
+        response?.data.DeugForAllFilieres + " DEUG et " + response?.data.LicenceForAllFilieres + " Licence.");
+        setNumber(total);
+      }
+      setReload(true);
     }).catch((error) => {
       console.log(error);
       setDisable(false);
       setLoad(false);
       setMessage(null);
       setNumber(null);
-      setError("Une connexion internet est obligatoire pour charger les nouvelles demandes, veuillez réssayer.");
+      setError("Une connexion internet est obligatoire pour charger les nouvelles demandes, veuillez réessayer.");
     });
   };
 
@@ -307,7 +331,7 @@ function DemandesGrid(props) {
               setMessage(dt?.length === 1 ? "Dossier créé avec succès." :
                 dt?.length + " dossiers créés avec succès.");
             } else {
-              setError("Cette demande n'existe plus.");
+              setError("Cette demande est déjà traitée, ou une autre erreur est servenue.");
             }
             handleSelection(null);
           }).catch((error) => {
@@ -316,7 +340,7 @@ function DemandesGrid(props) {
             setDisable1(false);
             setMessage(null);
             setNumber(null);
-            setError("Erreur dans la création du dossier, veuillez réssayer.");
+            setError("Une erreur s'est produite lors de la création du dossier, veuillez réessayer.");
           })
       ));
     }
@@ -324,7 +348,11 @@ function DemandesGrid(props) {
 
   const handleCloseCallback = (open) => {
     setOpen(open);
-  }
+  };
+
+  const handleSelectedFiliere = (event) => {
+    setselectedFiliere(event.target.value);
+  };
 
   return (
     <Paper className={classes.paper}>
@@ -344,16 +372,73 @@ function DemandesGrid(props) {
                   className: classes.searchInput,
                 }}
                 onChange={(e) => setSearch(e.target.value)}
+                value={search}
               />
             </Grid>
+            {filiere === null &&
             <Grid item>
-              <Button variant="contained"
+              <TextField
+              style={{minWidth: 150, marginRight: 15}}
+              id="standard-select-currency"
+              select
+              label="Filtrer par filière"
+              onChange={handleSelectedFiliere}
+              InputProps={{
+                  startAdornment: (
+                      <InputAdornment position="start">
+                          <FilterListIcon/>
+                      </InputAdornment>
+                  ),
+              }}
+              variant="outlined"
+              margin="normal"
+              size="small"
+              value={selectedFiliere}
+              >
+                <MenuItem key={1} value="القانون باللغة العربية">
+                    القانون باللغة العربية
+                </MenuItem>
+                <MenuItem key={2} value="Droit en français">
+                    Droit en français
+                </MenuItem>
+                <MenuItem key={3} value="Sciences Economiques et Gestion">
+                    Sciences Economiques et Gestion
+                </MenuItem>
+              </TextField>
+            </Grid>}
+            <Grid item>
+              <Tooltip title="Charger les nouvelles demandes">
+                <div>
+                  <IconButton className={classes.newDemands} onClick={handleNewDemands}
+                      disabled={disable}>
+                      <PostAddIcon style={{fontSize: 22}}/>
+                  </IconButton>
+                </div>
+              </Tooltip>
+              {/* <Button variant="contained"
                 disabled={disable}
                 className={classes.newDemands}
-                onClick={handleNewDemands}>
+                onClick={handleNewDemands} startIcon={<AddIcon/>}>
                 <Box fontWeight="fontWeightBold">Nouvelles demandes</Box>
-              </Button>
-              <Tooltip title="Recharger">
+              </Button> */}
+            </Grid>
+            {filiere !== null && 
+            <Grid item>
+              <Tooltip title="Créer dossier">
+                <div style={{marginLeft: 10, marginTop:10,marginBottom:10}}>
+                  <IconButton className={classes.folder} onClick={handleCreateFolders}
+                      disabled={selectionModel?.length === 0 || disable1 ? true : false}>
+                      <CreateNewFolderIcon style={{fontSize: selectionModel?.length === 0 || disable1 ? 25 : 22}}/>
+                  </IconButton>
+                </div>
+              </Tooltip>
+              {/* <Button variant="contained" disabled={selectionModel?.length === 0 || disable1 ? true : false}
+                className={classes.folder} onClick={handleCreateFolders} startIcon={<CreateNewFolderIcon/>}>
+                <Box fontWeight="fontWeightBold">Créer dossier</Box>
+              </Button> */}
+            </Grid>}
+            <Grid item>
+              <Tooltip title="Rafraîchir">
                 <IconButton onClick={handleReload}>
                   <RefreshIcon className={classes.block} color="inherit" />
                 </IconButton>
@@ -377,10 +462,11 @@ function DemandesGrid(props) {
             {message || error}
           </Alert>
         )}
-
-        <div style={{ height: 375, width: '100%' }} className={classes.MuiDataGrid}>
+    
+        <div style={{ width: '100%' }} className={classes.MuiDataGrid}>
           <DataGrid
             localeText={frFR.props.MuiDataGrid.localeText}
+            autoHeight
             rows={data ? data : []}
             columns={columns}
             getCellClassName={(params) => {
@@ -389,7 +475,7 @@ function DemandesGrid(props) {
             /* sortModel={[
               { field: 'date', sort: 'desc' },
             ]} */
-            checkboxSelection
+            checkboxSelection={filiere !== null ? true : false}
             disableSelectionOnClick
             disableColumnMenu
             pageSize={pageSize}
@@ -404,10 +490,6 @@ function DemandesGrid(props) {
             pagination
             loading={load}
           />
-          <Button variant="contained" disabled={selectionModel?.length === 0 || disable1 ? true : false}
-            className={classes.footer} onClick={handleCreateFolders}>
-            <Box fontWeight="fontWeightBold">Créer dossier</Box>
-          </Button>
         </div>
       </div>
       {open?

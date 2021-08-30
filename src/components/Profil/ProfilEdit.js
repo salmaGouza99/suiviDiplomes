@@ -10,21 +10,19 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import PersonIcon from '@material-ui/icons/Person';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import Container from '@material-ui/core/Container';
 import EditIcon from '@material-ui/icons/Edit';
-import MenuItem from '@material-ui/core/MenuItem';
 import Alert from "@material-ui/lab/Alert";
 import Button from '@material-ui/core/Button';
 import swal from 'sweetalert';
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import BlockIcon from "@material-ui/icons/Block";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import AddBoxRoundedIcon from '@material-ui/icons/AddBoxRounded';
 import userService from "../../Services/userService";
-import imgAjout from "../../Images/ajout.jpg";
 import imgEdition from "../../Images/edition.jpg";
 
 const useStyles = makeStyles((theme) => ({
@@ -62,39 +60,29 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function UserForm(props) {
+export default function ProfilEdit(props) {
   const classes = useStyles();
-  const [roles, setRoles] = useState([]);
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState(null);
+  const [passwordConfirm, setPasswordConfirm] = useState(null);
   const [errors, setErrors] = useState('');
   const [role, setRole] = useState('');
-  const [roleName, setRoleName] = useState('');
-  const [idUser, setIdUser] = useState('');
-  const [disable, setDisable] = useState(false);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
 
-
   useEffect(() => {
     setOpen(props.handleOpen);
-    props.user ? setRole(props.user.roleId) : setRole('');
-    props.user ? setRoleName(props.user.role) : setRole('');
+    props.user ? setRole(props.user.role) : setRole('');
     props.user ? setEmail(props.user.email) : setEmail('');
-    props.user ? setIdUser(props.user.id) : setIdUser('');
     props.handleOpen ? setOpen(props.handleOpen) : setOpen(false);
-    props.roles ? setRoles(props.roles) : setRoles([]);
+    // props.roles ? setRoles(props.roles) : setRoles([]);
   }, []);
 
 
   ///////////////////////////////////////////
-  const handleRole = (e) => {
-    setRole(e.target.value);
-  }
-
+ 
   const handleEmail = (e) => {
     setEmail(e.target.value);
     if (email.length < 6) {
@@ -116,96 +104,52 @@ export default function UserForm(props) {
 
   }
 
-
-
   const handlePasswordConfirm = (e) => {
     setPasswordConfirm(e.target.value);
     console.log(passwordConfirm);
 
   }
 
-
-
   const handleClose = (e) => {
-    if(props.formType  === "edit"){
-      props.closeCallback(false,"edit");
-    }else if(props.formType  === "add"){
-      props.closeCallback(false,"add");
-    }
+    //   props.closeCallback(false,null);
+    props.closeCallback(false);
   }
   /////////////////////////////////////////
 
   const handleSumbit = (e) => {
     e.preventDefault();
-    if (props.formType === "add") {
-      console.log("add");
+      // console.log("edit");
       if (passwordConfirm === password) {
         setErrors({ ...errors, passwordConfirm: null });
-        // setDisable(false);
       } else {
         setErrors({ ...errors, passwordConfirm: "Les mots de passe doivent être identiques." });
       }
       if (!Object.values(errors).some((x) => x !== null && x !== "")) {
-        setDisable(true);
+        // console.log('heeere submit Edit');
         if (password === passwordConfirm) {
-          userService.addNewUser(email, password, role).then((response) => {
+          userService.updateProfil(email, password).then((response) => {
               swal({
-                title: response.data.message,
+                title: response?.data?.message,
                 text: "",
                 icon: "success",
               });
-              setDisable(false);
-            props.closeCallback(false,"add");
+              props.closeCallback(false);
+              props.handleCallBack(response?.data?.user?.email);
             }).catch(err => {
               console.log(err.response);
-              setDisable(false);
               setMessage("Une erreur est servenue, veuillez réessayer.");
-              if (err.response.status === 500) {
-                setMessage("Cette adresse mail est déjà utilisée.");
-              }
-            })
-        } else {
-          setDisable(false);
-          setMessage("Les mots de passe doivent être identiques.");
-        }
-      }
-    }
-    else if (props.formType === "edit") {
-      console.log("edit");
-      if (passwordConfirm === password) {
-        setErrors({ ...errors, passwordConfirm: null });
-      } else {
-        setErrors({ ...errors, passwordConfirm: "Les mots de passe doivent être identiques."});
-      }
-      if (!Object.values(errors).some((x) => x !== null && x !== "")) {
-        setDisable(true);
-        if (password === passwordConfirm) {
-          userService.updateUser(idUser, email, password, role).then((response) => {
-            setDisable(false);
-              swal({
-                title: response.data.message,
-                text: "",
-                icon: "success",
-              });
-            props.closeCallback(false,"edit");
-            }).catch(err => {
-              console.log(err.response);
-              setDisable(false);
-              setMessage("Une erreur est servenue, veuillez réessayer.");
-              if (err.response.status === 500) {
+              if (err.response?.status === 500) {
                 setMessage("Cette adresse mail est déjà utilisée.");
               }
             })
 
         } else {
-          setDisable(false);
           setMessage("Les mots de passe doivent être identiques.");
         }
       }
-
-    }
-  }
-
+  };
+  
+  
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
@@ -224,7 +168,7 @@ export default function UserForm(props) {
           <Card className={classes.root}>
             <CardActionArea>
               <CardMedia
-                style={{height:80, backgroundImage: props.formType === "add" ? `url(${imgAjout})` : `url(${imgEdition})`}}
+                style={{height:80, backgroundImage: `url(${imgEdition})`}}
                 image=""
                 title=""
               />
@@ -273,7 +217,6 @@ export default function UserForm(props) {
                     error={Boolean(errors?.email)}
                     helperText={errors?.email}
                   />
-        {/* /////////////////////////////////////////////////77 */}
                   <TextField
                     onChange={handlePassword}
                     InputProps={{
@@ -296,19 +239,18 @@ export default function UserForm(props) {
                     }}
                     variant="outlined"
                     margin="normal"
-                    required
                     fullWidth
                     size="small"
                     name="password"
                     placeholder="********"
-                    label="Nouveau mot de passe "
+                    label="Nouveau mot de passe"
                     type={showPassword ? "text" : "password"}
                     id="password"
                     autoComplete="current-password"
                     error={Boolean(errors?.password)}
                     helperText={errors?.password}
                   />
-{/* /////////////////////////////////////////////////////////////// */}
+
                   <TextField
                     onChange={handlePasswordConfirm}
                     InputProps={{
@@ -331,54 +273,30 @@ export default function UserForm(props) {
                     }}
                     variant="outlined"
                     margin="normal"
-                    required
                     fullWidth
                     size="small"
                     name="password"
                     placeholder="********"
-                    label="Confirmer mot de passe "
+                    label="Confirmer mot de passe"
                     type={showPassword1 ? "text" : "password"}
                     id="password"
                     autoComplete="current-password"
                     error={Boolean(errors?.passwordConfirm)}
                     helperText={errors?.passwordConfirm}
                   />
-{/* //////////////////////////////////////////////////////////////// */}
 
 
-                    
-                  {props.title === "Editer utilisateur" || props.title === "Ajouter utilisateur" ? 
-                  <TextField
-                    id="standard-select-currency"
-                    select
-                    label="Profil"
-                    onChange={handleRole}
-                    value={role}
-                    helperText="Choisissz un profil"
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
-                    required
-                    size="small"
-                  >
-                    {roles.map((role) => (
-                      <MenuItem key={role.id} value={role.id}>
-                        {role.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                  :
                   <TextField
                     id="standard-select-currency"
                     label="Profil"
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <VpnKeyIcon />
+                          <BlockIcon style={{fontSize:16}}/>
                         </InputAdornment>
                       ),
                     }}
-                    value={roleName}
+                    value={role}
                     variant="outlined"
                     margin="normal"
                     fullWidth
@@ -387,22 +305,11 @@ export default function UserForm(props) {
                     disabled
                   >
                   </TextField>
-                  }
 
-            {/* ///////////////////////////////////////////// */}
-                  {props.formType === "add" ?
-                    <Button type='submit' variant="contained" color="primary" size="small"
-                      className={classes.fab} startIcon={<AddBoxRoundedIcon />}
-                      disabled={disable}
-                    >
-                      Ajouter</Button>
-                    :
                     <Button
                       variant="contained" color="primary" size="small"
                       type='submit' className={classes.fab} startIcon={<EditIcon />}
-                      disabled={disable}
                     >Editer</Button>
-                  }
                 </form>
               </Container>
             </CardActions>

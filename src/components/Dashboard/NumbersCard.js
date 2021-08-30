@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { green, pink } from '@material-ui/core/colors';
 import {
   Avatar,
   Card,
@@ -8,7 +7,6 @@ import {
   Grid,
   Typography
 } from '@material-ui/core';
-import CallReceivedIcon from '@material-ui/icons/CallReceived';
 import { red } from '@material-ui/core/colors';
 
 
@@ -23,9 +21,6 @@ const useStyles = makeStyles((theme) => ({
 export default function NumbersCard(props) {
   const classes = useStyles();
   const { title, number, icon, color } = props;
-
-
-
 
   return (
     <Card

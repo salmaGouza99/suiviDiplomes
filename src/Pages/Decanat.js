@@ -6,15 +6,16 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import FolderIcon from '@material-ui/icons/Folder';
+import SchoolIcon from '@material-ui/icons/School';
+import SchoolOutlinedIcon from '@material-ui/icons/SchoolOutlined';
 import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import Navigator from '../Demandes/Navigator';
-import DemandesGrid from '../Demandes/DemandesGrid';
-import DossiersGrid from '../Dossiers/DossiersGrid';
-import Header from '../Demandes/Header';
-import Profil from '../Users/Profil';
-import Acceuil from '../Acceuil/Acceuil';
+import Navigator from '../components/Demandes/Navigator';
+import DiplomesTraitement from '../components/Dossiers/DiplomesTraitement';
+import Header from '../components/Demandes/Header';
+import Profil from '../components/Profil/Profil';
+import Acceuil from '../components/Acceuil/Acceuil';
+import authService from "../Services/authService";
 
 function Copyright() {
     return (
@@ -165,26 +166,28 @@ const styles = {
     },
 };
 
-function GuichetScolarite(props) {
+function Decanat(props) {
     const { classes } = props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [indexItem, setIndexItem] = useState('0');
-    const [title, setTitle] = useState('Acceuil');
+    const [title, setTitle] = useState('');
     const [navItems, setNavItems] = useState([]);
+    const [emailUpdate, setEmailUpdate] = useState(null);
+    const [changeIndexToEdit, setChangeIndexToEdit] = useState(false);
     const history = useHistory();
 
     useEffect(() => {
-        if (props?.role !== 2 && props?.role !== 3 && props?.role !== 4) {
+        const loggedOut = authService.getLoggedOutValue();
+        if(loggedOut === true || props?.role !== 6) {
             history.push("/");
-            window.location.reload();  // reload here obligatory
         } else {
             setNavItems([
                 {
                     id: 'Menu',
                     children: [
-                        { id: 'Demandes', icon: <AssignmentIndIcon />, index: '1'},
-                        { id: 'Dossiers créés', icon: <FolderIcon />, index: '2'},
+                        { id: 'Diplômes à signer', icon: <SchoolOutlinedIcon />, index: '1'},
+                        { id: 'Diplômes signés', icon: <SchoolIcon />, index: '2'},
                     ],
                 },
                 {
@@ -194,6 +197,7 @@ function GuichetScolarite(props) {
                     ],
                 },
             ]);
+            handleCallbackNav(localStorage.getItem("index"));
         }
     }, []);
 
@@ -207,10 +211,19 @@ function GuichetScolarite(props) {
     
     const handleCallbackNav = (childData) => {
         setIndexItem(childData);
+        setChangeIndexToEdit(false);
         childData === '0' && setTitle("Acceuil");
-        childData === '1' && setTitle("Demandes");
-        childData === '2' && setTitle("Dossiers Créés");
+        childData === '1' && setTitle("Diplômes à signer");
+        childData === '2' && setTitle("Diplômes signés");
         childData === '3' && setTitle("Profil Personnel");
+    };
+
+    const handleCallbackProfil = (childData) => {
+        setEmailUpdate(childData);
+    };
+
+    const handleCallBackEditProfil = (edit) => {
+        setChangeIndexToEdit('3');
     };
 
     return (
@@ -225,21 +238,27 @@ function GuichetScolarite(props) {
                             open={mobileOpen}
                             onClose={handleDrawerToggle}
                             navItems={navItems}
+                            parentCallback={handleCallbackNav} emailUpdate={emailUpdate}
+                            indexEdit={changeIndexToEdit}
                         />
                     </Hidden>
                     <Hidden xsDown implementation="css">
                         <Navigator PaperProps={{ style: { width: drawerWidth } }}
-                            navItems={navItems} parentCallback={handleCallbackNav}/>
+                            navItems={navItems} parentCallback={handleCallbackNav} emailUpdate={emailUpdate}
+                            indexEdit={changeIndexToEdit}/>
                     </Hidden>
                 </nav>
                 <div className={classes.app}>
-                    <Header onDrawerToggle={handleDrawerToggle} parentCallback={handleCallbackHeader} 
+                    <Header onDrawerToggle={handleDrawerToggle} parentCallback={handleCallbackHeader} role={props?.role}
+                        callBackEditProfil={handleCallBackEditProfil} emailUpdate={emailUpdate} 
                         title={title} tabs={indexItem === '0' || indexItem === '3' ? false : true} />
                     <main className={classes.main}>
                         {indexItem === '0' && <Acceuil role={props?.role} />}
-                        {indexItem === '1' && <DemandesGrid currentIndex={currentIndex} role={props?.role} />}
-                        {indexItem === '2' && <DossiersGrid currentIndex={currentIndex} role={props?.role} />}
-                        {indexItem === '3' && <Profil />}
+                        {indexItem === '1' && <DiplomesTraitement currentIndex={currentIndex} 
+                                                role={props?.role} traitement={true} />}
+                        {indexItem === '2' && <DiplomesTraitement currentIndex={currentIndex} 
+                                                role={props?.role} traitement={false} />}
+                        {indexItem === '3' && <Profil parentCallback={handleCallbackProfil}/>}
                     </main>
                     <footer className={classes.footer}>
                         <Copyright />
@@ -250,8 +269,8 @@ function GuichetScolarite(props) {
     );
 }
 
-GuichetScolarite.propTypes = {
+Decanat.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(GuichetScolarite);
+export default withStyles(styles)(Decanat);

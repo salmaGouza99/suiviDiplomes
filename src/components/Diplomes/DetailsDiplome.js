@@ -18,10 +18,6 @@ import LinearProgress from '@material-ui/core/LinearProgress';import DetailsRow 
 import TimeLine from './TimeLine'
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        maxWidth: 900,
-
-    },
     container: {
         marginTop: theme.spacing(5),
         display: 'flex',
@@ -29,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
 
     },
-
     closeIcon: {
         display: 'flex',
         justifyContent: 'flex-end',
@@ -45,9 +40,6 @@ const useStyles = makeStyles((theme) => ({
     },
     pos: {
         marginBottom: 12,
-    },
-    card: {
-        width: '700',
     },
 }));
 
@@ -141,7 +133,7 @@ export default function DetailsDiplome(props) {
                                     }
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body" component="h3" >
+                                    <Typography variant="body" component="h3" align='center'>
                                         Parcours du diplôme
                                     </Typography>
                                     <Typography variant="body2" component="p">

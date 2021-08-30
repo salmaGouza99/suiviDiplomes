@@ -2,35 +2,30 @@ import React ,{useEffect , useState} from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
   Divider,
   useTheme,
-  colors
 } from '@material-ui/core';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import { indigo ,brown,grey} from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 import userService from "../../Services/userService";
-
+import Message from '../Formulaires/Message';
 
 export default function BarChart(props){
   const theme = useTheme();
   const [results, setResults] = useState([]);
   const [message, setMessage] = useState('');
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
       userService.dashboardCurrents().then((response) => {
         setResults(response.data.results)
     }).catch(err => {
         console.log(err);
-        setMessage("Erreur de chargement , veuillez reessayer !");
+        setMessage("Erreur de chargement des statistiques actuelles, veuillez réessayer.");
+        setOpen(true);
     })
-
-
-
   },[])
 
 
@@ -39,27 +34,31 @@ export default function BarChart(props){
       {
         backgroundColor:'#5664d2',
         data: [
-            results.nbrDiplomesDeugCree,
-            results.nbrDiplomesDeugDecanat, 
+            results.nbrDiplomesDeugCrees,
+            results.nbrDiplomesDeugReedites,
+            results.nbrDiplomesDeugImprimes, 
             results.nbrDiplomesDeugSignes, 
             results.nbrDiplomesDeugPresidence, 
-            results.nbrDiplomesDeugRetrait, 
+            results.nbrDiplomesDeugRecus, 
+            results.nbrDiplomesDeugPrets, 
       ],
         label: 'DEUG'
       },
       {
         backgroundColor: grey[300],       
         data: [
-          results.nbrDiplomeslicenceCree,
-          results.nbrDiplomeslicenceDecanat, 
-          results.nbrDiplomeslicenceSignes, 
-          results.nbrDiplomeslicencePresidence, 
-          results.nbrDiplomeslicenceRetrait, 
+          results.nbrDiplomesLicenceCrees,
+          results.nbrDiplomesLicenceReedites, 
+          results.nbrDiplomesLicenceImprimes, 
+          results.nbrDiplomesLicenceSignes, 
+          results.nbrDiplomesLicencePresidence, 
+          results.nbrDiplomesLicenceRecus, 
+          results.nbrDiplomesLicencePrets, 
     ],
         label: 'LICENCE'
       }
     ],
-    labels: ['Crées', 'Chez Décanat', 'Signés', 'A la Présidence', 'Prêts']
+    labels: ['Créés', 'Réédités', 'Imprimés', 'Signés', 'A la Présidence', 'Reçus', 'Prêts']
   };
 
   const options = {
@@ -119,10 +118,13 @@ export default function BarChart(props){
     }
   };
 
-
+  const handleCallBackOpen = (open) => {
+    setOpen(open);
+  }
 
   return (
     <Card {...props}>
+        {open && <Message message={message} success="error" callBackOpen={handleCallBackOpen}/>}
       <CardHeader
         title="Statistiques actuelles"
         titleTypographyProps={{

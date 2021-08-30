@@ -22,7 +22,7 @@ import NumbersCard from './NumbersCard';
 import userService from "../../Services/userService";
 import DonutChart from './DonutChart';
 import BarChart from './BarChart';
-
+import Message from '../Formulaires/Message';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -52,23 +52,20 @@ export default function Dashboard(props) {
   const [type, setType] = useState('');
   const [results, setResults] = useState('');
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [open, setOpen] = useState(false);
   // const [properties, setProperties] = useState([]);
-
-
 
   const properties1 = [
     { id: 1, title: 'Demandes Reçues', number: results.demandes_recus, icon: <CallReceivedIcon />, color: cyan[500], },
     { id: 2, title: 'Demandes Traitées', number: results.demandes_traitees, icon: <AssignmentTurnedInIcon />, color: purple[500], },
     { id: 3, title: 'Diplômes En cours', number: results.diplomes_non_prets, icon: <HourglassEmptyIcon />, color: lime[500], },
-
   ];
 
   const properties2 = [
-    { id: 4, title: 'Diplômes Prêts', number: results.diplomes_prets, icon: <AlarmOnIcon />, color: green[500], },
-    { id: 5, title: 'Diplômes Réedités', number: results.diplomes_reedites, icon: <BorderColorIcon />, color: red[600], },
+    { id: 4, title: 'Diplômes Réédités', number: results.diplomes_reedites, icon: <BorderColorIcon />, color: red[600], },
+    { id: 5, title: 'Diplômes Prêts', number: results.diplomes_prets, icon: <AlarmOnIcon />, color: green[500], },
     { id: 6, title: 'Diplômes Retirés', number: results.diplomes_retirees, icon: <DescriptionIcon />, color: grey[700], },
-
-
   ];
 
   const handleDateDebut = (e) => {
@@ -86,23 +83,19 @@ export default function Dashboard(props) {
   useEffect(() => {
     if (type === '' && dateDebut === '' && dateFin === '') {
       userService.filtredDashboard(dateDebut, dateFin, type).then((response) => {
-        console.log(response.data)
         setResults(response.data.results)
       }).catch(err => {
         console.log(err);
-        setMessage("Erreur de chargement , veuillez reessayer !");
+        setError("Erreur de chargement des statiqtiques générales, veuillez réessayer.");
+        setOpen(true);
       })
-    }
-
-  }, [dateDebut, type]);
-
-  useEffect(() => {
-    if (type !== '' && dateDebut === '' && dateFin === '') {
+    } else if (type !== '' && dateDebut === '' && dateFin === '') {
       userService.dashboardByType(type).then((response) => {
         setResults(response.data.results)
       }).catch(err => {
         console.log(err);
-        setMessage("Erreur de chargement , veuillez reessayer !");
+        setError("Erreur de chargement des statiqtiques générales, veuillez réessayer.");
+        setOpen(true);
       })
     }
   }, [type]);
@@ -114,19 +107,25 @@ export default function Dashboard(props) {
         setResults(response.data.results)
       }).catch(err => {
         console.log(err);
-        setMessage("Erreur de chargement , veuillez reessayer !");
+        setError("Erreur de chargement des statiqtiques générales, veuillez réessayer.");
+        setOpen(true);
       })
     } else {
-      setMessage("Selectionner les dates et le type du diplôme");
+      setMessage("Veuillez sélectionner d'abord les dates et le type du diplôme (demande).");
     }
   }
+
   const handleCancel = () => {
     setType('')
     setDateDebut('')
     setDateFin('')
     setMessage(null)
-
   }
+
+  const handleCallBackOpen = (open) => {
+    setOpen(open);
+  }
+
   return (
     <div className={classes.root}>
       {message && (
@@ -139,6 +138,7 @@ export default function Dashboard(props) {
           {message}
         </Alert>
       )}
+      {open && <Message message={error} success="error" callBackOpen={handleCallBackOpen}/>}
       <TextField
         style={{ height: "8px" }}
         id="standard-select-currency"
@@ -195,6 +195,7 @@ export default function Dashboard(props) {
             }}
             size="small"
             variant="outlined"
+            //disableFuture
           />
 
           <Tooltip title="Appliquer">

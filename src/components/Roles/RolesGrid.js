@@ -5,15 +5,12 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import PersonAddIcon from '@material-ui/icons/PersonAddOutlined';
 import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
 import swal from 'sweetalert';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
@@ -23,7 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { withStyles } from '@material-ui/core/styles';
 import userService from "../../Services/userService";
-import UserForm from './UserForm';
+import RoleForm from './RoleForm';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -126,77 +123,54 @@ const styles = (theme) => ({
 
 ///Data grid columns
 const columns = [
-    { field: 'id', headerName: 'ID', width: 120 },
+    { field: 'id', headerName: 'ID', width: 200 },
     {
-        field: 'email',
-        headerName: 'Identifiant',
+        field: 'name',
+        headerName: 'Nom du rôle',
         width: 300,
-        editable: false,
-        filterable: false,
-    },
-    {
-        field: 'role',
-        headerName: 'Rôle',
-        width: 200,
         editable: false,
     },
 ];
 
-function UsersGrid(props) {
-
+function RolesGrid(props) {
     /////States
     const { classes } = props;
     const [id, setId] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [filtredUsers, setFiltredUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
+    const [filtredRoles, setFiltredRoles] = useState([]);
     const [disableButton, setDisableButton] = useState(true);
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
-    let [userEdit, setUserEdit] = useState([]);
+    let [roleEdit, setRoleEdit] = useState([]);
     const [message, setMessage] = useState(null);
     let [searchItem, setSearchItem] = useState('');
-    const [roles, setRoles] = useState([]);
-    const [roleFilter, setRoleFilter] = useState(null);
-    const [deleteUser, setDeleteUser] = useState(false);
-    const [addUser, setAddUser] = useState(false);
-    const [editUser, setEditUser] = useState(false);
+    const [deleteRole, setDeleteRole] = useState(false);
+    const [addRole, setAddRole] = useState(false);
+    const [editRole, setEditRole] = useState(false);
     const [load, setLoad] = useState(false);
     const [reload, setReload] = useState(true);
 
     //////////////////////////////////////////////////////////////
     useEffect(() => {
         setLoad(reload ? true : false);
-        //liste utilisateur avec posibilite de recherche
-        userService.getAllUsers().then((response) => {
+        userService.getAllRoles().then((response) => {
             setLoad(false);
             setReload(false);
-            setUsers(response.data.users);
+            setRoles(response.data.roles);
         }).catch(err => {
             console.log(err);
             setLoad(false);
             setReload(false);
             setMessage("Erreur de chargement, veuillez réessayer.");
         })
-        //liste des roles pour les select
-        userService.getAllRoles().then((response) => {
-            setRoles(response.data.roles);
-        }).catch(err => {
-            console.log(err);
-            setMessage("Erreur de chargement des rôles, veuillez réessayer.");
-        })
-    },[deleteUser, addUser, editUser, reload]);
-    //}, [roleFilter, searchItem, deleteUser,disableButton]);
-    /////////////////////////////////////////////////////////
+    },[deleteRole, addRole, editRole, reload]);
 
     useEffect(() => {
-        //liste filtre selon role et search
-        setFiltredUsers(
-        users?.filter((user) =>
-                (user.email !== props?.user.email) &&
-                (user.email.toLowerCase().includes(searchItem.toLowerCase()) ) && 
-                (roleFilter !== null ? user.roleId === roleFilter : user.roleId !== null) ));
+        setFiltredRoles(
+        roles?.filter((role) =>
+                (role.name.toLowerCase().includes(searchItem.toLowerCase()) )  ));
         setMessage(null);
-    },[roleFilter, searchItem, users])
+    },[searchItem, roles])
 
     useEffect(() => {
         setDisableButton(id.length === 0 ? true : false);
@@ -206,10 +180,10 @@ function UsersGrid(props) {
     const handleCloseCallback = (open, type) => {
         if (type === "edit") {
             setOpenEdit(open);
-            setEditUser(true);
+            setEditRole(true);
         } else if (type === "add") {
             setOpenAdd(open);
-            setAddUser(true);
+            setAddRole(true);
         }
     }
     /////////////////////////////////////////////////////////
@@ -220,12 +194,12 @@ function UsersGrid(props) {
         }
     }
 
-    /////Open Edit Form with user data
+    /////Open Edit Form with role data
     const handleEdit = () => {
-        setEditUser(false);
+        setEditRole(false);
         setMessage(null);
-        userService.showUser(id).then((response) => {
-            setUserEdit(response.data.user);
+        userService.showRole(id).then((response) => {
+            setRoleEdit(response.data.role);
             setOpenEdit(true);
         }).catch((err) => {
             console.log(err);
@@ -236,26 +210,25 @@ function UsersGrid(props) {
     /////Open add form
     const handleAdd = () => {
         setMessage(null);
-        setAddUser(false);
+        setAddRole(false);
         setOpenAdd(true);
     }
 
-    /////Delete user
+    /////Delete role
     const handleDelete = (e) => {
-        setDeleteUser(false);
+        setDeleteRole(false);
         setMessage(null);
         swal({
             title: "Êtes-vous sûr ?",
-            text: "Cette action est irreversible !",
+            text: "Tous les utilisateurs associés à ce rôle seront supprimés !",
             icon: "warning",
             buttons: true,
             dangerMode: true,
         })
             .then((willDelete) => {
                 if (willDelete) {
-                    userService.delateUser(id).then((response) => {
-                        // console.log(response.data.message);
-                        setDeleteUser(true);
+                    userService.delateRole(id).then((response) => {
+                        setDeleteRole(true);
                         setId([]);
                         swal({
                             title: response.data.message,
@@ -264,19 +237,17 @@ function UsersGrid(props) {
                         });
                     }).catch((err) => {
                         console.log(err);
-                        setMessage("Une erreur est servenue lors de la suppression d'utilisateur, veuillez réessayer.")
+                        setMessage("Une erreur est servenue lors de la suppression de rôle, veuillez réessayer.")
                     })
-
                 }
             });
     };
     const handleReload = () => {
-        setRoleFilter(null);
         setSearchItem('');
         setId([]);
         setDisableButton(true);
         setLoad(true);
-        setUsers([]);
+        setRoles([]);
         setMessage(null);
         setReload(true);
     };
@@ -285,46 +256,8 @@ function UsersGrid(props) {
         setSearchItem(e.target.value);
     }
 
-    const filterByRole = (e) => {
-        setId([]);
-        setRoleFilter(e.target.value);
-    }
-
     return (
         <Paper className={classes.paper}>
-            {/* ///////Filter by role////// */}
-            {/* <AppBar style={{ paddingTop: "0px", paddingRight: "20px" }}
-                position="static" color="#fff" elevation={0}>
-                <Grid container justifyContent="flex-end"
-                    alignItems="flex-start"
-                >
-                    <TextField
-                    style={{paddingLeft: "15px" , paddingBottom: "15px"}}
-                        id="standard-select-currency"
-                        select
-                        fullWidth
-                        onChange={filterByRole}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <PersonOutlineIcon />
-                                </InputAdornment>
-                            ),
-                        }}
-                        helperText="Filtrer selon les rôles"
-                        variant="outlined"
-                        margin="normal"
-                        size="small"
-                        value={roleFilter === null ? "" : roleFilter}
-                    >
-                        {roles.map((role) => (
-                            <MenuItem key={role.id} value={role.id}>
-                                {role.name}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </Grid>
-            </AppBar> */}
             <AppBar className={classes.searchBar} position="static" color="default" elevation={0}>
                 <Toolbar>
                     <Grid container spacing={1} alignItems="center">
@@ -336,56 +269,13 @@ function UsersGrid(props) {
                                 onChange={handleSearch}
                                 value={searchItem}
                                 fullWidth
-                                placeholder="Chercher par Identifiant ..."
+                                placeholder="Chercher par nom du rôle ..."
                                 fontWeight="fontWeightBold"
                                 InputProps={{
                                     disableUnderline: true,
                                     className: classes.searchInput,
                                 }}
                             />
-                        </Grid>
-                        <Grid item>
-                            <TextField
-                                style={{minWidth: 180}}
-                                id="standard-select-currency"
-                                select
-                                label="Filtrer selon les rôles"
-                                onChange={filterByRole}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <PersonOutlineIcon/>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                variant="outlined"
-                                margin="normal"
-                                size="small"
-                                value={roleFilter}
-                            >
-                                {roles.map((role) => (
-                                    <MenuItem key={role.id} value={role.id}>
-                                        {role.name}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-                        <Grid item>
-                            {/* <Button variant="contained" color="primary" size="small"
-                                className={classes.button} startIcon={<AddBoxRoundedIcon />}
-                                onClick={handleAdd}>Ajouter
-                            </Button>
-                            <Button variant="contained" color="primary" size="small"
-                                className={classes.button} startIcon={<EditIcon />}
-                                disabled={disableButton}
-                                onClick={handleEdit}>Editer
-                            </Button>
-
-                            <Button variant="contained" color="secondary" size="small"
-                                className={classes.button} startIcon={<DeleteIcon />}
-                                disabled={disableButton}
-                                onClick={handleDelete}>Supprimer
-                            </Button> */}
                         </Grid>
                         <Grid item>
                             <Tooltip title="Ajouter">
@@ -439,10 +329,9 @@ function UsersGrid(props) {
                 )}
 
                 <div style={{ width: '100%' }} className={classes.MuiDataGrid}>
-                    {/* {chargement && <LinearProgress color="primary" />} */}
                     <DataGrid
                         localeText={frFR.props.MuiDataGrid.localeText}
-                        rows={filtredUsers}
+                        rows={filtredRoles}
                         columns={columns}
                         pageSize={10}
                         checkboxSelection={false}
@@ -463,21 +352,21 @@ function UsersGrid(props) {
                 </div>
 
                 {openEdit ?
-                    <UserForm handleOpen={openEdit} user={userEdit} title="Editer utilisateur"
-                        closeCallback={handleCloseCallback} formType="edit" roles={roles} />
+                    <RoleForm handleOpen={openEdit} role={roleEdit} title="Editer rôle"
+                        closeCallback={handleCloseCallback} formType="edit"/>
                     : <div></div>}
 
                 {openAdd ?
-                    <UserForm handleOpen={openAdd} title="Ajouter utilisateur"
-                        closeCallback={handleCloseCallback} formType="add" roles={roles} />
+                    <RoleForm handleOpen={openAdd} title="Ajouter rôle"
+                        closeCallback={handleCloseCallback} formType="add" />
                     : <div></div>}
             </div>
         </Paper>
 
     );
 }
-UsersGrid.propTypes = {
+RolesGrid.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(UsersGrid);
+export default withStyles(styles)(RolesGrid);

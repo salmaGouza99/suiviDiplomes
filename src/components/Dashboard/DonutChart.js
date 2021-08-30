@@ -8,21 +8,16 @@ import {
     Box,
     Typography,
     colors,
-    TextField,
-    InputAdornment,
-    MenuItem
 }
     from '@material-ui/core';
-import { green, red, purple, lime, grey, cyan } from '@material-ui/core/colors';
+import { red, purple, grey, cyan } from '@material-ui/core/colors';
 import { useTheme, makeStyles } from '@material-ui/core';
-import LaptopMacIcon from '@material-ui/icons/LaptopMac';
-import PhoneIcon from '@material-ui/icons/Phone';
-import TabletIcon from '@material-ui/icons/Tablet';
 import userService from "../../Services/userService";
 import CallReceivedIcon from '@material-ui/icons/CallReceived';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import DescriptionIcon from '@material-ui/icons/Description';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
+import Message from '../Formulaires/Message';
 
 const useStyles = makeStyles((theme) => ({
     cardTitle: {
@@ -38,6 +33,7 @@ export default function DonutChart(props) {
     const currentYear = new Date().getFullYear();
     const [results, setResults] = useState([]);
     const [message, setMessage] = useState('');
+    const [open, setOpen] = useState(false);
     const data = {
         datasets: [
             {
@@ -102,35 +98,37 @@ export default function DonutChart(props) {
     ];
     const labels2 = [
         {
-            title: 'Diplômes Retirés',
-            value: results.diplomes_retires,
-            icon: DescriptionIcon,
-            color: green[500]
-        },
-        {
             title: 'Diplômes Réédités',
             value: results.diplomes_reedites,
             icon: BorderColorIcon,
             color: red[600]
         },
+        {
+            title: 'Diplômes Retirés',
+            value: results.diplomes_retires,
+            icon: DescriptionIcon,
+            color: grey[700]
+        },
 
     ];
-    const typeOptions = [
-        { value: 'DEUG', label: 'DEUG' },
-        { value: 'licence', label: 'Licence' },
-    ]
+    
     useEffect(() => {
         userService.dashboardCurrentYear().then((response) => {
             setResults(response.data.results)
-        }).catch(err => {
+        }).catch((err) => {
             console.log(err);
-            setMessage("Erreur de chargement , veuillez reessayer !");
+            setMessage("Erreur de chargement des statistiques de l'année courante, veuillez réessayer.");
+            setOpen(true);
         })
-
-
     }, [])
+
+    const handleCallBackOpen = (open) => {
+        setOpen(open);
+    };
+
     return (
         <Card {...props}>
+            {open && <Message message={message} success="error" callBackOpen={handleCallBackOpen}/>}
             <CardHeader
                 title={`Statistiques de l'année courante ${currentYear}`}
                 titleTypographyProps={{

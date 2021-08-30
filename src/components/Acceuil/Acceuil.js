@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useReactToPrint } from 'react-to-print';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
-import Visibility from "@material-ui/icons/VisibilityRounded";
-import Box from '@material-ui/core/Box';
+import PrintIcon from "@material-ui/icons/Print";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import CloseIcon from '@material-ui/icons/Close';
+import Button from '@material-ui/core/Button';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { makeStyles } from '@material-ui/styles';
 import { DataGrid, GridOverlay, useGridSlotComponentProps, frFR } from '@material-ui/data-grid';
@@ -19,6 +24,8 @@ import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import userService from "../../Services/userService";
+import RenderFiche from './RenderFiche';
+import Bienvenue from "../../Images/Bienvenue.png"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     width: '100%',
     color: '#0268B5'
+  },
+  closeIcon: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
 }));
 
@@ -62,26 +74,16 @@ const styles = (theme) => ({
   paper: {
     maxWidth: 950,
     margin: 'auto',
-    marginTop: -theme.spacing(1.5),
     overflow: 'hidden',
   },
   searchBar: {
     borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
   },
   searchInput: {
-    fontSize: theme.typography.fontSize,
+    fontSize: 15,
   },
   block: {
     display: 'block',
-  },
-  newDemands: {
-    marginRight: theme.spacing(1),
-    padding: theme.spacing(0.5, 1.5),
-    background: '#4fc3f7',
-    '&:hover': {
-      background: "#3A7BAF",
-    },
-    color: theme.palette.common.white,
   },
   alert: {
     marginTop: -theme.spacing(1.5),
@@ -90,14 +92,10 @@ const styles = (theme) => ({
   contentWrapper: {
     margin: '20px 16px',
   },
-  footer: {
-    marginLeft: theme.spacing(49.5),
-    marginTop: -theme.spacing(10),
-    background: '#4fc3f7',
-    '&:hover': {
-      background: "#3A7BAF",
-    },
-    color: theme.palette.common.white,
+  closeIcon: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
   MuiDataGrid: {
     '& .traitee': {
@@ -107,52 +105,38 @@ const styles = (theme) => ({
       color: 'gray'
     },
   },
+  image: {
+    margin: theme.spacing(6,32.5,-10),
+  }
 });
 
 
 function Acceuil(props) {
   const { classes } = props;
   const [open, setOpen] = useState(false);
-  const [demandeId, setDemandeId] = useState(null);
-  const [demandes, setDemandes] = useState();
-  const [demandesTraitees, setDemandesTraitees] = useState([]);
+  const [etudiantId, setEtudiantId] = useState(null);
+  const [etudiants, setEtudiants] = useState();
   const [search, setSearch] = useState("");
-  const [filtredDemandes, setfiltredDemandes] = useState([]);
-  const [pageSize, setPageSize] = useState(5);
+  const [filtredEtudiants, setFiltredEtudiants] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
   const [load, setLoad] = useState();
-  const [disable, setDisable] = useState(false);
-  const [disable1, setDisable1] = useState(true);
-  const [message, setMessage] = useState();
+  const [loadPrint, setLoadPrint] = useState();
+  const [reload, setReload] = useState(false);
   const [error, setError] = useState();
-  const [number, setNumber] = useState();
-  const [selectionModel, setSelectionModel] = useState([]);
-  const index = props?.currentIndex;
+  const filiere = props?.role === 2 ? "القانون باللغة العربية" : 
+                  props?.role === 3 ? "Droit en français" : 
+                  props?.role === 4 ? "Sciences Economiques et Gestion" : null;
+
 
   const columns = [
     {
       field: 'id',
-      headerName: 'N°',
-      width: 73,
-    },
-    {
-      field: 'type',
-      headerName: 'Type',
-      width: 90,
-    },
-    {
-      field: 'date',
-      headerName: 'Date',
-      width: 110,
-    },
-    {
-      field: 'fullName',
-      headerName: 'Faite par',
-      width: 160,
+      hide: true,
     },
     {
       field: 'apogee',
       headerName: 'Apogée',
-      width: 130,
+      width: 109,
     },
     {
       field: 'cin',
@@ -160,26 +144,41 @@ function Acceuil(props) {
       width: 120,
     },
     {
-      field: 'statut',
-      headerName: 'Statut',
+      field: 'cne',
+      headerName: 'CNE',
+      width: 120,
+    },
+    {
+      field: 'fullName',
+      headerName: 'Nom complet',
+      width: 170,
+    },
+    {
+      field: 'filiere',
+      headerName: 'Filière',
+      width: 160,
+    },
+    {
+      field: 'type',
       sortable: false,
-      width: 100,
+      headerName: 'Type demande',
+      width: 140,
     },
     {
       field: 'info',
       headerName: ' ',
       sortable: false,
-      width: 60,
+      width: 70,
       renderCell: (params) => {
         const showInfo = () => {
           setOpen(true);
-          setDemandeId(params.id);
+          setEtudiantId(params.id);
         };
           
         return (
-          <Tooltip title='Voir détails'>
-            <IconButton style={{ marginLeft: 3 }}>
-              <Visibility onClick={showInfo}
+          <Tooltip title="Imprimer fiche étudiant">
+            <IconButton style={{ marginLeft: 8 }}>
+              <PrintIcon onClick={showInfo}
                 style={{ color: 'gray' }} />
             </IconButton>
           </Tooltip>
@@ -188,142 +187,68 @@ function Acceuil(props) {
     },
   ];
 
-  const data = filtredDemandes?.map((demande) => (
+  const data = filtredEtudiants?.map((etudiant) => (
     {
-      id: demande.id, type: demande.type_demande, date: demande.date_demande,
-      fullName: demande.nom + ' ' + demande.prenom,
-      apogee: demande.apogee, cin: demande.etudiant_cin,
-      statut: getStatut(demande.id),
+      id: etudiant.cin, apogee: etudiant.apogee, cin: etudiant.cin,
+      cne: etudiant.cin, fullName: etudiant.nom + ' ' + etudiant.prenom,
+      filiere: etudiant.filiere, type: etudiant.demande.map((demande) => (demande.type_demande)), 
     }
   ));
 
-  function getStatut(demandeId) {
-    return (demandesTraitees.indexOf(demandeId) > -1 ? 'Traitée' : 'Non traitée')
-  }
-
-  function filterDemandes() {
+  useEffect(() => {
     setLoad(true);
-    userService.filterDemandes(index === 0 ? "DEUG" : "Licence", "القانون باللغة العربية")
+    setReload(false);
+    userService.getAllEtudiants()
       .then((response) => {
         setLoad(false);
         setError(null);
-        setDemandes(response?.data.demandes);
+        setEtudiants(response?.data?.etudiants);
       }).catch((error) => {
         console.log(error);
         setLoad(false);
-        setMessage(null);
-        setNumber(null);
         setError("Erreur de chargement, veuillez réssayer.");
       });
-  };
+  }, [reload]);
 
   useEffect(() => {
-    /* async function getAllDemandes() {
-      await userService.getAllDemandes().then((response) => {
-        setDemandes(Object.entries(response?.data));
-      });
-    }
-    getAllDemandes(); */
-    // console.log(index);
-    filterDemandes();
-    setMessage(number != null ? message : null);
-  }, [index]);
-
-  useEffect(() => {
-    setfiltredDemandes(
-      demandes?.filter((demande) =>
-        demande.etudiant_cin.toLowerCase().includes(search.toLowerCase()) ||
-        demande.apogee.toLowerCase().includes(search.toLowerCase()) ||
-        demande.cne.toLowerCase().includes(search.toLowerCase())
+    setFiltredEtudiants(
+      etudiants?.filter((etudiant) =>
+        (filiere !== null ? etudiant.filiere === filiere : etudiant.filiere !== null) &&
+        (etudiant.cin.toLowerCase().includes(search.toLowerCase()) ||
+         etudiant.apogee.toLowerCase().includes(search.toLowerCase()) ||
+         etudiant.cne.toLowerCase().includes(search.toLowerCase()) )
       )
     );
-  }, [search, demandes]);
+  }, [search, etudiants]);
 
   const handleReload = () => {
-    setMessage(null);
-    setNumber(null);
     setError(null);
-    setDemandes([]);
-    filterDemandes();
+    setEtudiants([]);
+    setReload(true);
+    setSearch('');
   };
 
-  const handleNewDemands = () => {
-    setLoad(true);
-    setDisable(true);
-    userService.nouvellesDemandes('القانون باللغة العربية').then((response) => {
-      setDisable(false);
-      setError(null);
-      filterDemandes();
-      let total = response?.data.Deug + response?.data.Licence;
-      setMessage(total === 0 ? "Aucune nouvelle demande." :
-        response?.data.Deug === 1 && response?.data.Licence === 0 ? "Une seule damande de DEUG est ajoutée." :
-        response?.data.Deug === 0 && response?.data.Licence === 1 ? "Une seule damande de Licence est ajoutée." :
-        total + " demandes ajoutées: " +
-        response?.data.Deug + " DEUG et " + response?.data.Licence + " Licence.");
-      setNumber(total);
-    }).catch((error) => {
-      console.log(error);
-      setDisable(false);
-      setLoad(false);
-      setMessage(null);
-      setNumber(null);
-      setError("Une connexion internet est obligatoire pour charger les nouvelles demandes, veuillez réssayer.");
-    });
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
+  
+  const handleClickPrint = () => {
+    setLoadPrint(true);
+    handlePrintFiche();
   };
 
-  const handleSelection = (e) => {
-    if (e) {
-      setSelectionModel(e);
-      setDisable1(false);
-    } else {
-      setSelectionModel(null);
-      setDisable1(true);
-    }
-  };
-
-  const handleCreateFolders = (e) => {
-    setLoad(true);
-    setDisable1(true);
-    if (selectionModel?.length === 0) {
-      setLoad(false);
-      setNumber(null);
-      setMessage(null);
-      setError("Veuillez séléctionner un dossier d'abord.");
-    } else {
-      let dt = [];
-      selectionModel?.map((id) => (
-        userService.CreerDossiers(id)
-          .then((response) => {
-            setLoad(false);
-            setError(null);
-            setNumber(null);
-            setMessage(null);
-            if (response?.data.diplomeCree !== null) {
-              demandesTraitees.push(id);
-              dt.push(id);
-              setMessage(dt?.length === 1 ? "Dossier créé avec succès." :
-                dt?.length + " dossiers créés avec succès.");
-            } else {
-              setError("Cette demande n'existe plus.");
-            }
-            handleSelection(null);
-          }).catch((error) => {
-            console.log(error);
-            setLoad(false);
-            setDisable1(false);
-            setMessage(null);
-            setNumber(null);
-            setError("Erreur dans la création du dossier, veuillez réssayer.");
-          })
-      ));
-    }
-  };
-
-  const handleCloseCallback = (open) => {
-    setOpen(open);
-  }
+  const componentRef = useRef();
+  const pageStyle = '@page { size: auto; margin: 0mm; } @media print { body { -webkit-print-color-adjust: exact; padding: 30px !important; } }';
+  const handlePrintFiche = useReactToPrint({
+        pageStyle: () => pageStyle,
+        content: () => componentRef.current,
+        documentTitle: etudiantId,
+        onAfterPrint: () => (setLoadPrint(false), setOpen(false)),
+  });
 
   return (
+    <div>
     <Paper className={classes.paper}>
       <AppBar className={classes.searchBar} position="static" color="default" elevation={0}>
         <Toolbar>
@@ -341,16 +266,11 @@ function Acceuil(props) {
                   className: classes.searchInput,
                 }}
                 onChange={(e) => setSearch(e.target.value)}
+                value={search}
               />
             </Grid>
             <Grid item>
-              <Button variant="contained"
-                disabled={true}
-                className={classes.newDemands}
-                onClick={handleNewDemands}>
-                <Box fontWeight="fontWeightBold">Exporter fiche étudiant</Box>
-              </Button>
-              <Tooltip title="Recharger">
+              <Tooltip title="Rafraîchir">
                 <IconButton onClick={handleReload}>
                   <RefreshIcon className={classes.block} color="inherit" />
                 </IconButton>
@@ -359,26 +279,67 @@ function Acceuil(props) {
           </Grid>
         </Toolbar>
       </AppBar>
-      {/* <div className={classes.contentWrapper}>
-        {(message || error) && (
+      </Paper>
+      <br></br>
+     <Paper className={classes.paper}>
+      {search ? (
+      <div className={classes.contentWrapper}>
+        {error && (
           <Alert className={classes.alert}
-            icon={number === 0 ? false : null}
-            severity={message ? "success" : "error"}
-            color={message ? "info" : "error"}
+            severity="error"
             onClose={() => {
-              setMessage(null);
-              setNumber(null);
               setError(null);
             }}
           >
-            {message || error}
+            {error}
           </Alert>
         )}
-
-        
-      </div> */}
-     
+        <div style={{ width: '100%' }} className={classes.MuiDataGrid}>
+          <DataGrid
+            localeText={frFR.props.MuiDataGrid.localeText}
+            autoHeight
+            rows={data ? data : []}
+            columns={columns}
+            disableSelectionOnClick
+            disableColumnMenu
+            pageSize={pageSize}
+            //onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            //rowsPerPageOptions={[5, 7, 10]}
+            components={{
+              Pagination: CustomPagination,
+              LoadingOverlay: CustomLoadingOverlay,
+            }}
+            pagination
+            loading={load}
+          />
+        </div>
+      </div>
+      ) :
+     <></>
+      }
+      
+        <Dialog open={open} aria-labelledby="form-dialog-title">
+          <IconButton color="primary" aria-label="upload picture" className={classes.closeIcon}
+              component="span" size="small" >
+              <CloseIcon onClick={handleClose} />
+          </IconButton>
+          <DialogContent>
+          <Button fullWidth variant="outlined" color="primary" size="small" onClick={handleClickPrint}>
+              Imprimer 
+          </Button>
+            <Card className={classes.card}>
+              <CardContent>
+                <RenderFiche load={loadPrint} etudiantId={etudiantId} ref={componentRef} />
+              </CardContent>
+            </Card>
+          </DialogContent>
+        </Dialog>
     </Paper>
+      {!search && (
+      <div className={classes.image}>
+        <img alt="Bienvenue" src={Bienvenue} width={500} height={300}/>
+      </div>)}
+    </div>
   );
 }
 

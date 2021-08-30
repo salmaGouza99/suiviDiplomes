@@ -14,6 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
 import { Container } from '@material-ui/core';
+import ProfilEdit from './ProfilEdit';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,32 +31,35 @@ const useStyles = makeStyles((theme) => ({
 export default function Profil(props) {
     const classes = useStyles();
     const [user, setUser] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [changed, setChanged] = useState(false);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        setLoading(true);
-        setChanged(false);
         userService.showProfil().then((response) => {
             setLoading(false);
             setUser(response?.data.user);
         }).catch(err => {
             setLoading(false);
             console.log(err);
-            setError("Erreur de chargement, veuillez reessayer.");
+            setError("Erreur de chargement, veuillez réessayer.");
         })
+        setChanged(false);
     }, [changed]);
 
     const handleEditProfil = (e) => {
         setOpen(true);
-    }
+    };
 
     const closeCallback = (open) => {
         setOpen(open);
         setChanged(true);
-    }
+    };
+
+    const handleCallBack = (childData) => {
+        props.parentCallback(childData);
+    };
 
     return (
         <Container>
@@ -115,10 +119,9 @@ export default function Profil(props) {
                 </CardActions>
             </Card>
             {
-                open && <UserForm handleOpen={open} user={user}
-                    closeCallback={handleCloseCallback} title="Editer Profil" formType="editProfil"
-                    
-                />
+                open && <ProfilEdit handleOpen={open} user={user}
+                        closeCallback={closeCallback} handleCallBack={handleCallBack} title="Editer Profil"
+                        />
             }
         </Container>
     );

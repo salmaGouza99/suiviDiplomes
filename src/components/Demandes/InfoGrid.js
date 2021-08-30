@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function DetailsDiplome(props) {
+export default function InfoGrid(props) {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -48,7 +48,7 @@ export default function DetailsDiplome(props) {
     useEffect(() => {
         setOpen(props?.handleOpen);
         setLoading(true);
-        if (props?.demandeId != null) {
+        if (props?.demandeId !== null) {
             userService.showDemande(props?.demandeId).then((response) => {
                 setLoading(false);
                 setDemande(response?.data.demande)

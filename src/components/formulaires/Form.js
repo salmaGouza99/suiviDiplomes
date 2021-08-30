@@ -13,11 +13,6 @@ import userService from "../../Services/userService";
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Link from '@material-ui/core/Link';
 
-
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
 const useStyles = makeStyles((theme) => ({
     root: {
         '& .MuiTextField-root': {
@@ -26,15 +21,16 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     button: {
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(6)
     },
     help: {
         marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(79)
+        marginLeft: theme.spacing(89),
+        marginBottom: theme.spacing(1),
     },
     link :{
-       
-        marginLeft: theme.spacing(90)
+        marginLeft: theme.spacing(101),
     }
 }));
 
@@ -45,8 +41,8 @@ export default function Form(props) {
     const [api_id, setApiId] = useState('');
     const [type_formulaire, setTypeFormulaire] = useState('');
     const [success, setSuccess] = useState(false);
-    const [errors, setErrors] = useState(false);
     const [message, setMessage] = useState('');
+    const [open, setOpen] = useState(false);
     const [disableButton, setDisableButton] = useState(true);
 
     useEffect(() => {
@@ -68,22 +64,32 @@ export default function Form(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        // props?.callBackLoad(true);
+        setDisableButton(true);
         userService.updateForm(formId, type_formulaire, lien, api_id).then((response) => {
-            console.log(response);
+            // props?.callBackLoad(false);
+            setDisableButton(false);
             setSuccess(true);
             setMessage(response.data.message);
-        }).catch(err => {
-            console.log(err.response);
-            setErrors(true);
-            setMessage("Une erreur est survenu, veuillez réessayer..");
+            setOpen(true);
+        }).catch((err) => {
+            // props?.callBackLoad(false);
+            setDisableButton(false);
+            console.log(err);
+            setSuccess(false);
+            setMessage("Une erreur est survenue, veuillez réessayer.");
+            setOpen(true);
         })
     }
 
+    const handleCallBackOpen = (open) => {
+        setOpen(open);
+    };
 
     return (
         <div>
-            {success && <Message message={message} success="success" />}
-            {errors && <Message message={message} success="error" />}
+            {open && <Message message={message} success={success ? "success" : "error"} 
+                     callBackOpen={handleCallBackOpen}/>}
 
             <form className={classes.root} onSubmit={handleSubmit}>
                 <Typography gutterBottom variant="h5" component="h2" color="primary">
@@ -132,7 +138,7 @@ export default function Form(props) {
                         startIcon={<HelpOutlineIcon />} size="small"
                     >Comment Obtenir API ID du formulaire</Button>
                 </div>
-                    <Link href="https://sheetdb.io/"  target="_blank" className={classes.link}>
+                    <Link href="https://sheetdb.io/" target="_blank" className={classes.link}>
                         Obtenir API ID
                     </Link>
             </form>
