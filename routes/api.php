@@ -24,12 +24,9 @@ use App\Http\Controllers\FormulaireController;
 
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
-Route::get('/roles',[RoleController::class,'index']);
-Route::get('/statuts',[DiplomeController::class,'statuts']);
-
-
-
-Route::get('/etudiants',[EtudiantController::class,'index']);
+// Route::get('/roles',[RoleController::class,'index']);
+// Route::get('/statuts',[DiplomeController::class,'statuts']);
+// Route::get('/etudiants',[EtudiantController::class,'index']);
 
 
 // Protected routes for admin
@@ -38,6 +35,12 @@ Route::group(['middleware' => ['auth:sanctum','role:Admin']], function(){
   // Route::get('/users/search/{email?}',[UserController::class,'search']);
   Route::resource('/users',UserController::class);
   Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
+
+  // Roles
+  Route::resource('/roles',RoleController::class);
+
+  // Statuts
+  Route::get('/statuts',[DiplomeController::class,'statuts']);
 
   // Forms
   Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
@@ -49,12 +52,8 @@ Route::group(['middleware' => ['auth:sanctum','role:Admin']], function(){
   Route::get('/exportEtudiants/{type},{filiere}',[EtudiantController::class,'exportEtudiants']);
   Route::get('/exportParcours/{statut},{type},{filiere}',[EtudiantController::class,'exportParcoursDetaille']);
 
-  // Demandes
-  Route::get('/demandes',[DemandeController::class,'index']);
-
   // Diplomes
   Route::get('/diplomes/search/{mc?}',[DiplomeController::class,'search']);
-  // Route::get('/diplomes',[DiplomeController::class,'index']);
   Route::get('/diplomes/dates/{dateDebut?}/{dateFin?}',[DiplomeController::class,'searchByDates']);
   Route::get('/diplomes/type/{type}',[DiplomeController::class,'filterByType']);
   Route::get('/diplomes/statut/{statut}',[DiplomeController::class,'filterByStatut']);
@@ -73,18 +72,18 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
   Route::put('/profil',[ProfileController::class,'update']);
 
   // Etudiants
-  Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
+  Route::resource('/etudiants',EtudiantController::class,['except' => 'store','destroy']);
+  // Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
   Route::get('/etudiants/search/{mc?}',[EtudiantController::class,'search']);
 
   // Diplomes 
-  Route::get('/diplomes',[DiplomeController::class,'index']);
-  Route::get('/diplomes/{id}',[DiplomeController::class,'show']);
+  Route::resource('/diplomes',DiplomeController::class,['except' => 'store','destroy']);
   Route::get('/diplomes/filter/{statut},{type},{filiere}',[DiplomeController::class,'filter']);
 });
 
 // Protected routes for admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
-Route::group(['middleware' => ['auth:sanctum','role:Admin|Guichet Droit Arabe|Guichet Droit Francais|Guichet Economie']], function(){
-  Route::get('/demandes/{id}',[DemandeController::class,'show']);
+Route::group(['middleware' => ['auth:sanctum','role:Admin|Guichet Droit Arabe|Guichet Droit Français|Guichet Economie']], function(){
+  Route::resource('/demandes',DemandeController::class,['except' => 'store','destroy']);
   Route::get('/demandes/filter/{type},{filiere}',[DemandeController::class,'filter']);
   Route::post('/demandes/nouvellesDemandes/{filiere}',[DemandeController::class,'sheet']);
 });
@@ -95,7 +94,7 @@ Route::group(['middleware' => ['auth:sanctum','role:Admin|Service de Diplômes']
 });
 
 // Protected routes for guichet_droit_arabe, guichet_droit_francais and guichet_economie
-Route::group(['middleware' => ['auth:sanctum','role:Guichet Droit Arabe|Guichet Droit Francais|Guichet Economie']], function(){
+Route::group(['middleware' => ['auth:sanctum','role:Guichet Droit Arabe|Guichet Droit Français|Guichet Economie']], function(){
   Route::post('/diplomes/{demande_id}',[DiplomeController::class,'store']);
 });
 
@@ -118,6 +117,7 @@ Route::group(['middleware' => ['auth:sanctum','role:Bureau d\'Ordre']], function
 
 // Protected routes only for guichet_retrait
 Route::group(['middleware' => ['auth:sanctum','role:Guichet de Retrait']], function(){
+  Route::put('/diplomes/notif/{diplome}',[DiplomeController::class,'updateDateNotificationEtudiant']);
   Route::put('/diplomes/retrait/{diplome}',[DiplomeController::class,'updateDateRetraitDiplomeArchiveDossier']);
-  Route::get('/diplomes/notif/{id}',[DiplomeController::class,'sendMail']);
+  Route::get('/diplomes/mail/{id}',[DiplomeController::class,'sendMail']);
 });

@@ -33,6 +33,9 @@ class Statut_DiplomeTableSeeder extends Seeder
             'statut' => 'Reçu par bureau d\'ordre et envoyé au guichet de retrait',
         ]);
         DB::table('statut_diplome')->insert([
+            'statut' => 'Prêt à retirer',
+        ]);
+        DB::table('statut_diplome')->insert([
             'statut' => 'Diplôme retiré et dossier archivé',
         ]);
     }

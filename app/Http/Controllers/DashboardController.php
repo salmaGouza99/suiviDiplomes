@@ -49,27 +49,31 @@ class DashboardController extends Controller
 
         $nbrDiplomesPrets = Demande::where('type_demande',$type)
         ->whereHas('diplome', function ($query)  {
-            $query->where('statut_id', '6');
+            $query->where('statut_id', '7');
         })
             ->get()->count();
 
         $nbrDiplomesNonPrets = Demande::where('type_demande',$type)
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '1')
+            ->orWhere('statut_id', '2')
             ->orWhere('statut_id', '3')
             ->orWhere('statut_id', '4')
-            ->orWhere('statut_id', '5');
+            ->orWhere('statut_id', '5')
+            ->orWhere('statut_id', '6');
         })
             ->get()->count();
         $nbrDiplomesRetires = Demande::where('type_demande',$type)
         ->whereHas('diplome', function ($query)  {
-            $query->where('statut_id', '7');
+            $query->where('statut_id', '8');
         })
             ->get()->count();
 
         $nbrDiplomesReedites = Demande::where('type_demande',$type)
         ->whereHas('diplome', function ($query)  {
-            $query->where('statut_id', '2');
+            $query->where('type_erreur', '!=', null)
+            ->where('date_reedition', '!=', null);
+            // $query->where('statut_id', '2');
         })
             ->get()->count();
             return response()->json([
@@ -100,18 +104,22 @@ class DashboardController extends Controller
 
             $nbrDemandesTraites = Demande::where('traite', '!=', '0')->get()->count();
 
-            $nbrDiplomesPrets = Diplome::where('statut_id', '6')
+            $nbrDiplomesPrets = Diplome::where('statut_id', '7')
                 ->get()->count();
 
             $nbrDiplomesNonPrets = Diplome::where('statut_id', '1')
+                ->orWhere('statut_id', '2')
                 ->orWhere('statut_id', '3')
                 ->orWhere('statut_id', '4')
                 ->orWhere('statut_id', '5')
+                ->orWhere('statut_id', '6')
                 ->get()->count();
 
-            $nbrDiplomesRetires = Diplome::where('statut_id', '7')->get()->count();
+            $nbrDiplomesRetires = Diplome::where('statut_id', '8')->get()->count();
 
-            $nbrDiplomesReedites = Diplome::where('statut_id', '2')->get()->count();
+            // $nbrDiplomesReedites = Diplome::where('statut_id', '2')->get()->count();
+            $nbrDiplomesReedites = Diplome::where('type_erreur', '!=', null)
+                                    ->where('date_reedition', '!=', null)->get()->count();
 
         }else {
                 $nbrDemandes = Demande::where('type_demande', $type)
@@ -177,18 +185,18 @@ class DashboardController extends Controller
             ->where('traite', '0')->get()->count();
 
 
-        $nbrDiplomesDeugCree = Demande::where('type_demande',"DEUG")
+        $nbrDiplomesDeugCrees = Demande::where('type_demande',"DEUG")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '1');
         })
             ->get()->count();
 
-        $nbrDiplomesDeugReedite = Demande::where('type_demande',"DEUG")
+        $nbrDiplomesDeugReedites = Demande::where('type_demande',"DEUG")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '2');
         })
             ->get()->count();
-        $nbrDiplomesDeugDecanat = Demande::where('type_demande',"DEUG")
+        $nbrDiplomesDeugImprimes = Demande::where('type_demande',"DEUG")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '3');
         })
@@ -203,79 +211,92 @@ class DashboardController extends Controller
             $query->where('statut_id', '5');
         })
             ->get()->count();
-        $nbrDiplomesDeugRetrait = Demande::where('type_demande',"DEUG")
+        $nbrDiplomesDeugRecus = Demande::where('type_demande',"DEUG")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '6');
         })
             ->get()->count();
-        $nbrDiplomesDeugRetire = Demande::where('type_demande',"DEUG")
+        $nbrDiplomesDeugPrets = Demande::where('type_demande',"DEUG")
         ->whereHas('diplome', function ($query)  {
-            $query->where('statut_id', '7');
+                $query->where('statut_id', '7');
+            })
+                ->get()->count();
+        $nbrDiplomesDeugRetires = Demande::where('type_demande',"DEUG")
+        ->whereHas('diplome', function ($query)  {
+            $query->where('statut_id', '8');
         })
             ->get()->count();
 
 
 
         ////Licence
-        $nbrDemandeslicence = Demande::where('type_demande', 'licence')
+        $nbrDemandesLicence = Demande::where('type_demande', 'Licence')
             ->where('traite', '0')->get()->count();
 
-        $nbrDiplomeslicenceCree = Demande::where('type_demande',"licence")
+
+        $nbrDiplomesLicenceCrees = Demande::where('type_demande',"Licence")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '1');
         })
             ->get()->count();
-        $nbrDiplomeslicenceReedite = Demande::where('type_demande',"licence")
+
+        $nbrDiplomesLicenceReedites = Demande::where('type_demande',"Licence")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '2');
         })
             ->get()->count();
-        $nbrDiplomeslicenceDecanat = Demande::where('type_demande',"licence")
+        $nbrDiplomesLicenceImprimes = Demande::where('type_demande',"Licence")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '3');
         })
             ->get()->count();
-        $nbrDiplomeslicenceSignes = Demande::where('type_demande',"licence")
+        $nbrDiplomesLicenceSignes = Demande::where('type_demande',"Licence")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '4');
         })
             ->get()->count();
-        $nbrDiplomeslicencePresidence = Demande::where('type_demande',"licence")
+        $nbrDiplomesLicencePresidence = Demande::where('type_demande',"Licence")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '5');
         })
             ->get()->count();
-        $nbrDiplomeslicenceRetrait = Demande::where('type_demande',"licence")
+        $nbrDiplomesLicenceRecus = Demande::where('type_demande',"Licence")
         ->whereHas('diplome', function ($query)  {
             $query->where('statut_id', '6');
         })
             ->get()->count();
-        $nbrDiplomeslicenceRetires = Demande::where('type_demande',"licence")
+        $nbrDiplomesLicencePrets = Demande::where('type_demande',"Licence")
         ->whereHas('diplome', function ($query)  {
-            $query->where('statut_id', '7');
+                $query->where('statut_id', '7');
+            })
+                ->get()->count();
+        $nbrDiplomesLicenceRetires = Demande::where('type_demande',"Licence")
+        ->whereHas('diplome', function ($query)  {
+            $query->where('statut_id', '8');
         })
             ->get()->count();
-
         return response()->json([
             'results' => [
                 ///////////////DEUG///////////////
                 'nbrDemandesDeug' => $nbrDemandesDeug,
-                'nbrDiplomesDeugCree' => $nbrDiplomesDeugCree,
-                'nbrDiplomesDeugReedite' => $nbrDiplomesDeugReedite,
-                'nbrDiplomesDeugDecanat' => $nbrDiplomesDeugDecanat,
+                'nbrDiplomesDeugCrees' => $nbrDiplomesDeugCrees,
+                'nbrDiplomesDeugReedites' => $nbrDiplomesDeugReedites,
+                'nbrDiplomesDeugImprimes' => $nbrDiplomesDeugImprimes,
                 'nbrDiplomesDeugSignes' => $nbrDiplomesDeugSignes,
                 'nbrDiplomesDeugPresidence' => $nbrDiplomesDeugPresidence,
-                'nbrDiplomesDeugRetrait' => $nbrDiplomesDeugRetrait,
-                'nbrDiplomesDeugRetire' => $nbrDiplomesDeugRetire,
+                'nbrDiplomesDeugRecus' => $nbrDiplomesDeugRecus,
+                'nbrDiplomesDeugPrets' => $nbrDiplomesDeugPrets,
+                'nbrDiplomesDeugRetires' => $nbrDiplomesDeugRetires,
                 //////////////////LIcence//////////////////////
-                'nbrDemandeslicence' => $nbrDemandeslicence,
-                'nbrDiplomeslicenceCree' => $nbrDiplomeslicenceCree,
-                'nbrDiplomeslicenceReedite' => $nbrDiplomeslicenceReedite,
-                'nbrDiplomeslicenceDecanat' => $nbrDiplomeslicenceDecanat,
-                'nbrDiplomeslicenceSignes' => $nbrDiplomeslicenceSignes,
-                'nbrDiplomeslicencePresidence' => $nbrDiplomeslicencePresidence,
-                'nbrDiplomeslicenceRetrait' => $nbrDiplomeslicenceRetrait,
-                'nbrDiplomeslicenceRetires' => $nbrDiplomeslicenceRetires,
+                'nbrDemandeslicence' => $nbrDemandesLicence,
+                'nbrDiplomesLicenceCrees' => $nbrDiplomesLicenceCrees,
+                'nbrDiplomesLicenceReedites' => $nbrDiplomesLicenceReedites,
+                'nbrDiplomesLicenceImprimes' => $nbrDiplomesLicenceImprimes,
+                'nbrDiplomesLicenceSignes' => $nbrDiplomesLicenceSignes,
+                'nbrDiplomesLicencePresidence' => $nbrDiplomesLicencePresidence,
+                'nbrDiplomesLicenceRecus' => $nbrDiplomesLicenceRecus,
+                'nbrDiplomesLicencePrets' => $nbrDiplomesLicencePrets,
+                'nbrDiplomesLicenceRetires' => $nbrDiplomesLicenceRetires,
 
 
 

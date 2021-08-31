@@ -22,9 +22,15 @@ class DemandeController extends Controller
      */
     public function index()
     {
-        return response()->json( Demande::with('etudiant')
-                ->where('traite','=',0)->get()->sortByDesc('date_demande')
-        ); 
+        $res = array();
+        foreach (Demande::with('etudiant')->where('traite','=',0)->get()->sortByDesc('date_demande') as $demande)
+        {
+            $res[] = $demande;
+        }
+        
+        return response()->json([
+            'demandes' => $res
+         ]);
     }
 
     /**
@@ -48,7 +54,7 @@ class DemandeController extends Controller
                 {
                     $res = $demande;
                 }
-            } else if(Auth::user()->hasRole('Guichet Droit Francais')) {
+            } else if(Auth::user()->hasRole('Guichet Droit Français')) {
                 if ($demande->etudiant->filiere == 'Droit en français')
                 {
                     $res = $demande;
@@ -122,6 +128,9 @@ class DemandeController extends Controller
     {
         $countDemandesDeug = 0;
         $countDemandesLicence = 0;
+        $countDemandesDeugForAllFilieres = 0;
+        $countDemandesLicenceForAllFilieres = 0;
+
         foreach(Formulaire::all() as $form)
         {
             $sheetdb = new SheetDB($form->api_id);
@@ -157,7 +166,7 @@ class DemandeController extends Controller
                     {
                         Etudiant::where('cin',$row->{'CIN رقم بطاقة التعريف الوطنية'})->update(['option' => $row->{'Option الاختيار'}]);
                     }
-                    if($row->{'Filière المسلك'} === $filiere) 
+                    if($row->{'Filière المسلك'} == $filiere) 
                     {
                         if($form->type_formulaire == 'DEUG')
                         {
@@ -165,6 +174,14 @@ class DemandeController extends Controller
                         } 
                         else {
                             $countDemandesLicence +=1;
+                        }
+                    } else {
+                        if($form->type_formulaire == 'DEUG')
+                        {
+                            $countDemandesDeugForAllFilieres += 1;
+                        } 
+                        else {
+                            $countDemandesLicenceForAllFilieres +=1;
                         }
                     }
                     //echo ' and his demand of  '.$form->type_formulaire.' done! ';
@@ -177,6 +194,8 @@ class DemandeController extends Controller
         return response()->json([
             'Deug' => $countDemandesDeug,
             'Licence' => $countDemandesLicence,
+            'DeugForAllFilieres' => $countDemandesDeugForAllFilieres,
+            'LicenceForAllFilieres' => $countDemandesLicenceForAllFilieres,
          ]);
     }
             

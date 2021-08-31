@@ -21,9 +21,13 @@ class EtudiantController extends Controller
      */
     public function index()
     {
-        $etudiants=Etudiant::with('demande','diplome')->get();
+        $res = array();
+        foreach (Etudiant::with('demande','diplome')->get()->sortBy('nom') as $etudiant)
+        {
+            $res[] = $etudiant;
+        }
         return response()->json([
-            'etudiants' => $etudiants,
+            'etudiants' => $res,
         ]); 
     }
 

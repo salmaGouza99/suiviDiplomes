@@ -22,7 +22,7 @@ class UserController extends Controller
                 'id'=>$user->id,
                 'email'=>$user->email,
                 'roleId' =>$user->roles[0]->id,
-                'role'=>Str::replace('_',' ',$user->roles[0]->name),
+                'role'=>$user->roles[0]->name,
             ];
             array_push($listUsers,$user);
         }
@@ -44,14 +44,14 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
             'role' => 'required'
         ]);
-
        
         $user = User::create(['email' => $request->email,
             'password' => Hash::make($request->password),]);
         $user->attachRole($request->role);
+
         return response()->json([
-            'user' =>$user, 
-            'message' => 'Utilisateur ajouté !'
+            'user' => $user, 
+            'message' => 'Utilisateur ajouté'
         ]);
         
     }
@@ -165,4 +165,3 @@ class UserController extends Controller
      }
     
 }   
-                    

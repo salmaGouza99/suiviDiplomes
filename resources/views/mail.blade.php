@@ -9,6 +9,6 @@
 <body>
     <h1>{{$mail['object']}}</h1>
     <h3>{{$mail['body']}}</h3>
-    <p>Cordialement</p>
+    <p>Cordialement.</p>
 </body>
 </html>

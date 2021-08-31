@@ -29,7 +29,7 @@ return [
             'demandes' => 'r',
             'diplomes' => 'c,r,u'
         ],
-        'Guichet Droit Francais' => [
+        'Guichet Droit Français' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'demandes' => 'r',

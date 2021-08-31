@@ -22,28 +22,39 @@ class DiplomeController extends Controller
      */
     public function index()
     {
-        $diplomes = [];
-        foreach (Diplome::with('demande', 'etudiant')->get() as $diplome) {
-            $diplome = [
+        $diplomes=[];
+        foreach(Diplome::with('demande','etudiant')->get()
+                ->sortByDesc('date_creationDossier_envoiAuServiceDiplome') as $diplome)
+        {
+            $diplome=[
                 'id' => $diplome->id,
                 'cin' => $diplome->etudiant->cin,
                 'apogee' => $diplome->etudiant->apogee, 
                 'cne' => $diplome->etudiant->cne,
                 'nom' => $diplome->etudiant->nom,
                 'prenom' => $diplome->etudiant->prenom,
+                'nom_arabe' => $diplome->etudiant->nom_arabe,
+                'prenom_arabe' => $diplome->etudiant->prenom_arabe,
                 'filiere' => $diplome->etudiant->filiere,
                 'option' => $diplome->etudiant->option,
-                'date_demande' => $diplome->demande->date_demande,
                 'type_demande' => $diplome->demande->type_demande,
                 'statut_id' => $diplome->statut_id,
+                'date_demande' => $diplome->demande->date_demande,
+                'date_creation' => $diplome->date_creationDossier_envoiAuServiceDiplome,
+                'date_impression' => $diplome->date_impression_envoiAuDecanat,
+                'date_signature' => $diplome->date_singature_renvoiAuServiceDiplome,
+                'date_envoi_Apresidence' => $diplome->date_generationBorodeaux_envoiApresidence,
+                'date_reception' => $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait,
+                'date_notificationEtudiant' => $diplome->date_notificationEtudiant,
+                'date_retrait' => $diplome->date_retraitDiplome_archiveDossier,
+                'date_reedition' => $diplome->date_reedition,
+                'type_erreur' => $diplome->type_erreur,
             ];
-            array_push($diplomes, $diplome);
+            array_push($diplomes,$diplome);
         }
         return response()->json([
-
             'diplomes' => $diplomes
-
-        ]);
+        ]); 
     }
     /**
      * search diplome by CNE,CIN or APPOGE
@@ -112,7 +123,7 @@ class DiplomeController extends Controller
                     $demande->traite = 1;
                     $demande->save();
                 }
-            } else if(Auth::user()->hasRole('Guichet Droit Francais')) {
+            } else if(Auth::user()->hasRole('Guichet Droit Français')) {
                 if ($demande->etudiant->filiere == 'Droit en français')
                 {
                     $diplome = Diplome::create(array(
@@ -242,13 +253,16 @@ class DiplomeController extends Controller
             !$diplome->date_singature_renvoiAuServiceDiplome
             and $diplome->date_impression_envoiAuDecanat
         ) {
-            $diplome->update([
-                'statut_id' => 4,
-                'date_singature_renvoiAuServiceDiplome' => Carbon::today()->format('Y-m-d'),
+            $diplome->statut_id = 4;
+            $diplome->date_singature_renvoiAuServiceDiplome = Carbon::today()->format('Y-m-d'); 
+            $diplome->save();
+
+            return response()->json([
+                'success' => $diplome,
             ]);
         }
         return response()->json([
-            'diplome' => $diplome,
+            'error' => $diplome,
         ]);
     }
 
@@ -272,7 +286,7 @@ class DiplomeController extends Controller
             ]);
         }
         return response()->json([
-            'diplome' => $diplome,
+            'diplome' => $diplome
         ]);
     }
 
@@ -291,13 +305,45 @@ class DiplomeController extends Controller
             and $diplome->date_singature_renvoiAuServiceDiplome
             and $diplome->date_impression_envoiAuDecanat
         ) {
-            $diplome->update([
-                'statut_id' => 6,
-                'date_receptionParBureauOrdre_envoiAuGuichetRetrait' => Carbon::today()->format('Y-m-d'),
+            $diplome->statut_id = 6;
+            $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait = Carbon::today()->format('Y-m-d'); 
+            $diplome->save();
+           
+            return response()->json([
+                'success' => $diplome,
             ]);
         }
         return response()->json([
-            'diplome' => $diplome,
+            'error' => $diplome,
+        ]);
+    }
+
+    /**
+     * Update DateReception du diplome par bureau d'ordre.
+     *
+     * @param  \App\Models\Diplome $diplome
+     * @return \Illuminate\Http\Response
+     */
+    public function updateDateNotificationEtudiant(Diplome $diplome)
+    {
+        // test if the specified date is null and the previous dates not null
+        if (
+            !$diplome->date_notificationEtudiant
+            and $diplome->date_receptionParBureauOrdre_envoiAuGuichetRetrait
+            and $diplome->date_generationBorodeaux_envoiApresidence
+            and $diplome->date_singature_renvoiAuServiceDiplome
+            and $diplome->date_impression_envoiAuDecanat
+        ) {
+            $diplome->statut_id = 7;
+            $diplome->date_notificationEtudiant = Carbon::today()->format('Y-m-d'); 
+            $diplome->save();
+           
+            return response()->json([
+                'success' => $diplome,
+            ]);
+        }
+        return response()->json([
+            'error' => $diplome,
         ]);
     }
 
@@ -318,13 +364,16 @@ class DiplomeController extends Controller
             and $diplome->date_singature_renvoiAuServiceDiplome
             and $diplome->date_impression_envoiAuDecanat
         ) {
-            $diplome->update([
-                'statut_id' => 7,
-                'date_retraitDiplome_archiveDossier' => Carbon::today()->format('Y-m-d'),
+            $diplome->statut_id = 8;
+            $diplome->date_retraitDiplome_archiveDossier = Carbon::today()->format('Y-m-d'); 
+            $diplome->save();
+            
+            return response()->json([
+                'success' => $diplome,
             ]);
         }
         return response()->json([
-            'diplome' => $diplome,
+            'error' => $diplome,
         ]);
     }
 
@@ -502,13 +551,17 @@ class DiplomeController extends Controller
         ]);
     }
 
+    /**
+     * Display a listing of statuts.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function statuts()
     {
         return response()->json([
             'statuts' => DB::table('statut_diplome')->get()
         ]);
     }
-
 
     /**
      * Notify etudent by sending notif to his email with update date_notificationEtudiant
@@ -537,21 +590,18 @@ class DiplomeController extends Controller
                 and $diplome->date_singature_renvoiAuServiceDiplome
                 and $diplome->date_impression_envoiAuDecanat
             ) {
-                $diplome->update([
-                    'date_notificationEtudiant' => Carbon::today()->format('Y-m-d'),
-                ]);
-                // notify etudiant
-                //Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
-                Mail::to('gouzasalma@gmail.com')->send(new NotificationDiplome($mail));
-
+                //Mail::to('gouzasalma@gmail.com')->send(new NotificationDiplome($mail));
+                //Mail::to('benkaddourassma@gmail.com')->send(new NotificationDiplome($mail));
+                Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
+                
                 return response()->json([
-                    'response' => 'email sent to ' . $diplome->etudiant->email_inst,
+                    'success' => 'mail sent successfully',
                 ]);
             }
         }
 
         return response()->json([
-            'response' => 'cannot send email!',
+            'error' => 'cannot send mail!',
         ]);
     }
 }

@@ -58,23 +58,23 @@ class FormulaireController extends Controller
         $formulaire->update($request->all());
         return response()->json([
             'form' => $formulaire,
-            'message' => 'Formulaire modifié'
+            'message' => 'Formulaire modifié.'
         ]);
     }
 
-    /**
-     * Remove the specified form from storage.
-     *
-     * @param  \App\Models\Formulaire $formulaire
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Formulaire $formulaire)
-    {
-        $formulaire->delete();
-        return response()->json([
-            'message' => 'Formulaire supprimé'
-        ]);
-    }
+    // /**
+    //  * Remove the specified form from storage.
+    //  *
+    //  * @param  \App\Models\Formulaire $formulaire
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function destroy(Formulaire $formulaire)
+    // {
+    //     $formulaire->delete();
+    //     return response()->json([
+    //         'message' => 'Formulaire supprimé.'
+    //     ]);
+    // }
 
     // /**
     //  * filter fors by type: DEUG or Licence.
