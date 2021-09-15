@@ -24,40 +24,18 @@ use App\Http\Controllers\FormulaireController;
 
 // Public routes
 Route::post('/login',[LoginController::class,'login']);
-// Route::get('/roles',[RoleController::class,'index']);
-// Route::get('/statuts',[DiplomeController::class,'statuts']);
-// Route::get('/etudiants',[EtudiantController::class,'index']);
 
 
-// Protected routes for admin
+// Protected routes for Admin
 Route::group(['middleware' => ['auth:sanctum','role:Admin']], function(){
   // Users
-  // Route::get('/users/search/{email?}',[UserController::class,'search']);
-  Route::resource('/users',UserController::class);
-  Route::get('/users/role/{role}',[UserController::class,'filterByRole']);
-
+  Route::resource('/users', UserController::class);
   // Roles
-  Route::resource('/roles',RoleController::class);
-
+  Route::get('/roles',[RoleController::class,'index']);
   // Statuts
   Route::get('/statuts',[DiplomeController::class,'statuts']);
-
   // Forms
-  Route::resource('/formulaires',FormulaireController::class,['except' => 'show','store']);
-  // Route::get('/formulaires/type/{type}',[FormulaireController::class,'filterByType']);
-
-  // Etudiants
-  // Route::get('/etudiants',[EtudiantController::class,'index']);
-  Route::get('/etudiants/filiere/{filiere}',[EtudiantController::class,'filterByFiliere']);
-  Route::get('/exportEtudiants/{type},{filiere}',[EtudiantController::class,'exportEtudiants']);
-  Route::get('/exportParcours/{statut},{type},{filiere}',[EtudiantController::class,'exportParcoursDetaille']);
-
-  // Diplomes
-  Route::get('/diplomes/search/{mc?}',[DiplomeController::class,'search']);
-  Route::get('/diplomes/dates/{dateDebut?}/{dateFin?}',[DiplomeController::class,'searchByDates']);
-  Route::get('/diplomes/type/{type}',[DiplomeController::class,'filterByType']);
-  Route::get('/diplomes/statut/{statut}',[DiplomeController::class,'filterByStatut']);
-
+  Route::resource('/formulaires',FormulaireController::class,['except' => 'show', 'store', 'destroy']);
   //dashboard 
   Route::get('/dashboard/type/{type}',[DashboardController::class,'dashboardByType']);
   Route::get('/dashboard/currents',[DashboardController::class,'currents']);
@@ -65,58 +43,61 @@ Route::group(['middleware' => ['auth:sanctum','role:Admin']], function(){
   Route::get('/dashboard/{date_debut?}/{date_fin?}/{type?}',[DashboardController::class,'filtredDashboard']);
 });
 
+
 // Protected routes for all users
 Route::group(['middleware' => 'auth:sanctum'], function(){
   // Profil
   Route::get('/profil',[ProfileController::class,'show']);
   Route::put('/profil',[ProfileController::class,'update']);
-
   // Etudiants
-  Route::resource('/etudiants',EtudiantController::class,['except' => 'store','destroy']);
-  // Route::get('/etudiants/{cin}',[EtudiantController::class,'show']);
-  Route::get('/etudiants/search/{mc?}',[EtudiantController::class,'search']);
-
+  Route::resource('/etudiants',EtudiantController::class,['except' => 'store', 'update', 'destroy']);
   // Diplomes 
-  Route::resource('/diplomes',DiplomeController::class,['except' => 'store','destroy']);
-  Route::get('/diplomes/filter/{statut},{type},{filiere}',[DiplomeController::class,'filter']);
+  Route::resource('/diplomes',DiplomeController::class,['except' => 'store', 'update', 'destroy']);
 });
 
-// Protected routes for admin, guichet_droit_arabe, guichet_droit_francais and guichet_economie
+
+// Protected routes for Admin, Guichet Droit Arabe, Guichet Droit Français and Guichet Economie
 Route::group(['middleware' => ['auth:sanctum','role:Admin|Guichet Droit Arabe|Guichet Droit Français|Guichet Economie']], function(){
-  Route::resource('/demandes',DemandeController::class,['except' => 'store','destroy']);
-  Route::get('/demandes/filter/{type},{filiere}',[DemandeController::class,'filter']);
+  // Demandes
+  Route::resource('/demandes',DemandeController::class,['except' => 'store', 'update', 'destroy']);
   Route::post('/demandes/nouvellesDemandes/{filiere}',[DemandeController::class,'sheet']);
 });
 
-// Protected routes for admin and service_diplomes
-Route::group(['middleware' => ['auth:sanctum','role:Admin|Service de Diplômes']], function(){
-  Route::put('/etudiants/{cin}',[EtudiantController::class,'update']);
-});
 
-// Protected routes for guichet_droit_arabe, guichet_droit_francais and guichet_economie
+// Protected routes for Guichet Droit Arabe, Guichet Droit Français and Guichet Economie
 Route::group(['middleware' => ['auth:sanctum','role:Guichet Droit Arabe|Guichet Droit Français|Guichet Economie']], function(){
+  // Diplomes
   Route::post('/diplomes/{demande_id}',[DiplomeController::class,'store']);
 });
 
-// Protected routes only for service_diplomes
+
+// Protected routes only for Service de Diplômes
 Route::group(['middleware' => ['auth:sanctum','role:Service de Diplômes']], function(){
+  // Etudiants
+  Route::put('/etudiants/{cin}',[EtudiantController::class,'update']);
+  // Diplomes
   Route::put('/diplomes/reedition/{diplome}',[DiplomeController::class,'updateDateReedition']);
   Route::put('/diplomes/impression/{diplome}',[DiplomeController::class,'updateDateImpression']);
   Route::put('/diplomes/envoiPresidence/{diplome}',[DiplomeController::class,'updateDateEnvoiApresidence']);
 });
 
-// Protected routes only for decanat
+
+// Protected routes only for Décanat
 Route::group(['middleware' => ['auth:sanctum','role:Décanat']], function(){
+  // Diplomes
   Route::put('/diplomes/signature/{diplome}',[DiplomeController::class,'updateDateSignature']);
 });
 
-// Protected routes only for bureau_ordre
+
+// Protected routes only for Bureau d'Ordre
 Route::group(['middleware' => ['auth:sanctum','role:Bureau d\'Ordre']], function(){
+  // Diplomes
   Route::put('/diplomes/reception/{diplome}',[DiplomeController::class,'updateDateReceptionParBureauOrdre']);
 });
 
-// Protected routes only for guichet_retrait
+// Protected routes only for Guichet de Retrait
 Route::group(['middleware' => ['auth:sanctum','role:Guichet de Retrait']], function(){
+  // Diplomes
   Route::put('/diplomes/notif/{diplome}',[DiplomeController::class,'updateDateNotificationEtudiant']);
   Route::put('/diplomes/retrait/{diplome}',[DiplomeController::class,'updateDateRetraitDiplomeArchiveDossier']);
   Route::get('/diplomes/mail/{id}',[DiplomeController::class,'sendMail']);

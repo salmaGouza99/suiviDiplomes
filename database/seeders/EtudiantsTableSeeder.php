@@ -27,104 +27,56 @@ class EtudiantsTableSeeder extends Seeder
             'prenom' => 'Ahmed',
             'nom_arabe' => 'المدني',
             'prenom_arabe' => 'احمد',
-            'filiere' => 'Droit ',
-            'option' => 'Francais',
-            'nationalite' => 'Marocain',
+            'filiere' => 'القانون باللغة العربية',
+            'option' => 'قانون الأعمال',
+            'nationalite' => 'مغربي',
             'date_naiss' => '1999-07-08',
-            'lieu_naiss' => 'Rabat',
-            'email_inst' => 'Ahmed.el@um5.ac.ma'
+            'lieu_naiss' => 'الرباط',
+            'email_inst' => 'Ahmed.elmadani@um5.ac.ma'
         ]);
         Etudiant::create([
             'cin' => 'AB222222',
-            'apogee' => '11111177',
+            'apogee' => '1507644',
             'cne' => 'J11119776',
-            'nom' => 'ELMADANI',
-            'prenom' => 'Ahmed',
-            'nom_arabe' => 'المدني',
-            'prenom_arabe' => 'احمد',
-            'filiere' => 'Droit ',
-            'option' => 'Francais',
-            'nationalite' => 'Marocain',
-            'date_naiss' => '1999-07-08',
-            'lieu_naiss' => 'Rabat',
-            'email_inst' => 'Ahmed.el@um5.ac.ma'
+            'nom' => 'ELIDRISSI',
+            'prenom' => 'Maha',
+            'nom_arabe' => 'الادريسي',
+            'prenom_arabe' => 'مها',
+            'filiere' => 'Droit en français',
+            'option' => 'Droit Privé',
+            'nationalite' => 'Marocaine',
+            'date_naiss' => '1996-05-22',
+            'lieu_naiss' => 'مراكش',
+            'email_inst' => 'Maha.elidrissi@um5.ac.ma'
         ]);
         Etudiant::create([
-            'cin' => 'WA11111111',
-            'apogee' => '0000444222',
-            'cne' => '1113334567',
-            'nom' => 'ELMADANI',
-            'prenom' => 'Ahmed',
-            'nom_arabe' => 'المدني',
-            'prenom_arabe' => 'احمد',
-            'filiere' => 'Droit ',
-            'option' => 'Francais',
-            'nationalite' => 'Marocain',
-            'date_naiss' => '1999-07-08',
-            'lieu_naiss' => 'Rabat',
-            'email_inst' => 'Ahmed.el@um5.ac.ma'
+            'cin' => 'WA111111',
+            'apogee' => '1702355',
+            'cne' => 'J5432299',
+            'nom' => 'FAOUZI',
+            'prenom' => 'Amal',
+            'nom_arabe' => 'فوزي',
+            'prenom_arabe' => 'أمال',
+            'filiere' => 'Sciences Economiques et Gestion',
+            'option' => 'Finance Comptabilité',
+            'nationalite' => 'Marocaine',
+            'date_naiss' => '1998-01-11',
+            'lieu_naiss' => 'سلا',
+            'email_inst' => 'Amal.faouzi@um5.ac.ma'
         ]);
         Etudiant::create([
-            'cin' => 'IJ345668',
+            'cin' => 'AE4355789',
             'apogee' => '15008877',
             'cne' => 'J1309776',
-            'nom' => 'ELMADANI',
-            'prenom' => 'Ahmed',
-            'nom_arabe' => 'المدني',
-            'prenom_arabe' => 'احمد',
-            'filiere' => 'Droit ',
-            'option' => 'Francais',
-            'nationalite' => 'Marocain',
-            'date_naiss' => '1999-07-08',
-            'lieu_naiss' => 'Rabat',
-            'email_inst' => 'Ahmed.el@um5.ac.ma'
+            'nom' => 'JOADANI',
+            'prenom' => 'Mustafa',
+            'nom_arabe' => 'جعداني',
+            'prenom_arabe' => 'مصطفى',
+            'filiere' => 'القانون باللغة العربية',
+            'nationalite' => 'مغربي',
+            'date_naiss' => '1999-12-08',
+            'lieu_naiss' => 'الرباط',
+            'email_inst' => 'Mustafa.joadani@um5.ac.ma'
         ]);
-         Etudiant::create([
-            'cin' => 'IJ345655',
-            'apogee' => '15008877',
-            'cne' => 'J1309776',
-            'nom' => 'ELMADANI',
-            'prenom' => 'Ahmed',
-            'nom_arabe' => 'المدني',
-            'prenom_arabe' => 'احمد',
-            'filiere' => 'Droit ',
-            'option' => 'Francais',
-            'nationalite' => 'Marocain',
-            'date_naiss' => '1999-07-08',
-            'lieu_naiss' => 'Rabat',
-            'email_inst' => 'Ahmed.el@um5.ac.ma'
-        ]);
-        
-        /* foreach(Formulaire::all() as $form)
-        {
-            $sheetdb = new SheetDB($form->api_id);
-                foreach ($sheetdb->get() as $row)
-                {
-                    // $etudiantExistant=Etudiant::where('cin',$row->cin)->get();
-                    // $demandeExistante=Demande::where('etudiant_cin',$row->cin)
-                    //         ->where('type_demande',$row->type_demande)->get();
-
-                    if(sizeof(Etudiant::where('cin',$row->cin)->get())==0)
-                    {
-                        Etudiant::create([
-                            'cin' => $row->cin,
-                            'apogee' => $row->apogee,
-                            'cne' => $row->cne,
-                            'nom' => Str::upper($row->nom),
-                            'prenom' => $row->prenom,
-                            'nom_arabe' => $row->nom_arabe,
-                            'prenom_arabe' => $row->prenom_arabe,
-                            'filiere' => $row->filiere,
-                            'option' => $row->option,
-                            'nationalite' =>$row->nationalite,
-                            'date_naiss' => Carbon::createFromFormat('d/m/Y', $row->date_de_naissance)->format('Y-m-d'),
-                            'lieu_naiss' => $row->lieu_de_naissance,
-                            'email_inst' => $row->email_intitutionnel,
-                        ]);
-                    }
-                }
-
-      
-        } */
     }
 }

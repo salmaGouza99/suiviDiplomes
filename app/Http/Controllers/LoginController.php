@@ -19,7 +19,7 @@ class LoginController extends Controller
     public function login(Request $request){
         $attr = $request->validate([
             'email' => 'required|string',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:5'
         ]);
 
         if (!Auth::attempt($attr)) {
@@ -34,55 +34,5 @@ class LoginController extends Controller
             'accessToken' => $token,
         ]);
     }
-
-
-    /*
-     * Logout function
-     *
-     * @param Request $request
-     * @return json_responce
-     */
-    /*  public function logout(Request $request){
-        $user = auth()->user(); //user authentified
-        $user->tokens()->delete();
-        return response()->json(['success' => 'logged out']);
-    } */
-
-
-    /*
-     * afficher le profil de l'utlisateur connecté
-     *
-     * @return json_response
-     */
-    /* public function show(){
-        return response()->json([
-            User::find(auth()->user()->id),
-            // auth()->user(),
-        ]);
-    }
-    */
-
-    /*
-     * update password
-     *
-     * @param Request $request
-     * @return json_response
-     */
-    /* public function update(Request $request){
-        $user = User::find(auth()->user()->id);
-        if (Hash::check($request->oldPassword, $user->password)) {
-           $user->update([
-               'password' => Hash::make($request->newPassword),
-           ]);
-            return response()->json([
-               'response' => 'password updated successfully',
-           ]);
-           
-        }
-        return response()->json([
-            'response' => 'old password incorrect',
-        ]);
-        
-    } */
 
 }

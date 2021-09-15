@@ -73,53 +73,7 @@ class DemandeController extends Controller
     }
 
     /**
-     * filter demandes either by type or filiere
-     *
-     * @param string $type
-     * @param string $filiere
-     * @return \Illuminate\Http\Response
-     */
-    public function filter($type, $filiere) 
-    {
-        if ($type and $filiere)
-        {
-            $demandes =  DB::table('demandes as d')
-                    ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
-                    ->where('d.traite','=',0)
-                    ->where('d.type_demande', $type)
-                    ->where('e.filiere',$filiere)
-                    ->get()->sortByDesc('date_demande');
-        }
-        if ($type and !$filiere)
-        {
-            $demandes =  DB::table('demandes as d')
-                    ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
-                    ->where('d.traite','=',0)
-                    ->where('d.type_demande', $type)
-                    ->get()->sortByDesc('date_demande');
-        }
-        if ($filiere and !$type)
-        {
-            $demandes =  DB::table('demandes as d')
-                    ->join('etudiants as e', 'd.etudiant_cin','=','e.cin')
-                    ->where('d.traite','=',0)
-                    ->where('e.filiere',$filiere)
-                    ->get()->sortByDesc('date_demande');
-        }
-
-        $res = array();
-        foreach ($demandes as $demande)
-        {
-            $res[] = $demande;
-        }
-        
-        return response()->json([
-            'demandes' => $res
-         ]);
-    }
-
-    /**
-     * get demandes from googlesheet
+     * get demandes from GoogleSheets
      *
      * @param string $filiere
      * @return \Illuminate\Http\Response
@@ -149,10 +103,9 @@ class DemandeController extends Controller
                         'filiere' => $row->{'Filière المسلك'}, 
                         'nationalite' => $row->{'Nationalité الجنسية'},
                         'date_naiss' => Carbon::createFromFormat('d/m/Y', $row->{'Date de naissance تاريخ الازدياد'})->format('Y-m-d'),
-                        'lieu_naiss' => $row->{'Lieu de naissance مكان الازدياد'},
+                        'lieu_naiss' => $row->{'Lieu de naissance en arabe مكان الازدياد بالعربية'},
                         'email_inst' => $row->{'Adresse e-mail institutionnel البريد الالكتروني للطالب'},
                     ]);
-                    //echo "\n adding student ".$row->{'CIN رقم بطاقة التعريف الوطنية'};
                 }
                 if(sizeof(Demande::where('etudiant_cin',$row->{'CIN رقم بطاقة التعريف الوطنية'})
                     ->where('type_demande',$form->type_formulaire)->get()) == 0)
@@ -184,7 +137,6 @@ class DemandeController extends Controller
                             $countDemandesLicenceForAllFilieres +=1;
                         }
                     }
-                    //echo ' and his demand of  '.$form->type_formulaire.' done! ';
                 }
                    
             } 
@@ -200,11 +152,3 @@ class DemandeController extends Controller
     }
             
 }
-        
-
-
-        // return response()->json([
-        //     'all'=> $sheetdb->get()[0]->cin,// returns all spreadsheets data
-        //     'keys'=> $sheetdb->keys()[1], // returns all spreadsheets key names
-        //     // 'names'=> $sheetdb->name(), //sheet name
-        // ]);

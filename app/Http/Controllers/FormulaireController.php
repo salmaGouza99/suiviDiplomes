@@ -19,33 +19,6 @@ class FormulaireController extends Controller
         ]);
     }
 
-    // /**
-    //  * Store a newly created form in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function store(Request $request)
-    // {
-    //     $form = Formulaire::create($request->all());
-    //     return response()->json([
-    //         'form' => $form,
-    //         'message' => 'Formulaire ajouté'
-    //     ]);
-    // }
-    /*
-     * Display the specified form.
-     *
-     * @param  \App\Models\Formulaire $formulaire
-     * @return \Illuminate\Http\Response
-     */
-    /*public function show(Formulaire $formulaire)
-    {
-        return response()->json([
-            'form' => $formulaire,
-        ]);
-    }*/
-
     /**
      * Update the specified form in storage.
      *
@@ -61,50 +34,7 @@ class FormulaireController extends Controller
             'message' => 'Formulaire modifié.'
         ]);
     }
-
-    // /**
-    //  * Remove the specified form from storage.
-    //  *
-    //  * @param  \App\Models\Formulaire $formulaire
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function destroy(Formulaire $formulaire)
-    // {
-    //     $formulaire->delete();
-    //     return response()->json([
-    //         'message' => 'Formulaire supprimé.'
-    //     ]);
-    // }
-
-    // /**
-    //  * filter fors by type: DEUG or Licence.
-    //  *
-    //  * @param  string  $type
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function filterByType($type)
-    // {
-    //     return response()->json([
-    //         'forms' => Formulaire::where('type_formulaire',$type)->get(),
-    //     ]);
-    // }
-
-     /*
-     * filter forms by filiere.
-     *
-     * @param  string  $filiere
-     * @return \Illuminate\Http\Response
-     */
-    /* public function filterByFiliere($filiere)
-    {
-        return response()->json([
-            'forms' => Formulaire::where('filiere',$filiere)->get(),
-        ]);
-    } */
-
-
-
-
+    
 }
 
 

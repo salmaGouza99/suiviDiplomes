@@ -24,49 +24,34 @@ class DemandesTableSeeder extends Seeder
             'date_demande' => '2021-06-01',     
         ]);
         Demande::create([
-            'etudiant_cin' => 'AB222222',
-            'type_demande' => 'DEUG',
-            'date_demande' => '2021-06-01',     
-        ]);
-        Demande::create([
-            'etudiant_cin' => 'AB222222',
-            'type_demande' => 'Licence',
-            'date_demande' => '2021-06-01',     
-        ]);
-        Demande::create([
             'etudiant_cin' => 'AB345668',
             'type_demande' => 'Licence',
-            'date_demande' => '2021-06-01',     
+            'date_demande' => '2020-05-17',     
         ]);
         Demande::create([
-            'etudiant_cin' => 'WA11111111',
+            'etudiant_cin' => 'AB222222',
             'type_demande' => 'DEUG',
-            'date_demande' => '2021-06-01',     
+            'date_demande' => '2020-05-22',     
         ]);
         Demande::create([
-            'etudiant_cin' => 'WA11111111',
+            'etudiant_cin' => 'AB222222',
             'type_demande' => 'Licence',
-            'date_demande' => '2021-06-01',     
+            'date_demande' => '2021-07-03',     
         ]);
-
-        /* foreach(Formulaire::all() as $form)
-        {
-            $sheetdb = new SheetDB($form->api_id);
-                foreach ($sheetdb->get() as $row)
-                {
-                    
-                    if(sizeof(Demande::where('etudiant_cin',$row->cin)
-                        ->where('type_demande',$row->type_demande)->get())==0)
-                    {
-                        Demande::create([
-                                'etudiant_cin' => $row->cin,
-                                'type_demande' => $row->type_demande,
-                                'date_demande' =>Carbon::createFromFormat('d/m/Y H:i:s', $row->Horodateur)->format('Y-m-d'),
-                        ]);
-                    }
-                   
-                } 
-        } */
-            
+        Demande::create([
+            'etudiant_cin' => 'WA111111',
+            'type_demande' => 'DEUG',
+            'date_demande' => '2020-06-01',     
+        ]);
+        Demande::create([
+            'etudiant_cin' => 'WA111111',
+            'type_demande' => 'Licence',
+            'date_demande' => '2021-07-23',     
+        ]);
+        Demande::create([
+            'etudiant_cin' => 'AE4355789',
+            'type_demande' => 'DEUG',
+            'date_demande' => '2021-07-23',     
+        ]);
     }
 }

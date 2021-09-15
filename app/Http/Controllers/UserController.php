@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /*
+    /** 
      * Display a listing of users.
      *
      * @return \Illuminate\Http\Response
@@ -22,7 +22,7 @@ class UserController extends Controller
                 'id'=>$user->id,
                 'email'=>$user->email,
                 'roleId' =>$user->roles[0]->id,
-                'role'=>$user->roles[0]->name,
+                'role'=> $user->roles[0]->name,
             ];
             array_push($listUsers,$user);
         }
@@ -115,53 +115,4 @@ class UserController extends Controller
         return response()->json(['message' => 'Utilisateur supprimé']);
     }
 
-     /**
-     * filter users by role
-     *
-     * @param  int  $role
-     * @return \Illuminate\Http\Response
-     */
-    public function filterByRole($role)
-    {
-        $users=array();
-        foreach ( User::with('roles')->get() as $user ) 
-        {
-            //test role
-            if($user->roles[0]->id==$role) 
-            {
-                $users[] = [
-                    'id'=>$user->id,
-                    'email'=>$user->email,
-                    'role'=> $user->roles[0]->name,
-                ];;
-            }
-        }    
-            
-        //return json response
-        return response()->json([
-           'users' => $users,
-        ]);
-    }
-
-    /** 
-     * search users by email
-     *
-     * @param string $email
-     * @return \Illuminate\Http\Response
-     */
-     public function search($email = ''){
-        $listUsers=[] ;
-        foreach (User::where('email','like','%'.$email.'%')->get() as $user){
-            $user=[
-                'id'=> $user->id,
-                'email'=> $user->email,
-                'role'=> $user->roles[0]->name,
-            ];
-            array_push($listUsers,$user);
-        }
-        return response()->json([
-           'users'=> $listUsers
-        ]);
-     }
-    
 }   

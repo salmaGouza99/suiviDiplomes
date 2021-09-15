@@ -16,7 +16,7 @@ class Diplome extends Model
      */
     protected $fillable = ['etudiant_cin',
     'demande_id',
-    'statut',
+    'statut_id',
     'date_creationDossier_envoiAuServiceDiplome',
     'date_reedition',
     'type_erreur',
@@ -34,5 +34,6 @@ class Diplome extends Model
     public function etudiant(){
         return $this->belongsTo(Etudiant::class, 'etudiant_cin', 'cin');
     }
+    
 
 }

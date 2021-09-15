@@ -15,37 +15,33 @@ return [
         'Admin' => [
             'profile' => 'r,u',
             'users' => 'c,r,u,d',
-            'formulaires' => 'c,r,u,d',
-            'etudiants' => 'r,u',
+            'formulaires' => 'r,u',
+            'etudiants' => 'r',
             'demandes' => 'r',
-            'diplomes' => 'r,u,d',
-            'diplomes_reedites' => 'r,u,d',
-            'roles' => 'c,r,u,d',
-            'permissions' => 'c,r,u,d',
+            'diplomes' => 'r',
         ],
         'Guichet Droit Arabe' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'demandes' => 'r',
-            'diplomes' => 'c,r,u'
+            'diplomes' => 'c,r'
         ],
         'Guichet Droit Français' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'demandes' => 'r',
-            'diplomes' => 'c,r,u'
+            'diplomes' => 'c,r'
         ],  
         'Guichet Economie' => [
             'profile' => 'r,u',
             'etudiants' => 'r',
             'demandes' => 'r',
-            'diplomes' => 'c,r,u'
+            'diplomes' => 'c,r'
         ],
         'Service de Diplômes' => [
             'profile' => 'r,u',
             'etudiants' => 'r,u',
-            'diplomes' => 'r',
-            'diplomes_reedites' => 'c,r,u'
+            'diplomes' => 'r,u',
         ],
         'Décanat' => [
             'profile' => 'r,u',
