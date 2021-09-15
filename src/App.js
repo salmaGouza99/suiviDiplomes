@@ -2,7 +2,6 @@ import React, { useState, useEffect, initialState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./Pages/Login";
 import Admin from './Pages/Admin';
-import AdminAcceuil from './Pages/AdminAcceuil';
 import GuichetScolarite from './Pages/GuichetScolarite';
 import ServiceDiplomes from './Pages/ServiceDiplomes';
 import Decanat from './Pages/Decanat';
@@ -38,34 +37,9 @@ function App() {
                 render={({ location }) =>
                   location.pathname !== "/Admin" && location.pathname !== "/GuichetScolarite" &&
                   location.pathname !== "/ServiceDiplomes" && location.pathname !== "/Decanat" &&
-                  location.pathname !== "/BureauOrdre" && location.pathname !== "/GuichetRetrait" &&
-                  location.pathname !== "/Users" && location.pathname !== "/Forms" &&
-                  location.pathname !== "/DiplomesEnCoursDeTraitement" && 
-                  location.pathname !== "/DiplomesRetires" && 
-                  location.pathname !== "/DemandesEnAttente"
-                  && location.pathname !== "/Statistiques" && location.pathname !== "/Profil"
+                  location.pathname !== "/BureauOrdre" && location.pathname !== "/GuichetRetrait"
                   ? (<NotFound />) :
                   (<> {/* Routes for admin */}
-                    {/* <Route exact path="/Admin" component={() =>
-                                    (<AdminAcceuil title="Acceuil" role={role} />)} />
-                    <Route exact path="/Users" component={() =>
-                                    (<AdminAcceuil openUser={true} title="Utilisateurs" user ={user} role={role} />)} />
-                    <Route exact path="/Forms" component={() =>
-                                    (<AdminAcceuil openForms={true} title="Formulaires" role={role} />)} />
-                    <Route exact path="/DemandesEnAttente" component={() =>
-                                    (<AdminAcceuil openDemandes={true} title="Demandes en attente" role={role} />)} />
-                    <Route exact path="/DiplomesEnCoursDeTraitement" component={() =>
-                                    (<AdminAcceuil openDiplomesTraitement={true} title="Diplômes en cours de traitement" role={role} />)} />
-                    <Route exact path="/DiplomesRetires" component={() =>
-                                    (<AdminAcceuil openDiplomesArchives={true} title="Diplômes retirés" role={role} />)} />
-                    <Route exact path="/Statistiques" component={() =>
-                                    (<AdminAcceuil openDashboard={true} title="Statistiques" role={role} />)} />
-                    <Route exact path="/Profil" component={() =>
-                                    (<AdminAcceuil openProfil={true} title="Profil Personnel" role={role} />)} />
-                    */}
-                    <Route exact path="/DiplomesEnCoursDeTraitement" component={() =>
-                (<AdminAcceuil openDiplomesTraitement={true} title="DiplomesEnCoursDeTraitement" role={role} />)} />
-                    {/* The route of admin */}
                     <Route exact path="/Admin" component={() => (<Admin user={user} role={role}/>)}/>
                     {/* The route of guichets: arabe, francais et economie */}
                     <Route exact path="/GuichetScolarite" component={() => (<GuichetScolarite role={role} />)} />
@@ -78,8 +52,8 @@ function App() {
                     {/* The route of guichet de retrait */}
                     <Route exact path="/GuichetRetrait" component={() => (<GuichetRetrait role={role} />)} />
                   </>)
-                } />
-            </>)}
+                }/>
+          </>)}
         </Switch>
       </div>
     </Router>

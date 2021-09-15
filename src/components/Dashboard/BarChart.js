@@ -13,13 +13,15 @@ import userService from "../../Services/userService";
 import Message from '../Formulaires/Message';
 
 export default function BarChart(props){
+  // States
   const theme = useTheme();
   const [results, setResults] = useState([]);
   const [message, setMessage] = useState('');
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-      userService.dashboardCurrents().then((response) => {
+    // get all the currents statistics
+    userService.dashboardCurrents().then((response) => {
         setResults(response.data.results)
     }).catch(err => {
         console.log(err);
@@ -28,7 +30,7 @@ export default function BarChart(props){
     })
   },[])
 
-
+  // set the above results in datasets (for DEUG and Licence) with some styles
   const data = {
     datasets: [
       {
@@ -41,7 +43,7 @@ export default function BarChart(props){
             results.nbrDiplomesDeugPresidence, 
             results.nbrDiplomesDeugRecus, 
             results.nbrDiplomesDeugPrets, 
-      ],
+        ],
         label: 'DEUG'
       },
       {
@@ -54,13 +56,14 @@ export default function BarChart(props){
           results.nbrDiplomesLicencePresidence, 
           results.nbrDiplomesLicenceRecus, 
           results.nbrDiplomesLicencePrets, 
-    ],
+        ],
         label: 'LICENCE'
       }
     ],
-    labels: ['Créés', 'Réédités', 'Imprimés', 'Signés', 'A la Présidence', 'Reçus', 'Prêts']
+    labels: ['Créés', 'Réédités', 'Imprimés', 'Signés', 'À la Présidence', 'Reçus', 'Prêts']
   };
 
+  // styling the results
   const options = {
     animation: {
       animateScale : true
@@ -118,6 +121,7 @@ export default function BarChart(props){
     }
   };
 
+  // open and close the error message
   const handleCallBackOpen = (open) => {
     setOpen(open);
   }
@@ -146,23 +150,6 @@ export default function BarChart(props){
           />
         </Box>
       </CardContent>
-      {/* <Divider />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          p: 2
-        }}
-      >
-        <Button
-          color="primary"
-          endIcon={<ArrowRightIcon />}
-          size="small"
-          variant="text"
-        >
-          Overview
-        </Button>
-      </Box> */}
     </Card>
   );
 }

@@ -1,5 +1,5 @@
 import React , { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -22,19 +22,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-//////////creation - envoi au decanat - signature- ..........///////
-function getSteps() {
-
-  return [  'Reception de la demande','Creation du dossier',
-            'Impression et envoi au decanat','Signature et Renvoi au service de diplomes',
-            'Evnoi a la presidence', 'Reception aupres du bureau d\'ordre',
-            'Reception chez guichet de retrait', 'Notification de l\'etudiant',
-            'Retrait du diplome et archive du dossier',  
-        ];
-}
-
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#a104fc'
+      }
+  }
+});
 
 export default function TimeLine(props) {
+  // States
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState("");
   const [steps, setSteps] = React.useState([]);
@@ -44,10 +41,11 @@ export default function TimeLine(props) {
   useEffect(() => {
     setSteps(
       [
+        // set labels and dates in the timeline of the given diplome
         {label :'Réception de la demande', date : dateDemande ?
             dateDemande : `${diplome.date_demande}`,},
         {label :'Création du dossier',date : `${diplome.date_creationDossier_envoiAuServiceDiplome}`,},
-        diplome.date_reedition !== null ? 
+        diplome.date_reedition !== null ? // if there is date_reedition we will show the label and date, else we pass to the next step
         {label :'Réédition par service de diplômes',date : `${diplome.date_reedition}`,} : {label: null,date: null},
         {label :'Impression et envoi au décanat',date : `${diplome.date_impression_envoiAuDecanat}`,},
         {label :'Signature et renvoi au service de diplômes',date : `${diplome.date_singature_renvoiAuServiceDiplome}`,},
@@ -58,7 +56,7 @@ export default function TimeLine(props) {
       ]
     );
 
-    ////handle ActiveStep selon les dates
+    // handle ActiveStep according to the dates
     if(`${diplome.date_creationDossier_envoiAuServiceDiplome}` === 'null'){
       setActiveStep(0)
     }else if(`${diplome.date_impression_envoiAuDecanat}` === 'null'){
@@ -73,23 +71,15 @@ export default function TimeLine(props) {
       setActiveStep(`${diplome.date_reedition}` === 'null' ? 5 : 6)
     }else if(`${diplome.date_retraitDiplome_archiveDossier}` === 'null'){
       setActiveStep(`${diplome.date_reedition}` === 'null' ? 6 : 7)
-    }else {
+    }else { // if all the steps are finished, so there is no ActiveStep
       setActiveStep(-1)
     }
   },[diplome]);
 
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
   return (
     <div className={classes.root}>
-      <Stepper activeStep={activeStep}  orientation="vertical">
+    <MuiThemeProvider theme={theme}>
+      <Stepper activeStep={activeStep}  orientation="vertical" color="primary">
         {steps.map(({label,date}) => (
           (label !== null && date !== null && 
             <Step key={label}>
@@ -104,10 +94,11 @@ export default function TimeLine(props) {
           </Step>)
         ))}
       </Stepper>
-      <div>
+    </MuiThemeProvider>
+    <div>
         {activeStep === -1 ? (
-          <div>
-            {/* <Typography className={classes.instructions}>Toutes les étapes sont terminées.</Typography> */}
+          <div> 
+            {/* if all the steps are finished, this alert message will appear */}
             <Alert severity="success" color="info" >
               Toutes les étapes sont terminées.
             </Alert>

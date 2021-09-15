@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
-import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import userService from "../../Services/userService";
 import Alert from '@material-ui/lab/Alert';
-import LinearProgress from '@material-ui/core/LinearProgress';import DetailsRow from './DetailsRow';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import DetailsRow from './DetailsRow';
 import TimeLine from './TimeLine'
 
 const useStyles = makeStyles((theme) => ({
@@ -43,7 +42,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const theme = createMuiTheme({
+    palette: {
+        secondary: {
+            main: '#a104fc'
+        }
+    }
+});
+
 export default function DetailsDiplome(props) {
+    // States
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [diplome, setDiplome] = useState('');
@@ -53,6 +61,7 @@ export default function DetailsDiplome(props) {
     useEffect(() => {
         setLoading(true);
         setOpen(props.handleOpen);
+        // show diplome info in the dialog
         userService.showDiplome(props?.diplomeId).then((response) => {
             setLoading(false);
             setDiplome(response?.data?.diplome);
@@ -63,15 +72,13 @@ export default function DetailsDiplome(props) {
         })
     }, []);
 
-
-    ///////////////////////////////////////////
+    // close the dialog info
     const handleClose = (e) => {
         props.closeCallback(false);
     };
 
     return (
         <div className={classes.root}>
-
             <Dialog open={open} aria-labelledby="form-dialog-title">
                 <IconButton color="primary" aria-label="upload picture"
                     component="span" size="small" className={classes.closeIcon}>
@@ -85,7 +92,9 @@ export default function DetailsDiplome(props) {
                 <DialogContent>
                 {loading && (
                     <div align='center' >
-                        <LinearProgress />
+                        <MuiThemeProvider theme={theme}>
+                            <LinearProgress color='secondary'/>
+                        </MuiThemeProvider>
                     </div>
                 )}
                 {error && (
@@ -107,7 +116,7 @@ export default function DetailsDiplome(props) {
                                 alignItems="flex-start"
                                 spacing={6}>
                                 <Grid item xs={6}>
-
+                                    {/* Fill the dialog with the appropriate info for the given diplome */}
                                     <Typography variant="body" component="h3" >
                                         Informations Personnelles
                                     </Typography><br />

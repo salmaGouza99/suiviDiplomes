@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import EditIcon from '@material-ui/icons/Edit';
-import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import LinearProgress from "@material-ui/core/LinearProgress";
 import userService from "../../Services/userService";
@@ -28,8 +26,16 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+const theme = createMuiTheme({
+    palette: {
+        secondary: {
+            main: '#a104fc'
+        }
+    }
+});
+
 export default function Profil(props) {
-    const classes = useStyles();
+    // States
     const [user, setUser] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -37,6 +43,7 @@ export default function Profil(props) {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
+        // show profil info
         userService.showProfil().then((response) => {
             setLoading(false);
             setUser(response?.data.user);
@@ -46,17 +53,20 @@ export default function Profil(props) {
             setError("Erreur de chargement, veuillez réessayer.");
         })
         setChanged(false);
+    // this code will be called if the profil is edited
     }, [changed]);
 
     const handleEditProfil = (e) => {
         setOpen(true);
     };
 
+    // close the edit form 
     const closeCallback = (open) => {
         setOpen(open);
         setChanged(true);
     };
 
+    // send the updated email to the parent component
     const handleCallBack = (childData) => {
         props.parentCallback(childData);
     };
@@ -66,7 +76,9 @@ export default function Profil(props) {
             <Card >
                 {loading && (
                     <div align='center' >
-                    <LinearProgress />
+                        <MuiThemeProvider theme={theme}>
+                            <LinearProgress color='secondary'/>
+                        </MuiThemeProvider>
                     </div>
                 )}
                 <CardContent>
@@ -91,7 +103,7 @@ export default function Profil(props) {
                             <Typography variant="body" component="h3" >
                                 Informations Personnelles
                             </Typography><br />
-                            <DetailsRow title="Identifiant" data={user.email} />
+                            <DetailsRow title="Identifiant" data={user.email}/>
                             <DetailsRow title="Mot de passe" data="******************" />
                             <DetailsRow title="Rôle" data={user.role} />
                         </Grid>
@@ -103,22 +115,19 @@ export default function Profil(props) {
                         alignItems="flex-end"
                         spacing={6}>
                         <Grid item xs={12}>
-                        <Tooltip title="Editer Profil">
-                        <Button variant="contained" color="primary" size="small"
+                        <Button variant="contained" style={{backgroundColor: "#bb0086", color: 'white'}} size="small"
                             startIcon={<EditIcon />}
                             onClick={handleEditProfil}>
                             Editer
                         </Button>
-                    </Tooltip>
                         </Grid>
                     </Grid>
-
                 </CardContent>
                 <CardActions>
                     
                 </CardActions>
             </Card>
-            {
+            {   // open the edit form
                 open && <ProfilEdit handleOpen={open} user={user}
                         closeCallback={closeCallback} handleCallBack={handleCallBack} title="Editer Profil"
                         />

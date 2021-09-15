@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import AddBoxRoundedIcon from '@material-ui/icons/AddBoxRounded';
-import MuiAlert from '@material-ui/lab/Alert';
 import Message from './Message';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import LinkIcon from '@material-ui/icons/Link';
@@ -12,6 +11,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import userService from "../../Services/userService";
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Link from '@material-ui/core/Link';
+import Tutoriel from './Tutoriel';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -22,7 +22,12 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6)
+        marginLeft: theme.spacing(6),
+        background: '#a104fc', 
+        '&:hover': {
+            background: "#ab5fe7",
+        },
+        color: 'white'
     },
     help: {
         marginTop: theme.spacing(2),
@@ -35,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Form(props) {
+    // States
     const classes = useStyles();
     const [formId, setFormId] = useState('');
     const [lien, setLien] = useState('');
@@ -44,8 +50,10 @@ export default function Form(props) {
     const [message, setMessage] = useState('');
     const [open, setOpen] = useState(false);
     const [disableButton, setDisableButton] = useState(true);
+    const [openTutoriel, setOpenTutoriel] = useState(false);
 
     useEffect(() => {
+        // set the props values of the parent component in the appropriate variables
         setFormId(props.form.id);
         setTypeFormulaire(props.form.type_formulaire);
         setLien(props.form.lien);
@@ -64,16 +72,14 @@ export default function Form(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // props?.callBackLoad(true);
         setDisableButton(true);
+        // update form
         userService.updateForm(formId, type_formulaire, lien, api_id).then((response) => {
-            // props?.callBackLoad(false);
             setDisableButton(false);
             setSuccess(true);
             setMessage(response.data.message);
             setOpen(true);
         }).catch((err) => {
-            // props?.callBackLoad(false);
             setDisableButton(false);
             console.log(err);
             setSuccess(false);
@@ -82,8 +88,19 @@ export default function Form(props) {
         })
     }
 
+    // open the success or the error message
     const handleCallBackOpen = (open) => {
         setOpen(open);
+    };
+
+    // open the dialog of tutorial images
+    const handleTutoriel = () => {
+        setOpenTutoriel(true);
+    };
+
+    // close the dialog of tutorial images
+    const handleCloseCallback = (value) => {
+        setOpenTutoriel(value);
     };
 
     return (
@@ -92,7 +109,7 @@ export default function Form(props) {
                      callBackOpen={handleCallBackOpen}/>}
 
             <form className={classes.root} onSubmit={handleSubmit}>
-                <Typography gutterBottom variant="h5" component="h2" color="primary">
+                <Typography gutterBottom variant="h5" component="h2" style={{color: '#a104fc'}}>
                     {type_formulaire}
                 </Typography><br />
                 <div>
@@ -130,18 +147,24 @@ export default function Form(props) {
                         variant="outlined"
                         required
                     />
-                    <Button type='submit' variant="contained" color="primary" className={classes.button}
+                    <Button type='submit' variant="contained" className={classes.button}
                         startIcon={<AddBoxRoundedIcon />} disabled={disableButton}
                     >Modifier</Button>
 
-                    <Button variant="contained" color="secondary" className={classes.help}
+                    <Button variant="contained" color="secondary" className={classes.help} onClick={handleTutoriel}
                         startIcon={<HelpOutlineIcon />} size="small"
-                    >Comment Obtenir API ID du formulaire</Button>
+                        // the dialog of tutorial images of how to obtain the api id of a form
+                    >Comment obtenir API ID du formulaire</Button>
                 </div>
+                    {/* Link to the page of getting the api id of the form */}
                     <Link href="https://sheetdb.io/" target="_blank" className={classes.link}>
                         Obtenir API ID
                     </Link>
             </form>
+            {
+                // open the dialog of tutorial images 
+                openTutoriel && <Tutoriel open={openTutoriel} closeCallback={handleCloseCallback}/>
+            }
         </div>
 
     );

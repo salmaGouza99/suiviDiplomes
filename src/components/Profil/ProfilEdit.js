@@ -28,11 +28,6 @@ import imgEdition from "../../Images/edition.jpg";
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 345,
-
-  },
-  media: {
-    height: 80,
-    backgroundImage: 'url(https://source.unsplash.com/random)',
   },
   extendedIcon: {
     marginRight: theme.spacing(1),
@@ -41,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
     marginLeft: theme.spacing(12),
+    background: '#a104fc', 
+    '&:hover': {
+      background: "#ab5fe7",
+    },
+    color: 'white'
   },
   container: {
     marginTop: theme.spacing(5),
@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProfilEdit(props) {
+  // States
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState();
@@ -68,20 +69,18 @@ export default function ProfilEdit(props) {
   const [passwordConfirm, setPasswordConfirm] = useState(null);
   const [errors, setErrors] = useState('');
   const [role, setRole] = useState('');
+  const [disable, setDisable] = useState(false);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
 
   useEffect(() => {
+    // set the props values of the parent component in the appropriate variables
     setOpen(props.handleOpen);
     props.user ? setRole(props.user.role) : setRole('');
     props.user ? setEmail(props.user.email) : setEmail('');
     props.handleOpen ? setOpen(props.handleOpen) : setOpen(false);
-    // props.roles ? setRoles(props.roles) : setRoles([]);
   }, []);
-
-
-  ///////////////////////////////////////////
  
   const handleEmail = (e) => {
     setEmail(e.target.value);
@@ -101,31 +100,25 @@ export default function ProfilEdit(props) {
     } else {
       setErrors({ ...errors, password: null });
     }
-
   }
 
   const handlePasswordConfirm = (e) => {
     setPasswordConfirm(e.target.value);
-    console.log(passwordConfirm);
-
   }
 
   const handleClose = (e) => {
-    //   props.closeCallback(false,null);
     props.closeCallback(false);
   }
-  /////////////////////////////////////////
 
   const handleSumbit = (e) => {
     e.preventDefault();
-      // console.log("edit");
       if (passwordConfirm === password) {
         setErrors({ ...errors, passwordConfirm: null });
       } else {
         setErrors({ ...errors, passwordConfirm: "Les mots de passe doivent être identiques." });
       }
       if (!Object.values(errors).some((x) => x !== null && x !== "")) {
-        // console.log('heeere submit Edit');
+        setDisable(true);
         if (password === passwordConfirm) {
           userService.updateProfil(email, password).then((response) => {
               swal({
@@ -133,10 +126,12 @@ export default function ProfilEdit(props) {
                 text: "",
                 icon: "success",
               });
+              setDisable(false);
               props.closeCallback(false);
               props.handleCallBack(response?.data?.user?.email);
             }).catch(err => {
               console.log(err.response);
+              setDisable(false);
               setMessage("Une erreur est servenue, veuillez réessayer.");
               if (err.response?.status === 500) {
                 setMessage("Cette adresse mail est déjà utilisée.");
@@ -144,15 +139,17 @@ export default function ProfilEdit(props) {
             })
 
         } else {
+          setDisable(false);
           setMessage("Les mots de passe doivent être identiques.");
         }
       }
   };
   
-  
+  // show and hide the password
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
+  // show and hide the confirmed password
   const handleClickShowPassword1 = () => setShowPassword1(!showPassword1);
   const handleMouseDownPassword1 = () => setShowPassword1(!showPassword1);
 
@@ -174,7 +171,7 @@ export default function ProfilEdit(props) {
               />
               <CardContent>
 
-                <Typography gutterBottom variant="h5" component="h2" color="primary">
+                <Typography gutterBottom variant="h5" component="h2" style={{color: '#a104fc'}}>
                   {props.title}
                 </Typography>
                 {message && (
@@ -284,8 +281,6 @@ export default function ProfilEdit(props) {
                     error={Boolean(errors?.passwordConfirm)}
                     helperText={errors?.passwordConfirm}
                   />
-
-
                   <TextField
                     id="standard-select-currency"
                     label="Profil"
@@ -306,8 +301,8 @@ export default function ProfilEdit(props) {
                   >
                   </TextField>
 
-                    <Button
-                      variant="contained" color="primary" size="small"
+                    <Button disabled={disable}
+                      variant="contained" size="small"
                       type='submit' className={classes.fab} startIcon={<EditIcon />}
                     >Editer</Button>
                 </form>

@@ -9,6 +9,7 @@ function Alert(props) {
  
 export default function Message(props) {
 
+  // close the success or the error message
   const handleClose = () => {
     props?.callBackOpen(false);
   };

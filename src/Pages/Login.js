@@ -1,6 +1,5 @@
 import React, { useState, useEffect, initialState } from 'react';
 import { useHistory } from "react-router-dom";
-import { Route } from "react-router-dom";
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -86,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Login(props) {
-
+  // States
   const history = useHistory();
   const classes = useStyles();
   const [email, setEmail] = useState("");
@@ -100,40 +99,40 @@ export default function Login(props) {
   
   useEffect(() => {
     const loggedOut = authService.getLoggedOutValue();
+    // test if the user is loggedout, we show him the content of the login page
     if(loggedOut === true) {
-      //console.log("logout");
+      console.log("logout");
+    // else we redirect him to her appropriate page
     } else if (props?.user) {
       history.push(props?.role === 1 ? "/Admin" :
                    props?.role === 2 || props?.role === 3 || props?.role === 4 ? "/GuichetScolarite" :
                    props?.role === 5 ? "/ServiceDiplomes" :
                    props?.role === 6 ? "/Decanat" : 
                    props?.role === 7 ? "BureauOrdre" : "/GuichetRetrait");
-      window.location.reload();
     }
   });
 
   const handleEmail = (e) => {
     const email = e.target.value;
     setEmail(email);
-
   };
 
   const handlePassword = (e) => {
     const password = e.target.value;
     setPassword(password);
-    if (password?.length < 6) {
-      setError("Mot de passe doit contenir au minimum 6 caractères");
+    if (password?.length < 5) {
+      setError("Mot de passe doit contenir au minimum 5 caractères");
     } else {
       setError("");
     }
   };
+  // show and hide the password
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   const handleLogin = (e) => {
     e.preventDefault();
     setMessage(error ? "Mot de passe invalid." : "");
-    //console.log('Login: ', email, password);
     if (error) {
       setMessage("Mot de passe invalid.");
     } else {
@@ -142,8 +141,10 @@ export default function Login(props) {
       setMessage("");
       authService.login(email, password, checked).then(
         (response) => {
+          // test if the credentials are true, we redirect the user to her appropriate page as axplained above
           if (!response.msgError) {
             window.location.reload();
+          // else we show him the error message
           } else {
             setLoading(false);
             setDisable(false);
@@ -165,9 +166,9 @@ export default function Login(props) {
     }
   };
 
+  // handle the possibility of stay signed in
   const handleRemember = (event) => {
     setChecked(event.target.checked);
-    //console.log(event.target.checked)
   };
 
   return (

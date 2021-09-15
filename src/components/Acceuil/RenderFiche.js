@@ -9,7 +9,8 @@ export default class RenderFiche extends React.PureComponent {
     render() {
         return (
             <div>
-            <FicheEtudiant etudiantId={this.props?.etudiantId} load={this.props?.load}/>
+                {/* render the FicheEtudiant to print it in the parent component */}
+                <FicheEtudiant etudiantId={this.props?.etudiantId} load={this.props?.load}/>
             </div>
         );
     }

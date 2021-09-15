@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React  from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Avatar,
@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 
-
 const useStyles = makeStyles((theme) => ({
   large: {
     width: theme.spacing(7),
@@ -19,10 +18,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function NumbersCard(props) {
+  // States
   const classes = useStyles();
   const { title, number, icon, color } = props;
 
   return (
+    // return the styling card numbers of Dashboard component
     <Card
       sx={{ height: '100%' }}
       {...props}

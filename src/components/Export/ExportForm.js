@@ -28,6 +28,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
     marginLeft: theme.spacing(15),
+    background: '#a104fc', 
+    '&:hover': {
+      background: "#ab5fe7",
+    },
+    color: 'white'
   },
   container: {
     marginTop: theme.spacing(5),
@@ -48,16 +53,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ExportForm(props) {
+  // States
   const classes = useStyles();
   const [checked, setChecked] = useState([false, false, false, false, false, false, false, false, false, false, false]);
   const open = props?.handleOpen;
   const archive = props?.archive;
 
+  // handle the choice of select all items
   const handleChangeAll = (event) => {
-    setChecked([event.target.checked, event.target.checked, event.target.checked, event.target.checked, 
-                event.target.checked, event.target.checked, event.target.checked, event.target.checked,
-                event.target.checked, event.target.checked, event.target.checked]);
+    if(checked.indexOf(true) > -1 ) {
+      setChecked([false, false, false, false, false, false, false, false, false, false, false]);
+    } else {
+      setChecked([event.target.checked, event.target.checked, event.target.checked, event.target.checked, 
+                  event.target.checked, event.target.checked, event.target.checked, event.target.checked,
+                  event.target.checked, event.target.checked, event.target.checked]);
+    }
   };
+
+  // handle the selection of each item
   const handleChange1 = (event) => {
     setChecked([event.target.checked, checked[1], checked[2], checked[3], checked[4],
                 checked[5], checked[6], checked[7], checked[8], checked[9], checked[10] ]);
@@ -105,62 +118,65 @@ export default function ExportForm(props) {
   };
 
 
+  // close the form of choosing items for export data 
   const handleClose = (e) => {
-    props.closeCallback(false);
+    props.closeCallback(false, false);
   }
 
+  // send the checked items to the parent component
   const handleSumbit = (e) => {
     e.preventDefault();
     props.checkedData(checked);
-    props.closeCallback(false);
+    props.closeCallback(false, false);
   }
 
+  // the children items
   const children = (
     <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
       <FormControlLabel
         label="Apogée"
-        control={<Checkbox color="primary" checked={checked[0]} onChange={handleChange1} />}
+        control={<Checkbox color="secondary" checked={checked[0]} onChange={handleChange1} />}
       />
       <FormControlLabel
         label="CIN"
-        control={<Checkbox color="primary" checked={checked[1]} onChange={handleChange2} />}
+        control={<Checkbox color="secondary" checked={checked[1]} onChange={handleChange2} />}
       />
       <FormControlLabel
         label="CNE"
-        control={<Checkbox color="primary" checked={checked[2]} onChange={handleChange3} />}
+        control={<Checkbox color="secondary" checked={checked[2]} onChange={handleChange3} />}
       />
       <FormControlLabel
         label="Nom et prénom (en Français)"
-        control={<Checkbox color="primary" checked={checked[3]} onChange={handleChange4} />}
+        control={<Checkbox color="secondary" checked={checked[3]} onChange={handleChange4} />}
       />
       <FormControlLabel
         label="Nom et prénom (en Arabe)"
-        control={<Checkbox color="primary" checked={checked[4]} onChange={handleChange5} />}
+        control={<Checkbox color="secondary" checked={checked[4]} onChange={handleChange5} />}
       />
       <FormControlLabel
         label="Filière"
-        control={<Checkbox color="primary" checked={checked[5]} onChange={handleChange6} />}
+        control={<Checkbox color="secondary" checked={checked[5]} onChange={handleChange6} />}
       />
       <FormControlLabel
         label="Option"
-        control={<Checkbox color="primary" checked={checked[6]} onChange={handleChange7} />}
+        control={<Checkbox color="secondary" checked={checked[6]} onChange={handleChange7} />}
       />
       <FormControlLabel
         label="Type de diplôme"
-        control={<Checkbox color="primary" checked={checked[7]} onChange={handleChange8} />}
+        control={<Checkbox color="secondary" checked={checked[7]} onChange={handleChange8} />}
       />
       {!archive &&
       <FormControlLabel
         label="Statut du diplôme"
-        control={<Checkbox color="primary" checked={checked[8]} onChange={handleChange9} />}
+        control={<Checkbox color="secondary" checked={checked[8]} onChange={handleChange9} />}
       />}
       <FormControlLabel
         label="Type d'erreur (en cas de réédition)"
-        control={<Checkbox color="primary" checked={checked[9]} onChange={handleChange10} />}
+        control={<Checkbox color="secondary" checked={checked[9]} onChange={handleChange10} />}
       />
       <FormControlLabel
         label="Dates du parcours détaillé du diplôme"
-        control={<Checkbox color="primary" checked={checked[10]} onChange={handleChange11} />}
+        control={<Checkbox color="secondary" checked={checked[10]} onChange={handleChange11} />}
       />
     </Box>
   );
@@ -176,7 +192,7 @@ export default function ExportForm(props) {
           <Card className={classes.root}>
             <CardActionArea>
               <CardContent>
-                <Typography gutterBottom variant="h5" color="primary" align='center' style={{marginTop: 8}}>
+                <Typography gutterBottom variant="h5" style={{color: '#a104fc', marginTop: 8}} align='center'>
                   Veuillez sélectionner s'il vous plaît les champs à exporter
                 </Typography>
               </CardContent>
@@ -185,16 +201,18 @@ export default function ExportForm(props) {
             <CardActions>
               <Container component="main" maxWidth="xs">
                 <form className={classes.form} onSubmit={handleSumbit} validate>
+                    {/* The select all item */}
                     <FormControlLabel
                         label="Séléctionner tout"
                         style={{color: 'gray'}}
                         control={
-                        <Checkbox color="primary"
+                        <Checkbox color="secondary"
                             checked={checked[0] && checked[1] && checked[2] && checked[3] && checked[4] && checked[5]
                                     && checked[6] && checked[7] && checked[8] && checked[9] && checked[10]}
                             indeterminate={checked.indexOf(true) > -1 ? true : false}
                             onChange={handleChangeAll} />}
                     />
+                    {/* call the children items */}
                     {children}
                     <Button 
                       variant="contained" color="primary" size="small"

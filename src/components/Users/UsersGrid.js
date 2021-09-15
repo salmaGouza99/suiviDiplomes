@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DataGrid, GridOverlay, useGridSlotComponentProps, frFR } from '@material-ui/data-grid';
 import Alert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -39,11 +39,20 @@ const useStyles = makeStyles((theme) => ({
   
 function CustomLoadingOverlay() {
     const classes = useStyles();
+    const theme = createMuiTheme({
+        palette: {
+            secondary: {
+                main: '#a104fc'
+            }
+        }
+    });
   
     return (
       <GridOverlay>
         <div className={classes.load}>
-          <LinearProgress />
+        <MuiThemeProvider theme={theme}>
+            <LinearProgress color='secondary'/>
+        </MuiThemeProvider>
         </div>
       </GridOverlay>
     );
@@ -108,9 +117,9 @@ const styles = (theme) => ({
         marginTop: theme.spacing(4)
     },
     button1: {
-        background: '#0a9ce6',
+        background: '#a104fc',
         '&:hover': {
-          background: "#5ea2d7",
+          background: "#ab5fe7",
         },
         color: theme.palette.common.white,
     },
@@ -124,7 +133,7 @@ const styles = (theme) => ({
 });
 
 
-///Data grid columns
+// Data grid columns
 const columns = [
     { field: 'id', headerName: 'ID', width: 120 },
     {
@@ -143,8 +152,7 @@ const columns = [
 ];
 
 function UsersGrid(props) {
-
-    /////States
+    // States
     const { classes } = props;
     const [id, setId] = useState([]);
     const [users, setUsers] = useState([]);
@@ -163,10 +171,9 @@ function UsersGrid(props) {
     const [load, setLoad] = useState(false);
     const [reload, setReload] = useState(true);
 
-    //////////////////////////////////////////////////////////////
     useEffect(() => {
         setLoad(reload ? true : false);
-        //liste utilisateur avec posibilite de recherche
+        // list of users 
         userService.getAllUsers().then((response) => {
             setLoad(false);
             setReload(false);
@@ -177,19 +184,18 @@ function UsersGrid(props) {
             setReload(false);
             setMessage("Erreur de chargement, veuillez réessayer.");
         })
-        //liste des roles pour les select
+        // list of roles in select textfield
         userService.getAllRoles().then((response) => {
             setRoles(response.data.roles);
         }).catch(err => {
             console.log(err);
             setMessage("Erreur de chargement des rôles, veuillez réessayer.");
         })
-    },[deleteUser, addUser, editUser, reload]);
-    //}, [roleFilter, searchItem, deleteUser,disableButton]);
-    /////////////////////////////////////////////////////////
+    // this code will be called everytime a user was deleted, added or edited and for the refresh
+    },[deleteUser, addUser, editUser, reload]);  
 
     useEffect(() => {
-        //liste filtre selon role et search
+        // filter the list of users according to the search input or the selected role
         setFiltredUsers(
         users?.filter((user) =>
                 (user.email !== props?.user.email) &&
@@ -198,11 +204,12 @@ function UsersGrid(props) {
         setMessage(null);
     },[roleFilter, searchItem, users])
 
+    // set the button edit and delete disabled in case of there is no selection in the data grid
     useEffect(() => {
         setDisableButton(id.length === 0 ? true : false);
     },[id])
 
-    ///Callback function to close forms
+    // Callback function to close forms
     const handleCloseCallback = (open, type) => {
         if (type === "edit") {
             setOpenEdit(open);
@@ -212,7 +219,8 @@ function UsersGrid(props) {
             setAddUser(true);
         }
     }
-    /////////////////////////////////////////////////////////
+
+    // set the id of the user selected and able the buttons edit and delete
     const handleRowSelection = (e) => {
         if(e[0]) {
             setId(e[0]);
@@ -220,7 +228,7 @@ function UsersGrid(props) {
         }
     }
 
-    /////Open Edit Form with user data
+    // Open Edit Form with user data
     const handleEdit = () => {
         setEditUser(false);
         setMessage(null);
@@ -233,14 +241,14 @@ function UsersGrid(props) {
         });
     }
 
-    /////Open add form
+    // Open add form
     const handleAdd = () => {
         setMessage(null);
         setAddUser(false);
         setOpenAdd(true);
     }
 
-    /////Delete user
+    // Delete user
     const handleDelete = (e) => {
         setDeleteUser(false);
         setMessage(null);
@@ -248,13 +256,15 @@ function UsersGrid(props) {
             title: "Êtes-vous sûr ?",
             text: "Cette action est irreversible !",
             icon: "warning",
-            buttons: true,
+            buttons: {
+                cancel: 'Annuler',
+                confirm: true,
+            },
             dangerMode: true,
         })
             .then((willDelete) => {
                 if (willDelete) {
                     userService.delateUser(id).then((response) => {
-                        // console.log(response.data.message);
                         setDeleteUser(true);
                         setId([]);
                         swal({
@@ -270,6 +280,8 @@ function UsersGrid(props) {
                 }
             });
     };
+
+    // refresh the list of users
     const handleReload = () => {
         setRoleFilter(null);
         setSearchItem('');
@@ -292,39 +304,6 @@ function UsersGrid(props) {
 
     return (
         <Paper className={classes.paper}>
-            {/* ///////Filter by role////// */}
-            {/* <AppBar style={{ paddingTop: "0px", paddingRight: "20px" }}
-                position="static" color="#fff" elevation={0}>
-                <Grid container justifyContent="flex-end"
-                    alignItems="flex-start"
-                >
-                    <TextField
-                    style={{paddingLeft: "15px" , paddingBottom: "15px"}}
-                        id="standard-select-currency"
-                        select
-                        fullWidth
-                        onChange={filterByRole}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <PersonOutlineIcon />
-                                </InputAdornment>
-                            ),
-                        }}
-                        helperText="Filtrer selon les rôles"
-                        variant="outlined"
-                        margin="normal"
-                        size="small"
-                        value={roleFilter === null ? "" : roleFilter}
-                    >
-                        {roles.map((role) => (
-                            <MenuItem key={role.id} value={role.id}>
-                                {role.name}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </Grid>
-            </AppBar> */}
             <AppBar className={classes.searchBar} position="static" color="default" elevation={0}>
                 <Toolbar>
                     <Grid container spacing={1} alignItems="center">
@@ -371,21 +350,6 @@ function UsersGrid(props) {
                             </TextField>
                         </Grid>
                         <Grid item>
-                            {/* <Button variant="contained" color="primary" size="small"
-                                className={classes.button} startIcon={<AddBoxRoundedIcon />}
-                                onClick={handleAdd}>Ajouter
-                            </Button>
-                            <Button variant="contained" color="primary" size="small"
-                                className={classes.button} startIcon={<EditIcon />}
-                                disabled={disableButton}
-                                onClick={handleEdit}>Editer
-                            </Button>
-
-                            <Button variant="contained" color="secondary" size="small"
-                                className={classes.button} startIcon={<DeleteIcon />}
-                                disabled={disableButton}
-                                onClick={handleDelete}>Supprimer
-                            </Button> */}
                         </Grid>
                         <Grid item>
                             <Tooltip title="Ajouter">
@@ -439,12 +403,12 @@ function UsersGrid(props) {
                 )}
 
                 <div style={{ width: '100%' }} className={classes.MuiDataGrid}>
-                    {/* {chargement && <LinearProgress color="primary" />} */}
+                    {/* List of the filtred users  */}
                     <DataGrid
                         localeText={frFR.props.MuiDataGrid.localeText}
                         rows={filtredUsers}
                         columns={columns}
-                        pageSize={10}
+                        pageSize={8}
                         checkboxSelection={false}
                         disableSelectionOnClick={false}
                         autoHeight={true}
@@ -462,11 +426,13 @@ function UsersGrid(props) {
                     />
                 </div>
 
+                {/* open the edit form */}
                 {openEdit ?
                     <UserForm handleOpen={openEdit} user={userEdit} title="Editer utilisateur"
                         closeCallback={handleCloseCallback} formType="edit" roles={roles} />
                     : <div></div>}
 
+                {/* open the add form */}
                 {openAdd ?
                     <UserForm handleOpen={openAdd} title="Ajouter utilisateur"
                         closeCallback={handleCloseCallback} formType="add" roles={roles} />

@@ -1,20 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
 import userService from "../../Services/userService";
 import Alert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import DetailsRow from '../Diplomes/DetailsRow';
-import TimeLine from '../Diplomes/TimeLine'
+import TimeLine from '../Diplomes/TimeLine';
+import logo from '../../Images/logoFsjes.png';
 
+const theme = createMuiTheme({
+    palette: {
+        secondary: {
+            main: '#a104fc'
+        }
+    }
+});
 
 export default function FicheEtudiant(props) {
+    // States
     const [etudiant, setEtudiant] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
         setLoading(true);
+        // show student info in the opened dialog
         userService.showEtudiant(props?.etudiantId).then((response) => {
             setLoading(false);
             setEtudiant(response?.data?.etudiant);
@@ -25,6 +37,7 @@ export default function FicheEtudiant(props) {
         })
     }, []);
 
+    // some student info
     const firstData = () => {
         return (
             <>
@@ -38,7 +51,6 @@ export default function FicheEtudiant(props) {
             </>
         )
     };
-
     const secondData = () => {
         return (
             <>
@@ -72,15 +84,19 @@ export default function FicheEtudiant(props) {
 
     return (
         <div>
-            <div style={{ marginBottom: 13 }}>
+            <div style={{ marginBottom: 13}}>
                 {loading && (
                     <div align='center' >
-                        <LinearProgress />
+                        <MuiThemeProvider theme={theme}>
+                            <LinearProgress color='secondary'/>
+                        </MuiThemeProvider>
                     </div>
                 )}
                 {props?.load && (
                     <div align='center' >
-                        <LinearProgress />
+                        <MuiThemeProvider theme={theme}>
+                            <LinearProgress color='secondary'/>
+                        </MuiThemeProvider>
                     </div>
                 )}
                 {error && (
@@ -95,23 +111,48 @@ export default function FicheEtudiant(props) {
                 )}
             </div>
             <div >
-                <Typography variant="body" component="h2" align='center' color='primary'
-                    style={{ marginBottom: 15 }}>
+                <Grid container direction="row" justifyContent="space-around" 
+                    alignItems="center" >
+                    <Grid item style={{ marginLeft:-40}}>
+                        <div style={{ textAlign: "center" }}>
+                            <Typography variant="body" component="h4">ⵜⴰⵙⴷⴰⵡⵉⵜⵎⵓⵃⴰⵎⴷⴸ - ⵔⴱⴰⴹ</Typography>
+                            <Typography variant="body" component="h4" >ⵜⴰⵙⵖⵉⵡⴰⵏⵜ ⵏ ⵜⵎⵓⵙⵏⵉⵏⵉⵣⵔⴼⴰⵏⵉⵏ,</Typography>
+                            <Typography variant="body" component="h4" >ⵜⵉⴷⴰⵎⵙⴰⵏⵉⵏ ⴷ ⵜⵉⵏⴰⵎⵓⵏⵉⵏ</Typography>
+                            <Typography variant="body" component="h4" >ⴰⴳⴷⴰⵍ</Typography>
+                        </div>
+                    </Grid>
+                    <Grid item style={{ marginLeft:-50, marginRight:-50 }}>
+                        <img src={`${logo}`}  width={90} height={90}/>
+                    </Grid>
+                    <Grid item >
+                        <div style={{ textAlign: "center", marginTop:-20 }}>
+                            <br />
+                            <Typography variant="body" component="h3" >جامعة محمد الخامس الرباط</Typography>
+                            <Typography variant="body" component="h3" > كلية العلوم القانونية والاقتصادية </Typography>
+                            <Typography variant="body" component="h3" >  والاجتماعية - أكدال</Typography>
+                        </div>
+                    </Grid>
+                </Grid>
+                <br></br>
+                <Typography variant="body" component="h2" align='center' 
+                    style={{ marginBottom: 15, color: '#a104fc' }}>
                     Fiche Etudiant
-                </Typography><br></br>
+                </Typography>
+                <br></br>
                 <Grid
                     container
                     direction="row"
-                    justifyContent="space-between"
+                    justifyContent={etudiant.diplome?.length === 2 ? "space-around" : "space-between"}
                     alignItems="flex-start"
-                    spacing={0}
                     style={{ marginLeft: 15 }}>
+
+                    {/* //////////////////// Info Personnelles //////////////////// */}
                     {etudiant.diplome?.length === 2 ?
                      <>
-                    <Grid item xs={4} style={{ marginBottom: 20 }}>
+                    <Grid item style={{ marginBottom: 20 }}>
                         {firstData()}
                     </Grid>
-                    <Grid item xs={6} style={{ marginBottom: 20 }}>
+                    <Grid item xs={6} tyle={{ marginBottom: 20 }}>
                        {secondData()}
                     </Grid> </> :
                      <Grid item xs={6} style={{ marginBottom: 20 }}>
@@ -131,7 +172,8 @@ export default function FicheEtudiant(props) {
                             etudiant.demande?.map((demande) => (
                                 demande.id === diplome.demande_id && demande.type_demande === "DEUG" ?
                                     <Grid item xs={5}>
-                                        <Typography variant="body" component="h3">
+                                    {/* //////////////////// Parcours du DEUG //////////////////// */}
+                                        <Typography variant="body" component="h3" style={{marginLeft: 25}}>
                                             Parcours du DEUG
                                         </Typography>
                                         <Typography variant="body2" component="p">
@@ -140,7 +182,8 @@ export default function FicheEtudiant(props) {
                                     </Grid> :
                                     demande.id === diplome.demande_id && demande.type_demande === "Licence" ?
                                         <Grid item xs={5}>
-                                            <Typography variant="body" component="h3">
+                                    {/* //////////////////// Parcours de la Licence //////////////////// */}
+                                            <Typography variant="body" component="h3" style={{marginLeft: 25}}>
                                                 Parcours de la Licence
                                             </Typography>
                                             <Typography variant="body2" component="p">

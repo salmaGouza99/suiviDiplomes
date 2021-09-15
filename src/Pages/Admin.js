@@ -6,18 +6,19 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
 import LinkIcon from '@material-ui/icons/Link';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import SchoolIcon from '@material-ui/icons/School';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import UnarchiveIcon from '@material-ui/icons/Unarchive';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import PersonIcon from '@material-ui/icons/Person';
+import Grid from '@material-ui/core/Grid';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import Navigator from '../components/Demandes/Navigator';
 import DemandesGrid from '../components/Demandes/DemandesGrid';
-import DiplomesTraitement from '../components/Dossiers/DiplomesTraitement';
-import Header from '../components/Demandes/Header';
+import DiplomesTraitement from '../components/Diplomes/DiplomesTraitement';
+import Header from '../components/Nav/Header';
+import SideBar from '../components/Nav/SideBar';
 import Profil from '../components/Profil/Profil';
 import Acceuil from '../components/Acceuil/Acceuil';
 import FormsPage from '../components/Formulaires/FormsPage';
@@ -25,14 +26,26 @@ import Dashboard from '../components/Dashboard/Dashboard';
 import UsersGrid from '../components/Users/UsersGrid';
 import RolesGrid from '../components/Roles/RolesGrid';
 import authService from "../Services/authService";
+import fsjes from "../Images/logoFsjesSmall.png";
 
 function Copyright() {
     return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © Suivi de Diplômes '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
+        <Grid container direction="row" 
+                    alignItems="center" >
+            <Grid item >
+                <img alt="logo" src={fsjes} width={30} height={25} style={{marginLeft: 370}}/>
+            </Grid>
+            <Grid item>
+                <Typography variant="body2" color="textSecondary" style={{marginLeft: 12}}>
+                    {'Copyright © Suivi de Diplômes '}
+                    {new Date().getFullYear()}
+                    {'.'}
+                </Typography>
+            </Grid>
+            <Grid item >
+                <img alt="logo" src={fsjes} width={30} height={25} style={{marginLeft: 10}}/>
+            </Grid>
+        </Grid>
     );
 }
 
@@ -71,7 +84,7 @@ theme = {
     overrides: {
         MuiDrawer: {
             paper: {
-                backgroundColor: '#18202c',
+                backgroundColor: 'white',
             },
         },
         MuiButton: {
@@ -167,15 +180,16 @@ const styles = {
     main: {
         flex: 1,
         padding: theme.spacing(6, 4),
-        background: '#eaeff1',
+        background: '#F6EDFF',
     },
     footer: {
         padding: theme.spacing(2),
-        background: '#eaeff1',
+        background: '#F6EDFF',
     },
 };
 
 function Admin(props) {
+    // States
     const { classes } = props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -188,28 +202,30 @@ function Admin(props) {
 
     useEffect(() => {
         const loggedOut = authService.getLoggedOutValue();
+        // test if the user is loggedout or he hasn't the role of Admin, we redirect him to the login page
         if(loggedOut === true || props?.role !== 1) {
             history.push("/");
+        // else we show him the content of this page
         } else {
           setNavItems(
-            [
-              {
-                id: 'Menu',
-                children: [
-                  { id: 'Utilisateurs', icon: <PersonIcon />, index: '1' },
-                  { id: 'Rôles', icon: <AssignmentIndIcon />, index: '2' },
-                  { id: 'Formulaires', icon: <LinkIcon />, index: '3' },
-                  { id: 'Demandes en attente', icon: <InsertDriveFileIcon />, index: '4' },
-                  { id: 'Diplômes', icon: <SchoolIcon />, children: [
-                        {id: "En cours de traitement", icon: <HourglassEmptyIcon/>, index: '5'},
-                        {id: "Retirés", icon: <UnarchiveIcon/>, index: '6'}
-                  ]},
-                ],
-              },
+            [ // set the navbar of Admin
               {
                 id: 'Tableau de bord',
                 children: [
-                  { id: 'Statistiques', icon: <TimelineIcon />, index: '7'}
+                    { id: 'Statistiques', icon: <TimelineIcon />, index: '1'}
+                ],
+              },
+              { 
+                id: 'Menu',
+                children: [
+                  { id: 'Utilisateurs', icon: <PersonIcon />, index: '2' },
+                  { id: 'Rôles', icon: <AssignmentIndIcon />, index: '3' },
+                  { id: 'Formulaires', icon: <LinkIcon />, index: '4' },
+                  { id: 'Demandes non traitées', icon: <LibraryBooksIcon />, index: '5' },
+                  { id: 'Diplômes', icon: <SchoolIcon />, children: [
+                        {id: "En cours de traitement", icon: <HourglassEmptyIcon/>, index: '6'},
+                        {id: "Retirés", icon: <UnarchiveIcon/>, index: '7'}
+                  ]},
                 ],
               },
               {
@@ -220,6 +236,7 @@ function Admin(props) {
               },
             ]
           );
+          // get the index of navbar from the localstorage in case of refresh page
           handleCallbackNav(localStorage.getItem("index"));
         }
     }, []);
@@ -228,28 +245,32 @@ function Admin(props) {
         setMobileOpen(!mobileOpen);
     };
 
+    // set the index of the header if exists (DEUG or Licence)
     const handleCallbackHeader = (childData) => {
         setCurrentIndex(childData);
     };
     
+    // set the index of the navbar and the appropriate title
     const handleCallbackNav = (childData) => {
         setIndexItem(childData);
         setChangeIndexToEdit('');
         childData === '0' && setTitle("Acceuil");
-        childData === '1' && setTitle("Utilisateurs");
-        childData === '2' && setTitle("Rôles");
-        childData === '3' && setTitle("Formulaires");
-        childData === '4' && setTitle("Demandes en attente");
-        childData === '5' && setTitle("Diplômes en cours de traitement");
-        childData === '6' && setTitle("Diplômes retirés");
-        childData === '7' && setTitle("Statistiques");
+        childData === '1' && setTitle("Statistiques");
+        childData === '2' && setTitle("Utilisateurs");
+        childData === '3' && setTitle("Rôles");
+        childData === '4' && setTitle("Formulaires");
+        childData === '5' && setTitle("Demandes non traitées");
+        childData === '6' && setTitle("Diplômes en cours de traitement");
+        childData === '7' && setTitle("Diplômes retirés");
         childData === '8' && setTitle("Profil Personnel");
     };
 
+    // In case of updating the email, we show it updated in the navbar
     const handleCallbackProfil = (childData) => {
         setEmailUpdate(childData);
     };
 
+    // If the user choose to update his profil from the header
     const handleCallBackEditProfil = (edit) => {
         setChangeIndexToEdit('8');
     };
@@ -260,7 +281,7 @@ function Admin(props) {
                 <CssBaseline />
                 <nav className={classes.drawer}>
                     <Hidden smUp implementation="js">
-                        <Navigator
+                        <SideBar
                             PaperProps={{ style: { width: drawerWidth } }}
                             variant="temporary"
                             open={mobileOpen}
@@ -271,7 +292,7 @@ function Admin(props) {
                         />
                     </Hidden>
                     <Hidden xsDown implementation="css">
-                        <Navigator PaperProps={{ style: { width: drawerWidth } }}
+                        <SideBar PaperProps={{ style: { width: drawerWidth, borderRight: '1px solid' } }}
                             navItems={navItems} parentCallback={handleCallbackNav} emailUpdate={emailUpdate}
                             indexEdit={changeIndexToEdit}/>
                     </Hidden>
@@ -280,18 +301,19 @@ function Admin(props) {
                     <Header onDrawerToggle={handleDrawerToggle} parentCallback={handleCallbackHeader} role={props?.role}
                         callBackEditProfil={handleCallBackEditProfil} emailUpdate={emailUpdate} 
                         title={title} tabs={indexItem === '0' || indexItem === '1' || indexItem === '2' ||
-                                            indexItem === '3' || indexItem === '7' || indexItem === '8' ? false : true} />
+                                            indexItem === '3' || indexItem === '4' || indexItem === '8' ? false : true} />
                     <main className={classes.main}>
+                        {/* Open the appropriate component according to the chosen index */}
                         {indexItem === '0' && <Acceuil role={props?.role} />}
-                        {indexItem === '1' && <UsersGrid user={props?.user}/>}
-                        {indexItem === '2' && <RolesGrid/>}
-                        {indexItem === '3' && <FormsPage/>}
-                        {indexItem === '4' && <DemandesGrid currentIndex={currentIndex} role={props?.role}/>}
-                        {indexItem === '5' && <DiplomesTraitement currentIndex={currentIndex} 
-                                                role={props?.role} traitement={true}/>}
+                        {indexItem === '1' && <Dashboard />}
+                        {indexItem === '2' && <UsersGrid user={props?.user}/>}
+                        {indexItem === '3' && <RolesGrid/>}
+                        {indexItem === '4' && <FormsPage/>}
+                        {indexItem === '5' && <DemandesGrid currentIndex={currentIndex} role={props?.role}/>}
                         {indexItem === '6' && <DiplomesTraitement currentIndex={currentIndex} 
+                                                role={props?.role} traitement={true}/>}
+                        {indexItem === '7' && <DiplomesTraitement currentIndex={currentIndex} 
                                                 role={props?.role} traitement={true} archive={true}/>}
-                        {indexItem === '7' && <Dashboard />}
                         {indexItem === '8' && <Profil parentCallback={handleCallbackProfil} />}
                     </main>
                     <footer className={classes.footer}>

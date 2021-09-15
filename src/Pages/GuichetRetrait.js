@@ -5,25 +5,36 @@ import { createTheme, ThemeProvider, withStyles } from '@material-ui/core/styles
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import SchoolIcon from '@material-ui/icons/School';
-import SchoolOutlinedIcon from '@material-ui/icons/SchoolOutlined';
-import EditIcon from '@material-ui/icons/Edit';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import Grid from '@material-ui/core/Grid';
+import UnarchiveIcon from '@material-ui/icons/Unarchive';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import Navigator from '../components/Demandes/Navigator';
-import DiplomesTraitement from '../components/Dossiers/DiplomesTraitement';
-import Header from '../components/Demandes/Header';
+import DiplomesTraitement from '../components/Diplomes/DiplomesTraitement';
+import Header from '../components/Nav/Header';
+import SideBar from '../components/Nav/SideBar';
 import Profil from '../components/Profil/Profil';
 import Acceuil from '../components/Acceuil/Acceuil';
 import authService from "../Services/authService";
+import fsjes from "../Images/logoFsjesSmall.png";
 
 function Copyright() {
     return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © Suivi de Diplômes '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
+        <Grid container direction="row" 
+                    alignItems="center" >
+            <Grid item >
+                <img alt="logo" src={fsjes} width={30} height={25} style={{marginLeft: 370}}/>
+            </Grid>
+            <Grid item>
+                <Typography variant="body2" color="textSecondary" style={{marginLeft: 12}}>
+                    {'Copyright © Suivi de Diplômes '}
+                    {new Date().getFullYear()}
+                    {'.'}
+                </Typography>
+            </Grid>
+            <Grid item >
+                <img alt="logo" src={fsjes} width={30} height={25} style={{marginLeft: 10}}/>
+            </Grid>
+        </Grid>
     );
 }
 
@@ -62,7 +73,7 @@ theme = {
     overrides: {
         MuiDrawer: {
             paper: {
-                backgroundColor: '#18202c',
+                backgroundColor: 'white',
             },
         },
         MuiButton: {
@@ -158,15 +169,16 @@ const styles = {
     main: {
         flex: 1,
         padding: theme.spacing(6, 4),
-        background: '#eaeff1',
+        background: '#F6EDFF',
     },
     footer: {
         padding: theme.spacing(2),
-        background: '#eaeff1',
+        background: '#F6EDFF',
     },
 };
 
 function GuichetRetrait(props) {
+    // States
     const { classes } = props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -179,15 +191,17 @@ function GuichetRetrait(props) {
 
     useEffect(() => {
         const loggedOut = authService.getLoggedOutValue();
+        // test if the user is loggedout or he hasn't the role of GuichetRetrait, we redirect him to the login page
         if(loggedOut === true || props?.role !== 8) {
             history.push("/");
+        // else we show him the content of this page
         } else {
             setNavItems([
-                {
-                    id: 'Menu',
+                {   // set the navbar of Guichet de Retrait
+                    id: 'Diplômes',
                     children: [
-                        { id: 'Diplômes En attente du retrait', icon: <SchoolOutlinedIcon />, index: '1'},
-                        { id: 'Diplômes retirés', icon: <SchoolIcon />, index: '2'},
+                        { id: 'En attente du retrait', icon: <ScheduleIcon />, index: '1'},
+                        { id: 'Retirés', icon: <UnarchiveIcon />, index: '2'},
                     ],
                 },
                 {
@@ -197,6 +211,7 @@ function GuichetRetrait(props) {
                     ],
                 },
             ]);
+            // get the index of navbar from the localstorage in case of refresh page
             handleCallbackNav(localStorage.getItem("index"));
         }
     }, []);
@@ -205,6 +220,7 @@ function GuichetRetrait(props) {
         setMobileOpen(!mobileOpen);
     };
 
+    // set the index of the header if exists (DEUG or Licence)
     const handleCallbackHeader = (childData) => {
         setCurrentIndex(childData);
     };
@@ -218,10 +234,12 @@ function GuichetRetrait(props) {
         childData === '3' && setTitle("Profil Personnel");
     };
 
-    const handleCallbackProfil = (childData) => {
+     // In case of updating the email, we show it updated in the navbar
+     const handleCallbackProfil = (childData) => {
         setEmailUpdate(childData);
     };
 
+    // If the user choose to update his profil from the header
     const handleCallBackEditProfil = (edit) => {
         setChangeIndexToEdit('3');
     };
@@ -232,7 +250,7 @@ function GuichetRetrait(props) {
                 <CssBaseline />
                 <nav className={classes.drawer}>
                     <Hidden smUp implementation="js">
-                        <Navigator
+                        <SideBar
                             PaperProps={{ style: { width: drawerWidth } }}
                             variant="temporary"
                             open={mobileOpen}
@@ -243,7 +261,7 @@ function GuichetRetrait(props) {
                         />
                     </Hidden>
                     <Hidden xsDown implementation="css">
-                        <Navigator PaperProps={{ style: { width: drawerWidth } }}
+                        <SideBar PaperProps={{ style: { width: drawerWidth, borderRight: '1px solid' } }}
                             navItems={navItems} parentCallback={handleCallbackNav} emailUpdate={emailUpdate}
                             indexEdit={changeIndexToEdit}/>
                     </Hidden>
@@ -253,6 +271,7 @@ function GuichetRetrait(props) {
                         callBackEditProfil={handleCallBackEditProfil} emailUpdate={emailUpdate} 
                         title={title} tabs={indexItem === '0' || indexItem === '3' ? false : true} />
                     <main className={classes.main}>
+                        {/* Open the appropriate component according to the chosen index */}
                         {indexItem === '0' && <Acceuil role={props?.role} />}
                         {indexItem === '1' && <DiplomesTraitement currentIndex={currentIndex} 
                                                 role={props?.role} traitement={true} />}

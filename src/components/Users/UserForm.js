@@ -32,10 +32,6 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 345,
 
   },
-  media: {
-    height: 80,
-    backgroundImage: 'url(https://source.unsplash.com/random)',
-  },
   extendedIcon: {
     marginRight: theme.spacing(1),
   },
@@ -43,6 +39,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
     marginLeft: theme.spacing(12),
+    background: '#a104fc', 
+    '&:hover': {
+      background: "#ab5fe7",
+    },
+    color: 'white'
   },
   container: {
     marginTop: theme.spacing(5),
@@ -63,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UserForm(props) {
+  // States
   const classes = useStyles();
   const [roles, setRoles] = useState([]);
   const [open, setOpen] = useState(false);
@@ -80,6 +82,7 @@ export default function UserForm(props) {
 
 
   useEffect(() => {
+    // set the props values of the parent component in the appropriate variables
     setOpen(props.handleOpen);
     props.user ? setRole(props.user.roleId) : setRole('');
     props.user ? setRoleName(props.user.role) : setRole('');
@@ -90,7 +93,6 @@ export default function UserForm(props) {
   }, []);
 
 
-  ///////////////////////////////////////////
   const handleRole = (e) => {
     setRole(e.target.value);
   }
@@ -113,18 +115,11 @@ export default function UserForm(props) {
     } else {
       setErrors({ ...errors, password: null });
     }
-
   }
-
-
 
   const handlePasswordConfirm = (e) => {
     setPasswordConfirm(e.target.value);
-    console.log(passwordConfirm);
-
   }
-
-
 
   const handleClose = (e) => {
     if(props.formType  === "edit"){
@@ -133,15 +128,14 @@ export default function UserForm(props) {
       props.closeCallback(false,"add");
     }
   }
-  /////////////////////////////////////////
 
   const handleSumbit = (e) => {
     e.preventDefault();
+    // adding user
     if (props.formType === "add") {
       console.log("add");
       if (passwordConfirm === password) {
         setErrors({ ...errors, passwordConfirm: null });
-        // setDisable(false);
       } else {
         setErrors({ ...errors, passwordConfirm: "Les mots de passe doivent être identiques." });
       }
@@ -170,6 +164,7 @@ export default function UserForm(props) {
         }
       }
     }
+    // editing user
     else if (props.formType === "edit") {
       console.log("edit");
       if (passwordConfirm === password) {
@@ -196,19 +191,19 @@ export default function UserForm(props) {
                 setMessage("Cette adresse mail est déjà utilisée.");
               }
             })
-
         } else {
           setDisable(false);
           setMessage("Les mots de passe doivent être identiques.");
         }
       }
-
     }
   }
 
+  // show and hide the password
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
+  // show and hide the confirmed password
   const handleClickShowPassword1 = () => setShowPassword1(!showPassword1);
   const handleMouseDownPassword1 = () => setShowPassword1(!showPassword1);
 
@@ -230,7 +225,7 @@ export default function UserForm(props) {
               />
               <CardContent>
 
-                <Typography gutterBottom variant="h5" component="h2" color="primary">
+                <Typography gutterBottom variant="h5" component="h2" style={{color: '#a104fc'}}>
                   {props.title}
                 </Typography>
                 {message && (
@@ -273,7 +268,6 @@ export default function UserForm(props) {
                     error={Boolean(errors?.email)}
                     helperText={errors?.email}
                   />
-        {/* /////////////////////////////////////////////////77 */}
                   <TextField
                     onChange={handlePassword}
                     InputProps={{
@@ -308,7 +302,6 @@ export default function UserForm(props) {
                     error={Boolean(errors?.password)}
                     helperText={errors?.password}
                   />
-{/* /////////////////////////////////////////////////////////////// */}
                   <TextField
                     onChange={handlePasswordConfirm}
                     InputProps={{
@@ -343,10 +336,6 @@ export default function UserForm(props) {
                     error={Boolean(errors?.passwordConfirm)}
                     helperText={errors?.passwordConfirm}
                   />
-{/* //////////////////////////////////////////////////////////////// */}
-
-
-                    
                   {props.title === "Editer utilisateur" || props.title === "Ajouter utilisateur" ? 
                   <TextField
                     id="standard-select-currency"
@@ -389,16 +378,15 @@ export default function UserForm(props) {
                   </TextField>
                   }
 
-            {/* ///////////////////////////////////////////// */}
                   {props.formType === "add" ?
-                    <Button type='submit' variant="contained" color="primary" size="small"
+                    <Button type='submit' variant="contained" size="small"
                       className={classes.fab} startIcon={<AddBoxRoundedIcon />}
                       disabled={disable}
                     >
                       Ajouter</Button>
                     :
                     <Button
-                      variant="contained" color="primary" size="small"
+                      variant="contained"  size="small"
                       type='submit' className={classes.fab} startIcon={<EditIcon />}
                       disabled={disable}
                     >Editer</Button>

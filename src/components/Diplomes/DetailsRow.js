@@ -2,11 +2,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 export default function DetailsRow(props) {
-    // const [title, setTitle] = useState('');
-    // const [data, setData] = useState('');
-
-
     return (
+        // set the title and the data style in the dialog of diplome info
         <Grid
             container
             direction="row"
@@ -14,7 +11,7 @@ export default function DetailsRow(props) {
             alignItems="center"
             spacing={3}>
             <Grid item xs={6}>
-                <Typography variant="body" component="h4" color="primary">
+                <Typography variant="body" component="h4" style={{color: '#a104fc'}}>
                     {props.title}
                 </Typography>
             </Grid>

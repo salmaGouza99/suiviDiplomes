@@ -18,14 +18,14 @@ import DialogContent from '@material-ui/core/DialogContent';
 import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { DataGrid, GridOverlay, useGridSlotComponentProps, frFR } from '@material-ui/data-grid';
 import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import userService from "../../Services/userService";
 import RenderFiche from './RenderFiche';
-import Bienvenue from "../../Images/Bienvenue.png"
+import Bienvenue from "../../Images/bienvenue.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,18 +44,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// custom loading of data grid
 function CustomLoadingOverlay() {
   const classes = useStyles();
+  const theme = createMuiTheme({
+    palette: {
+        secondary: {
+            main: '#a104fc'
+        }
+    }
+  });
 
   return (
     <GridOverlay>
       <div className={classes.load}>
-        <LinearProgress />
+        <MuiThemeProvider theme={theme}>
+            <LinearProgress color='secondary'/>
+        </MuiThemeProvider>
       </div>
     </GridOverlay>
   );
 }
 
+// custom pagination of data grid
 function CustomPagination() {
   const { state, apiRef } = useGridSlotComponentProps();
   const classes = useStyles();
@@ -106,12 +117,13 @@ const styles = (theme) => ({
     },
   },
   image: {
-    margin: theme.spacing(6,32.5,-10),
+    margin: theme.spacing(15,34,-10),
   }
 });
 
 
 function Acceuil(props) {
+  // States
   const { classes } = props;
   const [open, setOpen] = useState(false);
   const [etudiantId, setEtudiantId] = useState(null);
@@ -123,11 +135,12 @@ function Acceuil(props) {
   const [loadPrint, setLoadPrint] = useState();
   const [reload, setReload] = useState(false);
   const [error, setError] = useState();
+  // set filiere according to the user role
   const filiere = props?.role === 2 ? "القانون باللغة العربية" : 
                   props?.role === 3 ? "Droit en français" : 
                   props?.role === 4 ? "Sciences Economiques et Gestion" : null;
 
-
+  // data grid columns
   const columns = [
     {
       field: 'id',
@@ -171,6 +184,7 @@ function Acceuil(props) {
       width: 70,
       renderCell: (params) => {
         const showInfo = () => {
+          // show info of the chosen etudiant
           setOpen(true);
           setEtudiantId(params.id);
         };
@@ -187,6 +201,7 @@ function Acceuil(props) {
     },
   ];
 
+  // data grid rows : it's the filtred etudiants
   const data = filtredEtudiants?.map((etudiant) => (
     {
       id: etudiant.cin, apogee: etudiant.apogee, cin: etudiant.cin,
@@ -198,6 +213,7 @@ function Acceuil(props) {
   useEffect(() => {
     setLoad(true);
     setReload(false);
+    // list of all students without filtres
     userService.getAllEtudiants()
       .then((response) => {
         setLoad(false);
@@ -208,19 +224,26 @@ function Acceuil(props) {
         setLoad(false);
         setError("Erreur de chargement, veuillez réssayer.");
       });
+  // this code will be called in every refresh
   }, [reload]);
 
   useEffect(() => {
     setFiltredEtudiants(
+      // filter the above demandes list by :
       etudiants?.filter((etudiant) =>
-        (filiere !== null ? etudiant.filiere === filiere : etudiant.filiere !== null) &&
+        // filiere
+        (filiere !== null ? etudiant.filiere === filiere : etudiant.filiere !== null) 
+        // input search
+        &&
         (etudiant.cin.toLowerCase().includes(search.toLowerCase()) ||
          etudiant.apogee.toLowerCase().includes(search.toLowerCase()) ||
          etudiant.cne.toLowerCase().includes(search.toLowerCase()) )
       )
     );
+  // this code will be called if there is an input search 
   }, [search, etudiants]);
 
+  // handle refresh all states
   const handleReload = () => {
     setError(null);
     setEtudiants([]);
@@ -228,11 +251,12 @@ function Acceuil(props) {
     setSearch('');
   };
 
+  // close the dialog of opened student info
   const handleClose = () => {
     setOpen(false);
   };
   
-  
+  // handle print ficheEtudiant
   const handleClickPrint = () => {
     setLoadPrint(true);
     handlePrintFiche();
@@ -242,6 +266,7 @@ function Acceuil(props) {
   const pageStyle = '@page { size: auto; margin: 0mm; } @media print { body { -webkit-print-color-adjust: exact; padding: 30px !important; } }';
   const handlePrintFiche = useReactToPrint({
         pageStyle: () => pageStyle,
+        // give the reference to the current component (which will be the FicheEtudiant component) to print it
         content: () => componentRef.current,
         documentTitle: etudiantId,
         onAfterPrint: () => (setLoadPrint(false), setOpen(false)),
@@ -259,7 +284,7 @@ function Acceuil(props) {
             <Grid item xs>
               <TextField
                 fullWidth
-                placeholder="Chercher étudiant par Apogée, CIN ou CNE ..."
+                placeholder="Chercher un étudiant par son Apogée, CIN ou CNE ..."
                 fontWeight="fontWeightBold"
                 InputProps={{
                   disableUnderline: true,
@@ -283,6 +308,7 @@ function Acceuil(props) {
       <br></br>
      <Paper className={classes.paper}>
       {search ? (
+        // if there is an input search show the results of search
       <div className={classes.contentWrapper}>
         {error && (
           <Alert className={classes.alert}
@@ -296,6 +322,7 @@ function Acceuil(props) {
         )}
         <div style={{ width: '100%' }} className={classes.MuiDataGrid}>
           <DataGrid
+            // list of filtred students
             localeText={frFR.props.MuiDataGrid.localeText}
             autoHeight
             rows={data ? data : []}
@@ -303,8 +330,6 @@ function Acceuil(props) {
             disableSelectionOnClick
             disableColumnMenu
             pageSize={pageSize}
-            //onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            //rowsPerPageOptions={[5, 7, 10]}
             components={{
               Pagination: CustomPagination,
               LoadingOverlay: CustomLoadingOverlay,
@@ -318,26 +343,29 @@ function Acceuil(props) {
      <></>
       }
       
+      {/* Opeb the dialog of student info if open true */}
         <Dialog open={open} aria-labelledby="form-dialog-title">
           <IconButton color="primary" aria-label="upload picture" className={classes.closeIcon}
               component="span" size="small" >
               <CloseIcon onClick={handleClose} />
           </IconButton>
           <DialogContent>
-          <Button fullWidth variant="outlined" color="primary" size="small" onClick={handleClickPrint}>
+          <Button fullWidth variant="outlined" style={{color: '#bb0086'}} size="small" onClick={handleClickPrint}>
               Imprimer 
           </Button>
-            <Card className={classes.card}>
-              <CardContent>
+            <Card >
+              <CardContent >
                 <RenderFiche load={loadPrint} etudiantId={etudiantId} ref={componentRef} />
               </CardContent>
             </Card>
           </DialogContent>
         </Dialog>
     </Paper>
+
       {!search && (
+        // if there is no input search show a WELCOME image
       <div className={classes.image}>
-        <img alt="Bienvenue" src={Bienvenue} width={500} height={300}/>
+        <img alt="Bienvenue" src={Bienvenue} width={465} height={145}/>
       </div>)}
     </div>
   );

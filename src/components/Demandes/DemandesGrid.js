@@ -13,7 +13,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import Visibility from "@material-ui/icons/VisibilityRounded";
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { DataGrid, GridOverlay, useGridSlotComponentProps, frFR } from '@material-ui/data-grid';
 import Alert from '@material-ui/lab/Alert';
 import FilterListIcon from '@material-ui/icons/FilterListRounded';
@@ -36,18 +36,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// custom loading of data grid
 function CustomLoadingOverlay() {
   const classes = useStyles();
+  const theme = createMuiTheme({
+    palette: {
+        secondary: {
+            main: '#a104fc'
+        }
+    }
+  });
 
   return (
     <GridOverlay>
-      <div className={classes.load}>
-        <LinearProgress />
-      </div>
+       <div className={classes.load}>
+        <MuiThemeProvider theme={theme}>
+            <LinearProgress color='secondary'/>
+        </MuiThemeProvider>
+        </div>
     </GridOverlay>
   );
 }
 
+// custom pagination of data grid
 function CustomPagination() {
   const { state, apiRef } = useGridSlotComponentProps();
   const classes = useStyles();
@@ -77,17 +88,10 @@ const styles = (theme) => ({
   block: {
     display: 'block',
   },
-  newDemandsOld: {
-    background: '#4fc3f7',
-    '&:hover': {
-      background: "#3A7BAF",
-    },
-    color: theme.palette.common.white,
-  },
   newDemands: {
-    background: '#0a9ce6',
+    background: '#a104fc',
     '&:hover': {
-      background: "#5ea2d7",
+      background: "#ab5fe7",
     },
     color: theme.palette.common.white,
   },
@@ -99,15 +103,15 @@ const styles = (theme) => ({
     margin: '20px 16px',
   },
   folder: {
-    background: '#4fc3f7',
+    background: '#bb0086',
     '&:hover': {
-      background: "#3A7BAF",
+      background: "#bf3fa0",
     },
     color: theme.palette.common.white,
   },
   MuiDataGrid: {
     '& .traitee': {
-      color: theme.palette.info.main
+      color: '#BA55D3'
     },
     '& .nonTraitee': {
       color: 'gray'
@@ -117,6 +121,7 @@ const styles = (theme) => ({
 
 
 function DemandesGrid(props) {
+  // States
   const { classes } = props;
   const [open, setOpen] = useState(false);
   const [demandeId, setDemandeId] = useState(null);
@@ -124,7 +129,7 @@ function DemandesGrid(props) {
   const [demandesTraitees, setDemandesTraitees] = useState([]);
   const [search, setSearch] = useState("");
   const [filtredDemandes, setFiltredDemandes] = useState([]);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(8);
   const [load, setLoad] = useState();
   const [reload, setReload] = useState(false);
   const [disable, setDisable] = useState(false);
@@ -134,11 +139,14 @@ function DemandesGrid(props) {
   const [number, setNumber] = useState();
   const [selectionModel, setSelectionModel] = useState([]);
   const [selectedFiliere, setselectedFiliere] = useState('');
+  // set type of diplome according the indextab of the header
   const type = props?.currentIndex === 0 ? "DEUG" : "Licence";
+  // set filiere according to the user role
   const filiere = props?.role === 2 ? "القانون باللغة العربية" : 
                   props?.role === 3 ? "Droit en français" : 
                   props?.role === 4 ? "Sciences Economiques et Gestion" : null;
 
+  // data grid columns
   const columns = [
     {
       field: 'id',
@@ -190,6 +198,7 @@ function DemandesGrid(props) {
       width: 60,
       renderCell: (params) => {
         const showInfo = () => {
+          // show info of the chosen demande
           setOpen(true);
           setDemandeId(params.id);
         };
@@ -205,6 +214,7 @@ function DemandesGrid(props) {
     },
   ];
 
+  // data grid rows : it's the filtred demandes
   const data = filtredDemandes?.map((demande) => (
     {
       id: demande.id, type: demande.type_demande, date: demande.date_demande,
@@ -214,6 +224,7 @@ function DemandesGrid(props) {
     }
   ));
 
+  // get title of statut demande
   function getStatut(demandeId) {
     return (demandesTraitees.indexOf(demandeId) > -1 ? 'Traitée' : 'Non traitée')
   };
@@ -221,6 +232,7 @@ function DemandesGrid(props) {
   useEffect(() => {
     setLoad(true);
     setReload(false);
+    // list of all demandes without filtres
     userService.getAllDemandes()
       .then((response) => {
         setLoad(false);
@@ -234,16 +246,21 @@ function DemandesGrid(props) {
         setError("Erreur de chargement, veuillez réessayer.");
       });
     setMessage(number != null ? message : null);
+  // this code will be called in every refresh
   }, [reload]);
 
   useEffect(() => {
     setFiltredDemandes(
+      // filter the above demandes list by :
       demandes?.filter((demande) =>
+        // type
         demande.type_demande === type 
+        // filiere
         && 
         (filiere !== null ? demande.etudiant.filiere === filiere : 
          selectedFiliere !== '' ? demande.etudiant.filiere === selectedFiliere :
          demande.etudiant.filiere !== null) 
+        // input search
         &&
         (demande.etudiant_cin.toLowerCase().includes(search.toLowerCase()) ||
         demande.etudiant.apogee.toLowerCase().includes(search.toLowerCase()) ||
@@ -252,8 +269,10 @@ function DemandesGrid(props) {
     );
     setError(null);
     setMessage(number != null ? message : null);
+  // this code will be called if there is a selected filiere or an input search 
   }, [type, selectedFiliere, search, demandes]);
 
+  // handle refresh all states
   const handleReload = () => {
     setMessage(null);
     setNumber(null);
@@ -264,6 +283,7 @@ function DemandesGrid(props) {
     setReload(true);
   };
 
+  // load the new demandes from the forms (DEUG and Licence) according to the filiere 
   const handleNewDemands = () => {
     setLoad(true);
     setDisable(true);
@@ -271,6 +291,7 @@ function DemandesGrid(props) {
       setDisable(false);
       setError(null);
       if (filiere!==null) {
+        // load new demandes for GuichetScolarite according to each filiere
         let total = response?.data.Deug + response?.data.Licence;
         setMessage(total === 0 ? "Aucune nouvelle demande." :
         response?.data.Deug === 1 && response?.data.Licence === 0 ? "Une seule damande de DEUG est ajoutée." :
@@ -279,6 +300,7 @@ function DemandesGrid(props) {
         response?.data.Deug + " DEUG et " + response?.data.Licence + " Licence.");
         setNumber(total);
       } else {
+        // load new demandes for Admin (All filieres)
         let total = response?.data.DeugForAllFilieres + response?.data.LicenceForAllFilieres;
         setMessage(total === 0 ? "Aucune nouvelle demande." :
         response?.data.DeugForAllFilieres === 1 && response?.data.LicenceForAllFilieres === 0 ? "Une seule damande de DEUG est ajoutée." :
@@ -299,15 +321,16 @@ function DemandesGrid(props) {
   };
 
   const handleSelection = (e) => {
-    if (e) {
+    if (e) {  // if there is some selections
       setSelectionModel(e);
       setDisable1(false);
-    } else {
+    } else {  // if there is no selection
       setSelectionModel(null);
       setDisable1(true);
     }
   };
 
+  // create folders for diplomes for the first time
   const handleCreateFolders = (e) => {
     setLoad(true);
     setDisable1(true);
@@ -346,6 +369,7 @@ function DemandesGrid(props) {
     }
   };
 
+  // close the dialog of opened demande info
   const handleCloseCallback = (open) => {
     setOpen(open);
   };
@@ -362,6 +386,7 @@ function DemandesGrid(props) {
             <Grid item>
               <SearchIcon className={classes.block} color="inherit" />
             </Grid>
+            {/* /////////////////////// for Admin and GuichetScolarite ///////////////////////*/}
             <Grid item xs>
               <TextField
                 fullWidth
@@ -375,6 +400,7 @@ function DemandesGrid(props) {
                 value={search}
               />
             </Grid>
+            {/* /////////////////////// for Admin ///////////////////////*/}
             {filiere === null &&
             <Grid item>
               <TextField
@@ -406,6 +432,7 @@ function DemandesGrid(props) {
                 </MenuItem>
               </TextField>
             </Grid>}
+            {/* /////////////////////// for Admin and GuichetScolarite ///////////////////////*/}
             <Grid item>
               <Tooltip title="Charger les nouvelles demandes">
                 <div>
@@ -415,13 +442,8 @@ function DemandesGrid(props) {
                   </IconButton>
                 </div>
               </Tooltip>
-              {/* <Button variant="contained"
-                disabled={disable}
-                className={classes.newDemands}
-                onClick={handleNewDemands} startIcon={<AddIcon/>}>
-                <Box fontWeight="fontWeightBold">Nouvelles demandes</Box>
-              </Button> */}
             </Grid>
+            {/* /////////////////////// for GuichetScolarite ///////////////////////*/}
             {filiere !== null && 
             <Grid item>
               <Tooltip title="Créer dossier">
@@ -432,11 +454,8 @@ function DemandesGrid(props) {
                   </IconButton>
                 </div>
               </Tooltip>
-              {/* <Button variant="contained" disabled={selectionModel?.length === 0 || disable1 ? true : false}
-                className={classes.folder} onClick={handleCreateFolders} startIcon={<CreateNewFolderIcon/>}>
-                <Box fontWeight="fontWeightBold">Créer dossier</Box>
-              </Button> */}
             </Grid>}
+            {/* /////////////////////// for Admin and GuichetScolarite ///////////////////////*/}
             <Grid item>
               <Tooltip title="Rafraîchir">
                 <IconButton onClick={handleReload}>
@@ -464,25 +483,21 @@ function DemandesGrid(props) {
         )}
     
         <div style={{ width: '100%' }} className={classes.MuiDataGrid}>
+          {/* List of filtred demandes */}
           <DataGrid
             localeText={frFR.props.MuiDataGrid.localeText}
             autoHeight
             rows={data ? data : []}
             columns={columns}
-            getCellClassName={(params) => {
+            getCellClassName={(params) => { // set the appropriate name of class style to the demande statut
               return (params.value === 'Traitée' ? 'traitee' : params.value === 'Non traitée' ? 'nonTraitee' : '')
             }}
-            /* sortModel={[
-              { field: 'date', sort: 'desc' },
-            ]} */
             checkboxSelection={filiere !== null ? true : false}
-            disableSelectionOnClick
+            disableSelectionOnClick={filiere !== null ? false : true}
             disableColumnMenu
             pageSize={pageSize}
             onSelectionModelChange={handleSelection}
             selectionModel={selectionModel}
-            //onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            //rowsPerPageOptions={[5, 7, 10]}
             components={{
               Pagination: CustomPagination,
               LoadingOverlay: CustomLoadingOverlay,
@@ -492,6 +507,7 @@ function DemandesGrid(props) {
           />
         </div>
       </div>
+      {/* open dialog of info demande for Admin and GuichetScolarite*/}
       {open?
         <InfoGrid handleOpen={open} demandeId={demandeId} closeCallback={handleCloseCallback} />
         : <div></div>}

@@ -45,6 +45,7 @@ export default function NotFound() {
               />
 
             <Button to="/" size='large' variant="contained" component={RouterLink} className={classes.button}>
+                {/* If the user is loggedin, redirect him to her appropriate page, else to the login page */}
                 ALLER A L'ACCEUIL
             </Button>
           </Box>

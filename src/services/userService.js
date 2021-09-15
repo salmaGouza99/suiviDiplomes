@@ -50,19 +50,6 @@ const delateUser = (id) => {
 const getAllRoles = () => {
   return axios.get( API_URL + "roles", authHeaders() );
 };
-const addNewRole = (name) => {
-  return axios.post( API_URL + "roles", {name}, authHeaders() );
-};
-const showRole = (id) => {
-  return axios.get( API_URL + `roles/${id}`, authHeaders() );
-};
-const updateRole = (id, name) => {
-  return axios.put( API_URL + `roles/${id}`, {name}, authHeaders() );
-};
-const delateRole = (id) => {
-  return axios.delete( API_URL + `roles/${id}`, authHeaders() );
-};
-
 
 // Forms
 const getAllForms = () => {
@@ -79,6 +66,11 @@ const getAllEtudiants = () => {
 const showEtudiant = (cin) => {
   return axios.get( API_URL + `etudiants/${cin}`, authHeaders() )
 };
+const updateEtudiant = (old_cin, cin, apogee, cne, nom, prenom, nom_arabe, prenom_arabe, filiere, option,
+                        nationalite, date_naiss, lieu_naiss) => {
+  return axios.put( API_URL + `etudiants/${old_cin}`, {cin, apogee, cne, nom, prenom, nom_arabe,
+                        prenom_arabe, filiere, option, nationalite, date_naiss, lieu_naiss}, authHeaders() )
+}; 
 
 
 // Demandes
@@ -87,9 +79,6 @@ const getAllDemandes = () => {
 };
 const nouvellesDemandes = (filiere) => {
   return axios.post( API_URL + `demandes/nouvellesDemandes/${filiere}`, {}, authHeaders() )
-};
-const filterDemandes = (type, filiere) => {
-  return axios.get( API_URL + `demandes/filter/${type},${filiere}`, authHeaders() )
 };
 const showDemande = (id) => {
   return axios.get( API_URL + `demandes/${id}`, authHeaders() )
@@ -103,17 +92,29 @@ const CreerDossiers = (demandeId) => {
 const getAllDiplomes = () => {
   return axios.get( API_URL + "diplomes", authHeaders() )
 };
+const statutsDiplomes = () => {
+  return axios.get( API_URL + `statuts`, authHeaders() )
+};
 const showDiplome = (id) => {
   return axios.get( API_URL + `diplomes/${id}`, authHeaders() )
 };
-const statutsDiplomes = () => {
-  return axios.get( API_URL + `statuts`, authHeaders() )
+const updateDateReedition = (diplome, type_erreur) => {
+  return axios.put( API_URL + `diplomes/reedition/${diplome}`, {type_erreur}, authHeaders() )
+};
+const updateDateImpression = (id) => {
+  return axios.put( API_URL + `diplomes/impression/${id}` ,{}, authHeaders() );
 };
 const updateDateSignature = (diplome) => {
   return axios.put( API_URL + `diplomes/signature/${diplome}`, {}, authHeaders() )
 };
+const updateDateEnvoiApresidence = (id) => {
+  return axios.put( API_URL + `diplomes/envoiPresidence/${id}` ,{}, authHeaders() );
+};
 const updateDateReceptionParBureauOrdre = (diplome) => {
   return axios.put( API_URL + `diplomes/reception/${diplome}`, {}, authHeaders() )
+};
+const sendMail = (id) => {
+  return axios.get( API_URL + `diplomes/mail/${id}`, authHeaders() )
 };
 const updateDateNotificationEtudiant = (diplome) => {
   return axios.put( API_URL + `diplomes/notif/${diplome}`, {}, authHeaders() )
@@ -121,9 +122,7 @@ const updateDateNotificationEtudiant = (diplome) => {
 const updateDateRetraitDiplomeArchiveDossier = (diplome) => {
   return axios.put( API_URL + `diplomes/retrait/${diplome}`, {}, authHeaders() )
 };
-const sendMail = (id) => {
-  return axios.get( API_URL + `diplomes/mail/${id}`, authHeaders() )
-};
+
 
 const userService = {
     showProfil,
@@ -138,27 +137,26 @@ const userService = {
     updateUser,
     delateUser,
     getAllRoles,
-    addNewRole,
-    showRole,
-    updateRole,
-    delateRole,
     getAllForms,
     updateForm,
     getAllEtudiants,
     showEtudiant,
+    updateEtudiant,
     getAllDemandes,
     nouvellesDemandes,
-    filterDemandes,
     showDemande,
     CreerDossiers,
     getAllDiplomes,
-    showDiplome,
     statutsDiplomes,
+    showDiplome,
+    updateDateReedition,
+    updateDateImpression,
     updateDateSignature,
+    updateDateEnvoiApresidence,
     updateDateReceptionParBureauOrdre,
+    sendMail,
     updateDateNotificationEtudiant,
     updateDateRetraitDiplomeArchiveDossier,
-    sendMail,
 };
 export default userService;
   

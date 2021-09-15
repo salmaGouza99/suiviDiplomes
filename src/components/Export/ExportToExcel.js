@@ -15,40 +15,8 @@ export default function ExportToExcel(apiData) {
   }
   const worksheet = XLSX.utils.json_to_sheet(apiData);
   worksheet["!cols"] = wscols;
-  worksheet["A1"].t = 's';
-  worksheet["A1"].s = {
-    font: {
-      name: "Calibri",
-      sz: 24,
-      bold: true,
-      color: { rgb: "FFFFAA00" },
-    },
-  };
-/*   worksheet["A1"].s = { 
-    fill: {
-        type: 'pattern',
-        pattern:'solid',
-        fgColor:{argb:'FF1c4587'},
-        bgColor:{argb:'FF1c4587'}
-    }
-  };
-   */
-  /* worksheet.forEach(worksheet, (v, c) => {
-    if (c !== '!ref') {
-        if (header.indexOf(v.v) >= 0) {
-          worksheet[c]['s'] = {
-                fill: {
-                patternType: 'solid', // none / solid
-                fgColor: {rgb: 'FFD3D3D3'}
-                }
-            }
-        }
-    }
-}) */
-
-  // const ws = XLSX.utils.json_to_sheet(apiData);
-  const wb = { Sheets: { data: worksheet }, SheetNames: ["data"] };
-  const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
   const data = new Blob([excelBuffer], { type: fileType });
   FileSaver.saveAs(data, fileName + fileExtension);
 

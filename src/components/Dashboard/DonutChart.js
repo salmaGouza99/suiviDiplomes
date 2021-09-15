@@ -8,8 +8,7 @@ import {
     Box,
     Typography,
     colors,
-}
-    from '@material-ui/core';
+} from '@material-ui/core';
 import { red, purple, grey, cyan } from '@material-ui/core/colors';
 import { useTheme, makeStyles } from '@material-ui/core';
 import userService from "../../Services/userService";
@@ -26,20 +25,22 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 export default function DonutChart(props) {
+    // States
     const theme = useTheme();
     const classes = useStyles();
     const currentYear = new Date().getFullYear();
     const [results, setResults] = useState([]);
     const [message, setMessage] = useState('');
     const [open, setOpen] = useState(false);
+
+    // set data of the current year according to each type
     const data = {
         datasets: [
             {
                 data: [results.demandes_recues,
                 results.demandes_traites,
-                results.diplomes_retires,
+                results.diplomes_reedites,
                 results.diplomes_retires],
                 backgroundColor: [
                     cyan[500],
@@ -57,6 +58,8 @@ export default function DonutChart(props) {
         labels: ['Demandes Reçues', 'Demandes Traitées', 'Diplômes Réédités', 'Diplômes Retirés'],
         hoverOffset: 4
     };
+
+    // styling the DonutChart
     const options = {
         animation: {
             animateRotate: true,
@@ -81,6 +84,8 @@ export default function DonutChart(props) {
         }
 
     };
+
+    // fill the labels of the DonutChart by titles and the previous values
     const labels1 = [
         {
             title: 'Demandes Reçues',
@@ -113,6 +118,7 @@ export default function DonutChart(props) {
     ];
     
     useEffect(() => {
+        // get all data of the current year
         userService.dashboardCurrentYear().then((response) => {
             setResults(response.data.results)
         }).catch((err) => {
@@ -122,6 +128,7 @@ export default function DonutChart(props) {
         })
     }, [])
 
+    // open and close the error message
     const handleCallBackOpen = (open) => {
         setOpen(open);
     };
@@ -136,24 +143,6 @@ export default function DonutChart(props) {
                     variant: "h6"
                 }}
                 className={classes.cardTitle}
-                // action={(
-                //     <TextField
-                //         style={{ height: "35px", width: "100px" }}
-                //         id="standard-select-currency"
-                //         select
-                //         // onChange={filterByType}
-                //         variant="standard"
-                //         margin="normal"
-                //         size="small"
-                //     // value={type}
-                //     ><MenuItem key={1} value="DEUG">
-                //             DEUG
-                //         </MenuItem>
-                //         <MenuItem key={2} value="licence">
-                //             Licence
-                //         </MenuItem>
-                //     </TextField>
-                // )}
             />
             <Divider light={true} />
             <CardContent>

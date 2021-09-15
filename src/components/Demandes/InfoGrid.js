@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Card from '@material-ui/core/Card';
@@ -38,7 +38,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const theme = createMuiTheme({
+    palette: {
+        secondary: {
+            main: '#a104fc'
+        }
+    }
+});
+
 export default function InfoGrid(props) {
+    // States
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -49,6 +58,7 @@ export default function InfoGrid(props) {
         setOpen(props?.handleOpen);
         setLoading(true);
         if (props?.demandeId !== null) {
+            // show demande info
             userService.showDemande(props?.demandeId).then((response) => {
                 setLoading(false);
                 setDemande(response?.data.demande)
@@ -63,15 +73,13 @@ export default function InfoGrid(props) {
         }
     }, []);
 
-
-    ///////////////////////////////////////////
+    // close the dialog of demande info
     const handleClose = (e) => {
         props.closeCallback(false);
     }
 
     return (
         <div className={classes.root}>
-
             <Dialog open={open} aria-labelledby="form-dialog-title" className={classes.root}>
                 <IconButton color="primary" aria-label="upload picture"
                     component="span" size="small" className={classes.closeIcon}>
@@ -80,7 +88,9 @@ export default function InfoGrid(props) {
                 <DialogContent>
                     {loading && (
                         <div align='center' >
-                            <LinearProgress className={classes.loading} />
+                            <MuiThemeProvider theme={theme}>
+                                <LinearProgress className={classes.loading} color='secondary'/>
+                            </MuiThemeProvider>
                         </div>
                     )}
                     {error && (
@@ -102,7 +112,7 @@ export default function InfoGrid(props) {
                                 alignItems="flex-start"
                             >
                                 <Grid item xs={100}>
-
+                                     {/* Fill the dialog with the appropriate info for the given demande */}
                                     <Typography variant="body" component="h3">
                                         Informations Personnelles
                                     </Typography><br />
@@ -125,10 +135,8 @@ export default function InfoGrid(props) {
                                     <DetailsRow title="Date de demande" data={demande?.date_demande} />
                                 </Grid>
                             </Grid>
-
                         </CardContent>
                         <CardActions>
-
                         </CardActions>
                     </Card>
                 </DialogContent>

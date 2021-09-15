@@ -7,6 +7,7 @@ const login = (email, password, checked) => {
     .post(API_URL + "login", { email, password })
     .then((response) => {
       if (response.data.accessToken) {
+          // If the user checked the button of stay signed in we set the info in localstorage else in session storage
           checked ? localStorage.setItem("user", JSON.stringify(response.data)) :
                     sessionStorage.setItem("user", JSON.stringify(response.data));
           localStorage.setItem("loggedOut", false);

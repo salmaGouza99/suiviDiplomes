@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProfilCard(props) {
+    // States
     const classes = useStyles();
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('');
@@ -30,10 +31,13 @@ export default function ProfilCard(props) {
 
     useEffect(() => {
         const loggedInUser = authService.getCurrentUser();
+        // set the email and the role of the current user
         setRole(loggedInUser?.user?.roles[0]?.name);
         setEmail(emailUpdate !== null ? props?.emailUpdate : loggedInUser?.user?.email);
+        // this code will be called if the email has updated
     }, [emailUpdate]);
 
+    // open the component of edit profil
     const handleClickEdit = (e) => {
         props?.callBackEditProfil(true);
     };
@@ -45,7 +49,7 @@ export default function ProfilCard(props) {
                     <div align='right' style={{marginTop:-10}}>
                     <Tooltip title="Editer">
                         <IconButton onClick={handleClickEdit}>
-                            <EditIcon color='primary'/>
+                            <EditIcon style={{color: "#a104fc"}}/>
                         </IconButton>
                     </Tooltip>
                     </div>

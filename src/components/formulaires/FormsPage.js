@@ -1,6 +1,6 @@
 import React ,{useState , useEffect} from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -9,8 +9,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Form from "./Form";
-import Message from './Message';
 import userService from "../../Services/userService";
+import Message from "./Message";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -62,7 +62,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const theme = createMuiTheme({
+  palette: {
+      secondary: {
+          main: '#a104fc'
+      }
+  }
+});
+
 export default function FormsPage(props) {
+  // States
   const classes = useStyles();
   const [value, setValue] = useState('');
   const [formDeug, setFormDeug] = useState('');
@@ -73,6 +82,7 @@ export default function FormsPage(props) {
 
   useEffect(() => {
     setLoad(true);
+    // list of the two forms (DEUG and Licence)
     userService.getAllForms().then((response) => {
         setLoad(false);
         response.data.forms.forEach(form => {
@@ -91,10 +101,12 @@ export default function FormsPage(props) {
     })
   }, []);
 
+  // change the tab from DEUG to Licence or the opposite
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  // open the success or the error message
   const handleCallBackOpen = (open) => {
     setOpen(open);
   };
@@ -107,7 +119,7 @@ export default function FormsPage(props) {
           value={value}
           onChange={handleChange}
           indicatorColor="primary"
-          textColor="primary"
+          style={{color: '#a104fc'}}
           variant="fullWidth"
           aria-label="scrollable auto tabs example"
         >
@@ -115,9 +127,11 @@ export default function FormsPage(props) {
           <Tab label="Formulaire de demande de Licence" {...a11yProps(1)} />
         </Tabs>
         {load && (
-          <div align='center' >
-              <LinearProgress className={classes.loading} />
-            </div>
+          <div className={classes.load}>
+          <MuiThemeProvider theme={theme}>
+              <LinearProgress color='secondary'/>
+          </MuiThemeProvider>
+          </div>
         )}
       </AppBar>
       <TabPanel value={value} index={0}>
