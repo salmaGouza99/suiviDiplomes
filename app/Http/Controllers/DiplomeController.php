@@ -369,7 +369,8 @@ class DiplomeController extends Controller
                 and $diplome->date_impression_envoiAuDecanat
             ) {
 
-                Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
+                // Mail::to($diplome->etudiant->email_inst)->send(new NotificationDiplome($mail));
+                Mail::to("assma.benkaddour@uit.ac.ma")->send(new NotificationDiplome($mail));
                 
                 return response()->json([
                     'successEmail' => 'Email de notification envoyé avec succès à ' . $diplome->etudiant->email_inst . '.',
